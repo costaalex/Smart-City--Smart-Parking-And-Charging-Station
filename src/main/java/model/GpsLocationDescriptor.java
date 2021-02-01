@@ -1,7 +1,7 @@
 package model;
 
 
-public class GpsLocation {
+public class GpsLocationDescriptor {
 
     public static final String FILE_LOCATION_PROVIDER = "location_provider_file";
 
@@ -17,10 +17,10 @@ public class GpsLocation {
 
     private String provider;
 
-    public GpsLocation() {
+    public GpsLocationDescriptor() {
     }
 
-    public GpsLocation(double latitude, double longitude, double elevation, String provider) {
+    public GpsLocationDescriptor(double latitude, double longitude, double elevation, String provider) {
         this.latitude = latitude;
         this.longitude = longitude;
         this.elevation = elevation;

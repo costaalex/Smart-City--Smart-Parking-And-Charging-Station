@@ -2,9 +2,8 @@ package resource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sensors.Led;
+import model.Led;
 
-import java.util.Random;
 import java.util.UUID;
 
 public class ParkinglotSmartObject extends SmartObjectResource<Double> {

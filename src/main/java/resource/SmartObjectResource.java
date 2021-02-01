@@ -1,6 +1,6 @@
 package resource;
 
-import model.GpsLocation;
+import model.GpsLocationDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,7 +15,7 @@ public abstract class SmartObjectResource<T> {
 
     private String type;
     private String id;
-    private GpsLocation smartObjectLocation;
+    private GpsLocationDescriptor smartObjectLocation;
 
 
     public SmartObjectResource() {
@@ -25,7 +25,7 @@ public abstract class SmartObjectResource<T> {
     public SmartObjectResource(String id, String type, Double latitude, Double longitude) {
         this.id = id;
         this.type = type;
-        this.smartObjectLocation = new GpsLocation(latitude, longitude, 0.0, "");
+        this.smartObjectLocation = new GpsLocationDescriptor(latitude, longitude, 0.0, "");
         this.resourceListenerList = new ArrayList<>();
 
     }
@@ -68,11 +68,11 @@ public abstract class SmartObjectResource<T> {
         this.type = type;
     }
 
-    public GpsLocation getSmartObjectLocation() {
+    public GpsLocationDescriptor getSmartObjectLocation() {
         return smartObjectLocation;
     }
 
-    public void setSmartObjectLocation(GpsLocation smartObjectLocation) {
+    public void setSmartObjectLocation(GpsLocationDescriptor smartObjectLocation) {
         this.smartObjectLocation = smartObjectLocation;
     }
 

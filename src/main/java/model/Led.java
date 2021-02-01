@@ -1,4 +1,4 @@
-package sensors;
+package model;
 
 public enum Led {
     GREEN, RED, YELLOW

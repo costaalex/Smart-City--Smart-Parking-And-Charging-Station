@@ -1,13 +1,13 @@
-package sensors;
+package model;
 
-public class ParkingSensor {
+public class ParkingSensorDescriptor {
     double isVehiclePresent;
     Led led;
 
-    public ParkingSensor() {
+    public ParkingSensorDescriptor() {
     }
 
-    public ParkingSensor(double isVehiclePresent, Led led) {
+    public ParkingSensorDescriptor(double isVehiclePresent, Led led) {
         this.isVehiclePresent = isVehiclePresent;
         this.led = led;
     }
