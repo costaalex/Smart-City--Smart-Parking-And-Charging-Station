@@ -26,7 +26,7 @@ public class ChargingStationSmartObjectProcess {
 
         try{
 
-            //Generate Random Vehicle UUID
+            //Generate Random Charging Station UUID
             String chargingStationId = UUID.randomUUID().toString();
 
             //Create MQTT Client
