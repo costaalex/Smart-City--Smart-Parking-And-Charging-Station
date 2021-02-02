@@ -104,13 +104,14 @@ public class ParkingLotMqttSmartObject extends MqttSmartObject{
                             vehiclePresenceSensorResource.addDataListener(new ResourceDataListener<Boolean>() {
                                 @Override
                                 public void onDataChanged(SmartObjectResource<Boolean> resource, Boolean updatedValue) {
-                                    try {
+                                    logger.info(String.format("%s/%s/%s/%s", BASIC_TOPIC, getMqttSmartObjectId(), TELEMETRY_TOPIC, resourceEntry.getKey()), smartObjectResource.getType()+": "+updatedValue);
+                                    /*try {
                                         publishTelemetryData(
                                                 String.format("%s/%s/%s/%s", BASIC_TOPIC, getMqttSmartObjectId(), TELEMETRY_TOPIC, resourceEntry.getKey()),
                                                 new TelemetryMessage<>(smartObjectResource.getType(), updatedValue));
                                     } catch (MqttException | JsonProcessingException e) {
                                         e.printStackTrace();
-                                    }
+                                    }*/
                                 }
                             });
                         }
@@ -122,13 +123,15 @@ public class ParkingLotMqttSmartObject extends MqttSmartObject{
                             ledActuatorResource.addDataListener(new ResourceDataListener<Led>() {
                                 @Override
                                 public void onDataChanged(SmartObjectResource<Led> resource, Led updatedValue) {
-                                    try {
+
+                                    logger.info(String.format("%s/%s/%s/%s", BASIC_TOPIC, getMqttSmartObjectId(), TELEMETRY_TOPIC, resourceEntry.getKey()), smartObjectResource.getType()+": "+updatedValue);
+                                   /* try {
                                         publishTelemetryData(
                                                 String.format("%s/%s/%s/%s", BASIC_TOPIC, getMqttSmartObjectId(), TELEMETRY_TOPIC, resourceEntry.getKey()),
                                                 new TelemetryMessage<>(smartObjectResource.getType(), updatedValue));
                                     } catch (MqttException | JsonProcessingException e) {
                                         e.printStackTrace();
-                                    }
+                                    }*/
                                 }
                             });
                         }

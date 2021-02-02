@@ -2,6 +2,7 @@ package process;
 
 import device.ChargingStationMqttSmartObject;
 
+import device.ParkingLotMqttSmartObject;
 import org.eclipse.paho.client.mqttv3.IMqttClient;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttClientPersistence;
@@ -14,15 +15,15 @@ import resource.*;
 import java.util.HashMap;
 import java.util.UUID;
 
-public class ChargingStationSmartObjectProcess {
+public class SmartObjectProcess {
 
-    private static final Logger logger = LoggerFactory.getLogger(ChargingStationSmartObjectProcess.class);
+    private static final Logger logger = LoggerFactory.getLogger(SmartObjectProcess.class);
 
-    //IP Address of the target MQTT Broker
-    private static String MQTT_BROKER_IP = "155.185.228.19";
+    //BROKER URL
+    private static String BROKER_URL = "tcp://155.185.228.19:7883";
 
-    //PORT of the target MQTT Broker
-    private static int MQTT_BROKER_PORT = 7883;
+    //Message Limit generated and sent by the producer
+    private static final int MESSAGE_COUNT = 1000;
 
     //MQTT account username to connect to the target broker
     private static final String MQTT_USERNAME = "254892";
@@ -30,16 +31,23 @@ public class ChargingStationSmartObjectProcess {
     //MQTT account password to connect to the target broker
     private static final String MQTT_PASSWORD = "zpfupimt";
 
-    //Basic Topic used to consume generated demo data (the topic is associated to the user)
+    //Basic Topic used to publish generated demo data (the topic is associated to the user)
     private static final String MQTT_BASIC_TOPIC = "/iot/user/254892/";
 
+    //Additional Topic structure used to publish generated demo data. It is merged with the Basic Topic to obtain
+    //the final used topic
+    private static final String TOPIC = "sensor/temperature";
+
     public static void main(String[] args) {
-        logger.info("MQTT Auth Consumer Tester Started ...");
+        logger.info("MQTT Auth Producer Tester Started ...");
 
         try{
 
             //Generate Random Charging Station UUID
             String chargingStationId = UUID.randomUUID().toString();
+
+            //Generate Random Charging Station UUID
+            String parkingLotId = UUID.randomUUID().toString();
 
             //Represents a persistent data store, used to store outbound and inbound messages while they
             //are in flight, enabling delivery to the QoS specified. In that case use a memory persistence.
@@ -48,10 +56,7 @@ public class ChargingStationSmartObjectProcess {
 
             //The the persistence is not passed to the constructor the default file persistence is used.
             //In case of a file-based storage the same MQTT client UUID should be used
-            IMqttClient mqttClient = new MqttClient(
-                    String.format("tcp://%s:%d", MQTT_BROKER_IP, MQTT_BROKER_PORT),
-                    chargingStationId,
-                    persistence);
+            IMqttClient mqttClient = new MqttClient(BROKER_URL, chargingStationId, persistence);
 
             //Define MQTT Connection Options such as reconnection, persistent/clean session and connection timeout
             //Authentication option can be added -> See AuthProducer example
@@ -65,18 +70,7 @@ public class ChargingStationSmartObjectProcess {
             //Connect to the target broker
             mqttClient.connect(options);
 
-            logger.info("MQTT Client Connected ! Client Id: {}", chargingStationId);
-
-            //Subscribe to the target topic #. In that case the consumer will receive (if authorized) all the message
-            //passing through the broker
-            mqttClient.subscribe(MQTT_BASIC_TOPIC + "#", (topic, msg) -> {
-                //The topic variable contain the specific topic associated to the received message. Using MQTT wildcards
-                //messaged from multiple and different topic can be received with the same subscription
-                //The msg variable is a MqttMessage object containing all the information about the received message
-                byte[] payload = msg.getPayload();
-                logger.info("Message Received ({}) Message Received: {}", topic, new String(payload));
-            });
-
+            logger.info("Connected !");
 
             ChargingStationMqttSmartObject charhingstationMqttSmartObject = new ChargingStationMqttSmartObject();
             charhingstationMqttSmartObject.init(chargingStationId, mqttClient, new HashMap<String, resource.SmartObjectResource<?>>(){
@@ -88,8 +82,17 @@ public class ChargingStationSmartObjectProcess {
                     put("led", new LedActuatorResource());
                 }
             });
-
             charhingstationMqttSmartObject.start();
+
+
+            ParkingLotMqttSmartObject parkingLotMqttSmartObject = new ParkingLotMqttSmartObject();
+            parkingLotMqttSmartObject.init(parkingLotId, mqttClient, new HashMap<String, resource.SmartObjectResource<?>>(){
+                {
+                    put("vehicle_presence", new VehiclePresenceSensorResource());
+                    put("led", new LedActuatorResource());
+                }
+            });
+            parkingLotMqttSmartObject.start();
 
         }catch (Exception e){
             e.printStackTrace();

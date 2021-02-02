@@ -109,7 +109,8 @@ public class ChargingStationMqttSmartObject extends MqttSmartObject{
                         vehiclePresenceSensorResource.addDataListener(new ResourceDataListener<Boolean>() {
                             @Override
                             public void onDataChanged(SmartObjectResource<Boolean> resource, Boolean updatedValue) {
-                                try {
+                                logger.info(String.format("%s/%s/%s/%s", BASIC_TOPIC, getMqttSmartObjectId(), TELEMETRY_TOPIC, resourceEntry.getKey()), smartObjectResource.getType()+": "+updatedValue);
+                               /* try {
                                     publishTelemetryData(
                                             String.format("%s/%s/%s/%s", BASIC_TOPIC, getMqttSmartObjectId(), TELEMETRY_TOPIC, resourceEntry.getKey()),
                                             new TelemetryMessage<>(smartObjectResource.getType(), updatedValue));
@@ -117,7 +118,7 @@ public class ChargingStationMqttSmartObject extends MqttSmartObject{
 
                                 } catch (MqttException | JsonProcessingException e) {
                                     e.printStackTrace();
-                                }
+                                }*/
                             }
                         });
                     }
@@ -129,16 +130,14 @@ public class ChargingStationMqttSmartObject extends MqttSmartObject{
                         chargeStatusSensorResource.addDataListener(new ResourceDataListener<ChargeStatusDescriptor>() {
                             @Override
                             public void onDataChanged(SmartObjectResource<ChargeStatusDescriptor> resource, ChargeStatusDescriptor updatedValue) {
-                                try {
+                                logger.info(String.format("%s/%s/%s/%s", BASIC_TOPIC, getMqttSmartObjectId(), TELEMETRY_TOPIC, resourceEntry.getKey()), smartObjectResource.getType()+": "+updatedValue);
+                                /* try {
                                     publishTelemetryData(
                                             String.format("%s/%s/%s/%s", BASIC_TOPIC, getMqttSmartObjectId(), TELEMETRY_TOPIC, resourceEntry.getKey()),
                                             new TelemetryMessage<>(smartObjectResource.getType(), updatedValue));
-
-
-
                                 } catch (MqttException | JsonProcessingException e) {
                                     e.printStackTrace();
-                                }
+                                }*/
                             }
                         });
                     }
@@ -150,13 +149,15 @@ public class ChargingStationMqttSmartObject extends MqttSmartObject{
                         temperatureSensorResource.addDataListener(new ResourceDataListener<Double>() {
                             @Override
                             public void onDataChanged(SmartObjectResource<Double> resource, Double updatedValue) {
-                                try {
+                                logger.info(String.format("%s/%s/%s/%s", BASIC_TOPIC, getMqttSmartObjectId(), TELEMETRY_TOPIC, resourceEntry.getKey()), smartObjectResource.getType()+": "+updatedValue);
+
+                               /*try {
                                     publishTelemetryData(
                                             String.format("%s/%s/%s/%s", BASIC_TOPIC, getMqttSmartObjectId(), TELEMETRY_TOPIC, resourceEntry.getKey()),
                                             new TelemetryMessage<>(smartObjectResource.getType(), updatedValue));
                                 } catch (MqttException | JsonProcessingException e) {
                                     e.printStackTrace();
-                                }
+                                }*/
                             }
                         });
                     }
@@ -170,37 +171,19 @@ public class ChargingStationMqttSmartObject extends MqttSmartObject{
                         ledActuatorResource.addDataListener(new ResourceDataListener<Led>() {
                             @Override
                             public void onDataChanged(SmartObjectResource<Led> resource, Led updatedValue) {
-                                try {
+                                logger.info(String.format("%s/%s/%s/%s", BASIC_TOPIC, getMqttSmartObjectId(), TELEMETRY_TOPIC, resourceEntry.getKey()), smartObjectResource.getType()+": "+updatedValue);
+                                /*try {
                                     publishTelemetryData(
                                             String.format("%s/%s/%s/%s", BASIC_TOPIC, getMqttSmartObjectId(), TELEMETRY_TOPIC, resourceEntry.getKey()),
                                             new TelemetryMessage<>(smartObjectResource.getType(), updatedValue));
                                 } catch (MqttException | JsonProcessingException e) {
                                     e.printStackTrace();
-                                }
+                                }*/
                             }
                         });
                     }
 
 
-                    /*
-                    //Register to BatterySensorResource Notification
-                    if(smartObjectResource.getType().equals(BatterySensorResource.RESOURCE_TYPE)){
-
-                        BatterySensorResource batterySensorResource = (BatterySensorResource)smartObjectResource;
-                        batterySensorResource.addDataListener(new ResourceDataListener<Double>() {
-                            @Override
-                            public void onDataChanged(SmartObjectResource<Double> resource, Double updatedValue) {
-                                try {
-                                    publishTelemetryData(
-                                            String.format("%s/%s/%s/%s", BASIC_TOPIC, vehicleId, TELEMETRY_TOPIC, resourceEntry.getKey()),
-                                            new TelemetryMessage<>(smartObjectResource.getType(), updatedValue));
-                                } catch (MqttException | JsonProcessingException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        });
-                    }
-                    */
 
                 }
             });
