@@ -9,15 +9,14 @@ import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import resource.TemperatureSensorResource;
 import resource.VehiclePresenceResource;
 
 import java.util.HashMap;
 import java.util.UUID;
 
-public class VehicleSmartObjectProcess {
+public class ChargingStationSmartObjectProcess {
 
-    private static final Logger logger = LoggerFactory.getLogger(VehicleSmartObjectProcess.class);
+    private static final Logger logger = LoggerFactory.getLogger(ChargingStationSmartObjectProcess.class);
 
     private static String MQTT_BROKER_IP = "155.185.228.19";
 
