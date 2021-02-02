@@ -94,6 +94,29 @@ public class SmartObjectProcess {
             });
             parkingLotMqttSmartObject.start();
 
+            //Start to publish MESSAGE_COUNT messages
+            for(int i = 0; i < MESSAGE_COUNT; i++) {
+
+                    //Send data as simple numeric value
+               // double sensorValue = engineTemperatureSensor.getTemperatureValue();
+               // String payloadString = Double.toString(sensorValue);
+
+                    //Internal Method to publish MQTT data using the created MQTT Client
+                    //The final topic is obtained merging the MQTT_BASIC_TOPIC and TOPIC in order to send the messages
+                    //to the correct topic root associated to the authenticated user
+                    //Eg. /iot/user/000001/sensor/temperature
+                //publishData(client, MQTT_BASIC_TOPIC + TOPIC, payloadString);
+
+                //Sleep for 1 Second
+               // Thread.sleep(1000);
+            }
+
+            //Disconnect from the broker and close the connection
+            mqttClient.disconnect();
+            mqttClient.close();
+
+            logger.info("Disconnected !");
+
         }catch (Exception e){
             e.printStackTrace();
         }
