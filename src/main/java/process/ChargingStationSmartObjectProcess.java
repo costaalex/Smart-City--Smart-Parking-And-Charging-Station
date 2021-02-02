@@ -9,7 +9,7 @@ import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import resource.VehiclePresenceResource;
+import resource.VehiclePresenceSensorResource;
 
 import java.util.HashMap;
 import java.util.UUID;
@@ -50,7 +50,7 @@ public class ChargingStationSmartObjectProcess {
             ChargingStationMqttSmartObject vehicleMqttSmartObject = new ChargingStationMqttSmartObject();
             vehicleMqttSmartObject.init(chargingStationId, mqttClient, new HashMap<String, resource.SmartObjectResource<?>>(){
                 {
-                    put("vehiclePresence", new VehiclePresenceResource());
+                    put("vehiclePresence", new VehiclePresenceSensorResource());
                     //put("battery", new TemperatureSensorResource());
                 }
             });

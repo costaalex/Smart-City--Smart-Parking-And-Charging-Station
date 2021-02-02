@@ -11,7 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import resource.ResourceDataListener;
 import resource.SmartObjectResource;
-import resource.VehiclePresenceResource;
+import resource.VehiclePresenceSensorResource;
 
 import java.util.Map;
 
@@ -119,9 +119,9 @@ public class ChargingStationMqttSmartObject {
                             smartObjectResource.getId());
 
                     //Register to VehiclePresenceResource Notification
-                    if(smartObjectResource.getType().equals(VehiclePresenceResource.RESOURCE_TYPE)){
+                    if(smartObjectResource.getType().equals(VehiclePresenceSensorResource.RESOURCE_TYPE)){
 
-                        VehiclePresenceResource gpsGpxSensorResource = (VehiclePresenceResource)smartObjectResource;
+                        VehiclePresenceSensorResource gpsGpxSensorResource = (VehiclePresenceSensorResource)smartObjectResource;
                         gpsGpxSensorResource.addDataListener(new ResourceDataListener<Boolean>() {
                             @Override
                             public void onDataChanged(SmartObjectResource<Boolean> resource, Boolean updatedValue) {
