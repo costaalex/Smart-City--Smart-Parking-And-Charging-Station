@@ -17,7 +17,6 @@ public abstract class SmartObjectResource<T> {
     private String id;
     private GpsLocationDescriptor smartObjectLocation;
 
-
     public SmartObjectResource() {
         this.resourceListenerList = new ArrayList<>();
     }

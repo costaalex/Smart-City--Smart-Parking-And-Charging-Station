@@ -1,41 +1,40 @@
 package resource;
 
 import model.GpsLocationDescriptor;
-import model.ParkingLotDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
-public class ParkingLotResource extends SmartObjectResource<ParkingLotDescriptor> {
+public class VehiclePresenceResource extends SmartObjectResource<Boolean> {
 
-    private static final Logger logger = LoggerFactory.getLogger(ParkingLotResource.class);
+    private static final Logger logger = LoggerFactory.getLogger(VehiclePresenceResource.class);
 
     public static final String RESOURCE_TYPE = "iot:sensor:parkingLot";
 
     private static final long UPDATE_PERIOD = 10000; //10 Seconds
 
-    private static final long TASK_DELAY_TIME = 1000; //1 Seconds before starting the periodic update task
+    private static final long TASK_DELAY_TIME = 5000; //5 Seconds before starting the periodic update task
 
-    ParkingLotDescriptor updatedParkingSensorStatus;
+    private Boolean updatedVehiclePresenceSensorStatus;
 
     private Random random = null;
 
-    public ParkingLotResource() {
-        super(UUID.randomUUID().toString(), ParkingLotResource.RESOURCE_TYPE, new GpsLocationDescriptor());
+    public VehiclePresenceResource() {
+        super(UUID.randomUUID().toString(), VehiclePresenceResource.RESOURCE_TYPE, new GpsLocationDescriptor());
 
         init();
     }
 
-    public ParkingLotResource(String id, String type, GpsLocationDescriptor gpsLocationDescriptor, ParkingLotDescriptor parkingLotSmartObject) {
+    public VehiclePresenceResource(String id, String type, GpsLocationDescriptor gpsLocationDescriptor, Boolean vehiclePresenceSensorStatus) {
         super(id, type, gpsLocationDescriptor);
-        this.updatedParkingSensorStatus = parkingLotSmartObject;
+        this.updatedVehiclePresenceSensorStatus = vehiclePresenceSensorStatus;
         init();
     }
 
-    public ParkingLotResource(String id, GpsLocationDescriptor gpsLocationDescriptor, ParkingLotDescriptor parkingLotSmartObject) {
-        super(id, ParkingLotResource.RESOURCE_TYPE, gpsLocationDescriptor);
-        this.updatedParkingSensorStatus = parkingLotSmartObject;
+    public VehiclePresenceResource(GpsLocationDescriptor gpsLocationDescriptor, Boolean vehiclePresenceSensorStatus) {
+        super(UUID.randomUUID().toString(), VehiclePresenceResource.RESOURCE_TYPE, gpsLocationDescriptor);
+        this.updatedVehiclePresenceSensorStatus = vehiclePresenceSensorStatus;
         init();
     }
 
@@ -46,12 +45,12 @@ public class ParkingLotResource extends SmartObjectResource<ParkingLotDescriptor
 
         try{
             this.random = new Random(System.currentTimeMillis());
-            this.updatedParkingSensorStatus = new ParkingLotDescriptor();
+            this.updatedVehiclePresenceSensorStatus = false;
 
             startPeriodicEventValueUpdateTask();
 
         }catch (Exception e){
-            logger.error("Error init ParkingLotSmartObject ! Msg: {}", e.getLocalizedMessage());
+            logger.error("Error init VehiclePresenceResource ! Msg: {}", e.getLocalizedMessage());
         }
 
     }
@@ -66,10 +65,10 @@ public class ParkingLotResource extends SmartObjectResource<ParkingLotDescriptor
             updateTimer.schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    updatedParkingSensorStatus.setIsVehiclePresent(random.nextBoolean());
+                    updatedVehiclePresenceSensorStatus = random.nextBoolean();
                     //logger.info("Updated Parking Lot: {}", updatedParkingSensorStatus.getIsVehiclePresent());
 
-                    notifyUpdate(updatedParkingSensorStatus);
+                    notifyUpdate(updatedVehiclePresenceSensorStatus);
 
                 }
             }, TASK_DELAY_TIME, UPDATE_PERIOD);
@@ -80,19 +79,19 @@ public class ParkingLotResource extends SmartObjectResource<ParkingLotDescriptor
     }
 
     @Override
-    public ParkingLotDescriptor loadUpdatedValue() {
-        return this.updatedParkingSensorStatus;
+    public Boolean loadUpdatedValue() {
+        return this.updatedVehiclePresenceSensorStatus;
     }
 
     public static void main(String[] args) {
-        ParkingLotResource parkingLotResource = new ParkingLotResource();
+        VehiclePresenceResource vehiclePresenceResource = new VehiclePresenceResource();
 
         logger.info("New {} Resource Created with Id: {} ! Updated Value: {}",
-                parkingLotResource.getType(),
-                parkingLotResource.getId(),
-                parkingLotResource.loadUpdatedValue());
+                vehiclePresenceResource.getType(),
+                vehiclePresenceResource.getId(),
+                vehiclePresenceResource.loadUpdatedValue());
 
-        parkingLotResource.addDataListener((resource, updatedValue) -> {
+        vehiclePresenceResource.addDataListener((resource, updatedValue) -> {
             if(resource != null && updatedValue != null)
                 logger.info("Device: {} -> New Value Received: {}", resource.getId(), updatedValue);
             else
