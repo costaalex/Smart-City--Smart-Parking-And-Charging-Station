@@ -20,6 +20,8 @@ public class VehiclePresenceSensorResource extends SmartObjectResource<Boolean> 
 
     private Random random = null;
 
+    private boolean isActive = true;
+
     public VehiclePresenceSensorResource() {
         super(UUID.randomUUID().toString(), VehiclePresenceSensorResource.RESOURCE_TYPE);
 
@@ -65,7 +67,10 @@ public class VehiclePresenceSensorResource extends SmartObjectResource<Boolean> 
             updateTimer.schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    updatedVehiclePresenceStatus = random.nextBoolean();
+                    if (isActive())
+                        updatedVehiclePresenceStatus = random.nextBoolean();
+                    else
+                        updatedVehiclePresenceStatus = false;
                     //logger.info("Updated Parking Availability: {}", updatedParkingSensorStatus.getIsVehiclePresent());
 
                     notifyUpdate(updatedVehiclePresenceStatus);
@@ -100,5 +105,13 @@ public class VehiclePresenceSensorResource extends SmartObjectResource<Boolean> 
                     logger.error("onDataChanged Callback -> Null Resource or Updated Value !");
             }
         });
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
     }
 }

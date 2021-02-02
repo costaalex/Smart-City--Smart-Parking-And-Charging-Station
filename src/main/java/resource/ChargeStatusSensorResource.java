@@ -1,7 +1,6 @@
 package resource;
 
 import model.ChargeStatusDescriptor;
-import model.GpsLocationDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,7 +13,7 @@ import java.util.UUID;
 
 public class ChargeStatusSensorResource extends SmartObjectResource<ChargeStatusDescriptor> implements ResourceDataListener<Boolean>{
 
-    private static final Logger logger = LoggerFactory.getLogger(VehiclePresenceSensorResource.class);
+    private static final Logger logger = LoggerFactory.getLogger(ChargeStatusSensorResource.class);
 
     public static final String RESOURCE_TYPE = "iot:sensor:chargeStatus";
 
@@ -114,3 +113,7 @@ public class ChargeStatusSensorResource extends SmartObjectResource<ChargeStatus
         }
     }
 }
+
+
+
+
