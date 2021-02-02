@@ -13,7 +13,7 @@ public class TemperatureSensorResource extends SmartObjectResource<Double> {
 
     private static final Logger logger = LoggerFactory.getLogger(VehiclePresenceSensorResource.class);
 
-    public static final String RESOURCE_TYPE = "iot:sensor:parkingLot";
+    public static final String RESOURCE_TYPE = "iot:sensor:temperature";
 
     private static final long UPDATE_PERIOD = 10000; //10 Seconds
 

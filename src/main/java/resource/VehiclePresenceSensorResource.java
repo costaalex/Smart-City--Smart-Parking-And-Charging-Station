@@ -10,7 +10,7 @@ public class VehiclePresenceSensorResource extends SmartObjectResource<Boolean> 
 
     private static final Logger logger = LoggerFactory.getLogger(VehiclePresenceSensorResource.class);
 
-    public static final String RESOURCE_TYPE = "iot:sensor:vehiclePresence";
+    public static final String RESOURCE_TYPE = "iot:sensor:vehicle_presence";
 
     private static final long UPDATE_PERIOD = 10000; //10 Seconds
 

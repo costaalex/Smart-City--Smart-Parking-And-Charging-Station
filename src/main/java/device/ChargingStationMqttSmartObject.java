@@ -19,7 +19,7 @@ public class ChargingStationMqttSmartObject extends MqttSmartObject{
 
     private static final Logger logger = LoggerFactory.getLogger(ChargingStationMqttSmartObject.class);
 
-    private static final String BASIC_TOPIC = "smartcity/chargingstation";
+    private static final String BASIC_TOPIC = "smartcity/charging_station";
 
     public ChargingStationMqttSmartObject() {
         super.setMapper(new ObjectMapper());
