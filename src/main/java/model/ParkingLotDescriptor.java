@@ -1,18 +1,21 @@
 package model;
 
-public class ParkingSensorDescriptor {
-    double isVehiclePresent;
+public class ParkingLotDescriptor {
+
+    boolean isVehiclePresent;
     Led led;
 
-    public ParkingSensorDescriptor() {
+    public ParkingLotDescriptor() {
+        this.isVehiclePresent = false;
+        this.led = Led.GREEN;
     }
 
-    public ParkingSensorDescriptor(double isVehiclePresent, Led led) {
+    public ParkingLotDescriptor(boolean isVehiclePresent, Led led) {
         this.isVehiclePresent = isVehiclePresent;
         this.led = led;
     }
 
-    public double getIsVehiclePresent() {
+    public boolean getIsVehiclePresent() {
         return isVehiclePresent;
     }
 
@@ -20,7 +23,7 @@ public class ParkingSensorDescriptor {
         return led;
     }
 
-    public void setIsVehiclePresent(double isVehiclePresent) {
+    public void setIsVehiclePresent(boolean isVehiclePresent) {
         this.isVehiclePresent = isVehiclePresent;
     }
 

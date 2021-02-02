@@ -3,28 +3,17 @@ package model;
 
 public class GpsLocationDescriptor {
 
-    public static final String FILE_LOCATION_PROVIDER = "location_provider_file";
-
-    public static final String GPS_LOCATION_PROVIDER = "location_provider_gps";
-
-    public static final String NETWORK_LOCATION_PROVIDER = "location_provider_network";
-
     private double latitude;
-
     private double longitude;
 
-    private double elevation;
-
-    private String provider;
-
     public GpsLocationDescriptor() {
+        this.latitude = 0.0;
+        this.longitude = 0.0;
     }
 
-    public GpsLocationDescriptor(double latitude, double longitude, double elevation, String provider) {
+    public GpsLocationDescriptor(double latitude, double longitude) {
         this.latitude = latitude;
         this.longitude = longitude;
-        this.elevation = elevation;
-        this.provider = provider;
     }
 
     public double getLatitude() {
@@ -43,29 +32,11 @@ public class GpsLocationDescriptor {
         this.longitude = longitude;
     }
 
-    public double getElevation() {
-        return elevation;
-    }
-
-    public void setElevation(double elevation) {
-        this.elevation = elevation;
-    }
-
-    public String getProvider() {
-        return provider;
-    }
-
-    public void setProvider(String provider) {
-        this.provider = provider;
-    }
-
     @Override
     public String toString() {
         final StringBuffer sb = new StringBuffer("GpsLocationDescriptor{");
         sb.append("latitude=").append(latitude);
         sb.append(", longitude=").append(longitude);
-        sb.append(", elevation=").append(elevation);
-        sb.append(", provider='").append(provider).append('\'');
         sb.append('}');
         return sb.toString();
     }

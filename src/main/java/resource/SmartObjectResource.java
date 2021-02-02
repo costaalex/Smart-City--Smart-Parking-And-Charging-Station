@@ -22,12 +22,11 @@ public abstract class SmartObjectResource<T> {
         this.resourceListenerList = new ArrayList<>();
     }
 
-    public SmartObjectResource(String id, String type, Double latitude, Double longitude) {
+    public SmartObjectResource(String id, String type, GpsLocationDescriptor gpsLocationDescriptor) {
         this.id = id;
         this.type = type;
-        this.smartObjectLocation = new GpsLocationDescriptor(latitude, longitude, 0.0, "");
+        this.smartObjectLocation = gpsLocationDescriptor;
         this.resourceListenerList = new ArrayList<>();
-
     }
 
     public abstract T loadUpdatedValue();
