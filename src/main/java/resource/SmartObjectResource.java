@@ -15,16 +15,14 @@ public abstract class SmartObjectResource<T> {
 
     private String type;
     private String id;
-    private GpsLocationDescriptor smartObjectLocation;
 
     public SmartObjectResource() {
         this.resourceListenerList = new ArrayList<>();
     }
 
-    public SmartObjectResource(String id, String type, GpsLocationDescriptor gpsLocationDescriptor) {
+    public SmartObjectResource(String id, String type) {
         this.id = id;
         this.type = type;
-        this.smartObjectLocation = gpsLocationDescriptor;
         this.resourceListenerList = new ArrayList<>();
     }
 
@@ -64,14 +62,6 @@ public abstract class SmartObjectResource<T> {
 
     public void setType(String type) {
         this.type = type;
-    }
-
-    public GpsLocationDescriptor getSmartObjectLocation() {
-        return smartObjectLocation;
-    }
-
-    public void setSmartObjectLocation(GpsLocationDescriptor smartObjectLocation) {
-        this.smartObjectLocation = smartObjectLocation;
     }
 
     @Override
