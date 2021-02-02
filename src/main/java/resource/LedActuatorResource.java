@@ -10,7 +10,7 @@ import java.util.UUID;
 public class LedActuatorResource extends SmartObjectResource<Led>{
     private static Logger logger = LoggerFactory.getLogger(Led.class);
 
-    private static final String RESOURCE_TYPE = "iot.actuator.led";
+    public static final String RESOURCE_TYPE = "iot.actuator.led";
 
     private Led isActive;
 

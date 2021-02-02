@@ -3,15 +3,15 @@ package device;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import message.TelemetryMessage;
+import model.ChargeStatusDescriptor;
+import model.Led;
 import org.eclipse.paho.client.mqttv3.IMqttClient;
 import org.eclipse.paho.client.mqttv3.IMqttMessageListener;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import resource.ResourceDataListener;
-import resource.SmartObjectResource;
-import resource.VehiclePresenceSensorResource;
+import resource.*;
 
 import java.util.Map;
 
@@ -100,8 +100,8 @@ public class ParkingLotMqttSmartObject extends MqttSmartObject{
                         //Register to VehiclePresenceResource Notification
                         if(smartObjectResource.getType().equals(VehiclePresenceSensorResource.RESOURCE_TYPE)){
 
-                            VehiclePresenceSensorResource gpsGpxSensorResource = (VehiclePresenceSensorResource)smartObjectResource;
-                            gpsGpxSensorResource.addDataListener(new ResourceDataListener<Boolean>() {
+                            VehiclePresenceSensorResource vehiclePresenceSensorResource = (VehiclePresenceSensorResource)smartObjectResource;
+                            vehiclePresenceSensorResource.addDataListener(new ResourceDataListener<Boolean>() {
                                 @Override
                                 public void onDataChanged(SmartObjectResource<Boolean> resource, Boolean updatedValue) {
                                     try {
@@ -115,11 +115,23 @@ public class ParkingLotMqttSmartObject extends MqttSmartObject{
                             });
                         }
 
-                        //Register to TemperatureSensorResource Notification  -- Double
-                        //Register to EnergyConsumptionResource Notification  -- Double
-                        //Register to ChargingStateResource Notification      -- Double
-                        //Register to LedStateResource Notification           -- Led
+                        //Register to LedActuatorResource         -- Led
+                        if(smartObjectResource.getType().equals(LedActuatorResource.RESOURCE_TYPE)){
 
+                            LedActuatorResource ledActuatorResource = (LedActuatorResource)smartObjectResource;
+                            ledActuatorResource.addDataListener(new ResourceDataListener<Led>() {
+                                @Override
+                                public void onDataChanged(SmartObjectResource<Led> resource, Led updatedValue) {
+                                    try {
+                                        publishTelemetryData(
+                                                String.format("%s/%s/%s/%s", BASIC_TOPIC, getMqttSmartObjectId(), TELEMETRY_TOPIC, resourceEntry.getKey()),
+                                                new TelemetryMessage<>(smartObjectResource.getType(), updatedValue));
+                                    } catch (MqttException | JsonProcessingException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            });
+                        }
 
                     /*
                     //Register to BatterySensorResource Notification
