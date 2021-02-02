@@ -27,14 +27,14 @@ public class ChargingStationSmartObjectProcess {
         try{
 
             //Generate Random Vehicle UUID
-            String vehicleId = UUID.randomUUID().toString();
+            String chargingStationId = UUID.randomUUID().toString();
 
             //Create MQTT Client
             MqttClientPersistence persistence = new MemoryPersistence();
             IMqttClient mqttClient = new MqttClient(String.format("tcp://%s:%d",
                     MQTT_BROKER_IP,
                     MQTT_BROKER_PORT),
-                    vehicleId,
+                    chargingStationId,
                     persistence);
 
             MqttConnectOptions options = new MqttConnectOptions();
@@ -45,10 +45,10 @@ public class ChargingStationSmartObjectProcess {
             //Connect to MQTT Broker
             mqttClient.connect(options);
 
-            logger.info("MQTT Client Connected ! Client Id: {}", vehicleId);
+            logger.info("MQTT Client Connected ! Client Id: {}", chargingStationId);
 
             ChargingStationMqttSmartObject vehicleMqttSmartObject = new ChargingStationMqttSmartObject();
-            vehicleMqttSmartObject.init(vehicleId, mqttClient, new HashMap<String, resource.SmartObjectResource<?>>(){
+            vehicleMqttSmartObject.init(chargingStationId, mqttClient, new HashMap<String, resource.SmartObjectResource<?>>(){
                 {
                     put("vehiclePresence", new VehiclePresenceResource());
                     //put("battery", new TemperatureSensorResource());
