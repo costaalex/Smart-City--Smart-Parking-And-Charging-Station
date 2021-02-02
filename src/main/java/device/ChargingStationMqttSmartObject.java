@@ -136,6 +136,12 @@ public class ChargingStationMqttSmartObject {
                         });
                     }
 
+                    //Register to TemperatureSensorResource Notification  -- Double
+                    //Register to EnergyConsumptionResource Notification  -- Double
+                    //Register to ChargingStateResource Notification      -- Double
+                    //Register to LedStateResource Notification           -- Led
+
+
                     /*
                     //Register to BatterySensorResource Notification
                     if(smartObjectResource.getType().equals(BatterySensorResource.RESOURCE_TYPE)){
