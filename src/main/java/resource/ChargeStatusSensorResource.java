@@ -15,7 +15,7 @@ public class ChargeStatusSensorResource extends SmartObjectResource<ChargeStatus
 
     private static final Logger logger = LoggerFactory.getLogger(ChargeStatusSensorResource.class);
 
-    public static final String RESOURCE_TYPE = "iot:sensor:chargeStatus";
+    public static final String RESOURCE_TYPE = "iot:sensor:charge_status";
 
     private static final long UPDATE_PERIOD = 10000; //10 Seconds
 

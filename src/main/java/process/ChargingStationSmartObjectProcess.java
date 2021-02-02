@@ -34,6 +34,7 @@ public class ChargingStationSmartObjectProcess {
     private static final String MQTT_BASIC_TOPIC = "/iot/user/254892/";
 
     public static void main(String[] args) {
+        logger.info("MQTT Auth Consumer Tester Started ...");
 
         try{
 
