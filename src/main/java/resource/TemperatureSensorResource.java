@@ -29,12 +29,11 @@ public class TemperatureSensorResource extends SmartObjectResource<Double> {
 
     public TemperatureSensorResource() {
         super(UUID.randomUUID().toString(), TemperatureSensorResource.RESOURCE_TYPE, new GpsLocationDescriptor());
-
         init();
     }
 
-    public TemperatureSensorResource(String id, String type, GpsLocationDescriptor gpsLocationDescriptor, Double temperatureSensorValue) {
-        super(id, type, gpsLocationDescriptor);
+    public TemperatureSensorResource(String id, String type, Double temperatureSensorValue) {
+        super(id, type, null);
         this.updatedTemperatureSensorValue = temperatureSensorValue;
         init();
     }
