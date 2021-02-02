@@ -11,7 +11,7 @@ import java.util.UUID;
 
 public class TemperatureSensorResource extends SmartObjectResource<Double> {
 
-    private static final Logger logger = LoggerFactory.getLogger(VehiclePresenceResource.class);
+    private static final Logger logger = LoggerFactory.getLogger(VehiclePresenceSensorResource.class);
 
     public static final String RESOURCE_TYPE = "iot:sensor:parkingLot";
 
@@ -28,18 +28,18 @@ public class TemperatureSensorResource extends SmartObjectResource<Double> {
     private Random random = null;
 
     public TemperatureSensorResource() {
-        super(UUID.randomUUID().toString(), TemperatureSensorResource.RESOURCE_TYPE, new GpsLocationDescriptor());
+        super(UUID.randomUUID().toString(), TemperatureSensorResource.RESOURCE_TYPE);
         init();
     }
 
     public TemperatureSensorResource(String id, String type, Double temperatureSensorValue) {
-        super(id, type, null);
+        super(id, type);
         this.updatedTemperatureSensorValue = temperatureSensorValue;
         init();
     }
 
     public TemperatureSensorResource(GpsLocationDescriptor gpsLocationDescriptor, Double temperatureSensorValue) {
-        super(UUID.randomUUID().toString(), VehiclePresenceResource.RESOURCE_TYPE, gpsLocationDescriptor);
+        super(UUID.randomUUID().toString(), VehiclePresenceSensorResource.RESOURCE_TYPE);
         this.updatedTemperatureSensorValue = temperatureSensorValue;
         init();
     }
