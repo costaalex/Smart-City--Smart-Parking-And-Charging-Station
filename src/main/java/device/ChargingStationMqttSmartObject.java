@@ -15,30 +15,14 @@ import resource.VehiclePresenceSensorResource;
 
 import java.util.Map;
 
-public class ChargingStationMqttSmartObject {
+public class ChargingStationMqttSmartObject extends MqttSmartObject{
 
     private static final Logger logger = LoggerFactory.getLogger(ChargingStationMqttSmartObject.class);
 
-    private static final String BASIC_TOPIC = "??????/chargingstation";
-
-    private static final String TELEMETRY_TOPIC = "telemetry";
-
-    private static final String EVENT_TOPIC = "event";
-
-    private static final String CONTROL_TOPIC = "control";
-
-    private static final String COMMAND_TOPIC = "command";
-
-    private String chargingStationId;
-
-    private ObjectMapper mapper;
-
-    private IMqttClient mqttClient;
-
-    private Map<String, SmartObjectResource<?>> resourceMap;
+    private static final String BASIC_TOPIC = "smartcity/chargingstation";
 
     public ChargingStationMqttSmartObject() {
-        this.mapper = new ObjectMapper();
+        super.setMapper(new ObjectMapper());
     }
 
     /**
@@ -49,9 +33,9 @@ public class ChargingStationMqttSmartObject {
      */
     public void init(String chargingStationId, IMqttClient mqttClient, Map<String, SmartObjectResource<?>> resourceMap){
 
-        this.chargingStationId = chargingStationId;
-        this.mqttClient = mqttClient;
-        this.resourceMap = resourceMap;
+        super.setMqttSmartObjectId(chargingStationId);
+        super.setMqttClient(mqttClient);
+        super.setResourceMap(resourceMap);
 
         logger.info("Charging Station Smart Object correctly created ! Resource Number: {}", resourceMap.keySet().size());
     }
@@ -63,9 +47,9 @@ public class ChargingStationMqttSmartObject {
 
         try{
 
-            if(this.mqttClient != null &&
-                this.chargingStationId != null  && this.chargingStationId.length() > 0 &&
-                this.resourceMap != null && resourceMap.keySet().size() > 0){
+            if(super.getMqttClient() != null &&
+                super.getMqttSmartObjectId() != null  && super.getMqttSmartObjectId().length() > 0 &&
+                super.getResourceMap() != null && super.getResourceMap().keySet().size() > 0){
 
                 logger.info("Starting Charging Station Emulator ....");
 
@@ -86,11 +70,11 @@ public class ChargingStationMqttSmartObject {
 
         try{
 
-            String deviceControlTopic = String.format("%s/%s/%s", BASIC_TOPIC, chargingStationId, CONTROL_TOPIC);
+            String deviceControlTopic = String.format("%s/%s/%s", BASIC_TOPIC, super.getMqttSmartObjectId(), CONTROL_TOPIC);
 
             logger.info("Registering to Control Topic ({}) ... ", deviceControlTopic);
 
-            this.mqttClient.subscribe(deviceControlTopic, new IMqttMessageListener() {
+            super.getMqttClient().subscribe(deviceControlTopic, new IMqttMessageListener() {
                 @Override
                 public void messageArrived(String topic, MqttMessage message) throws Exception {
 
@@ -109,7 +93,7 @@ public class ChargingStationMqttSmartObject {
     private void registerToAvailableResources(){
         try{
 
-            this.resourceMap.entrySet().forEach(resourceEntry -> {
+            super.getResourceMap().entrySet().forEach(resourceEntry -> {
 
                 if(resourceEntry.getKey() != null && resourceEntry.getValue() != null){
                     SmartObjectResource smartObjectResource = resourceEntry.getValue();
@@ -127,7 +111,7 @@ public class ChargingStationMqttSmartObject {
                             public void onDataChanged(SmartObjectResource<Boolean> resource, Boolean updatedValue) {
                                 try {
                                     publishTelemetryData(
-                                            String.format("%s/%s/%s/%s", BASIC_TOPIC, chargingStationId, TELEMETRY_TOPIC, resourceEntry.getKey()),
+                                            String.format("%s/%s/%s/%s", BASIC_TOPIC, getMqttSmartObjectId(), TELEMETRY_TOPIC, resourceEntry.getKey()),
                                             new TelemetryMessage<>(smartObjectResource.getType(), updatedValue));
                                 } catch (MqttException | JsonProcessingException e) {
                                     e.printStackTrace();
@@ -177,18 +161,18 @@ public class ChargingStationMqttSmartObject {
         //TODO Implement a proper closing method
     }
 
-    private void publishTelemetryData(String topic, TelemetryMessage<?> telemetryMessage) throws MqttException, JsonProcessingException {
+    protected void publishTelemetryData(String topic, TelemetryMessage<?> telemetryMessage) throws MqttException, JsonProcessingException {
 
         logger.info("Sending to topic: {} -> Data: {}", topic, telemetryMessage);
 
-        if(this.mqttClient != null && this.mqttClient.isConnected() && telemetryMessage != null && topic != null){
+        if(super.getMqttClient() != null && super.getMqttClient().isConnected() && telemetryMessage != null && topic != null){
 
-            String messagePayload = mapper.writeValueAsString(telemetryMessage);
+            String messagePayload = super.getMapper().writeValueAsString(telemetryMessage);
 
             MqttMessage mqttMessage = new MqttMessage(messagePayload.getBytes());
             mqttMessage.setQos(0);
 
-            mqttClient.publish(topic, mqttMessage);
+            super.getMqttClient().publish(topic, mqttMessage);
 
             logger.info("Data Correctly Published to topic: {}", topic);
 
