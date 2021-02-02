@@ -165,7 +165,7 @@ public class ParkingLotMqttSmartObject extends MqttSmartObject{
                 String messagePayload = super.getMapper().writeValueAsString(telemetryMessage);
 
                 MqttMessage mqttMessage = new MqttMessage(messagePayload.getBytes());
-                mqttMessage.setQos(0);
+                mqttMessage.setQos(2);
 
                 super.getMqttClient().publish(topic, mqttMessage);
 
