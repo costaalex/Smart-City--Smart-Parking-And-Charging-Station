@@ -1,6 +1,7 @@
 package resource;
 
 import model.ChargeStatusDescriptor;
+import model.Led;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -112,8 +113,50 @@ public class ChargeStatusSensorResource extends SmartObjectResource<ChargeStatus
 
         }
     }
+
+    public ChargeStatusDescriptor getUpdatedChargeStatus() {
+        return updatedChargeStatus;
+    }
+
+    public void setUpdatedChargeStatus(ChargeStatusDescriptor updatedChargeStatus) {
+        this.updatedChargeStatus = updatedChargeStatus;
+    }
+
+    public static void main(String[] args) {
+
+        ChargeStatusSensorResource chargeStatusSensorResource = new ChargeStatusSensorResource();
+        logger.info("New {} Resource Created with Id: {} ! New Value: {}",
+                chargeStatusSensorResource.getType(),
+                chargeStatusSensorResource.getId(),
+                chargeStatusSensorResource.loadUpdatedValue());
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try{
+                    for(int i=0; i<100; i++){
+                        if (chargeStatusSensorResource.getUpdatedChargeStatus() == ChargeStatusDescriptor.PLUGGED)
+                            chargeStatusSensorResource.setUpdatedChargeStatus(ChargeStatusDescriptor.UNPLUGGED);
+                        else
+                            chargeStatusSensorResource.setUpdatedChargeStatus(ChargeStatusDescriptor.PLUGGED);
+                        Thread.sleep(1000);
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+
+        chargeStatusSensorResource.addDataListener(new ResourceDataListener<ChargeStatusDescriptor>() {
+            @Override
+            public void onDataChanged(SmartObjectResource<ChargeStatusDescriptor> resource, ChargeStatusDescriptor updatedValue) {
+
+                if(resource != null && updatedValue != null)
+                    logger.info("Device: {} -> New Value Received: {}", resource.getId(), updatedValue);
+                else
+                    logger.error("onDataChanged Callback -> Null Resource or Updated Value !");
+            }
+        });
+
+    }
 }
-
-
-
-
