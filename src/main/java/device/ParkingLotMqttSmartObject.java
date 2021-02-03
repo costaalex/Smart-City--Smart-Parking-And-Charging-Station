@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import message.TelemetryMessage;
 import model.ChargeStatusDescriptor;
+import model.GpsLocationDescriptor;
 import model.Led;
 import org.eclipse.paho.client.mqttv3.IMqttClient;
 import org.eclipse.paho.client.mqttv3.IMqttMessageListener;
@@ -26,9 +27,10 @@ public class ParkingLotMqttSmartObject extends MqttSmartObject{
          * @param mqttClient
          * @param resourceMap
          */
-        public void init(String chargingStationId, IMqttClient mqttClient, Map<String, SmartObjectResource<?>> resourceMap){
+        public void init(String chargingStationId, GpsLocationDescriptor gpsLocation, IMqttClient mqttClient, Map<String, SmartObjectResource<?>> resourceMap){
 
             super.setMqttSmartObjectId(chargingStationId);
+            super.setGpsLocation(gpsLocation);
             this.setMqttClient(mqttClient);
             this.setResourceMap(resourceMap);
 
@@ -104,14 +106,14 @@ public class ParkingLotMqttSmartObject extends MqttSmartObject{
                             vehiclePresenceSensorResource.addDataListener(new ResourceDataListener<Boolean>() {
                                 @Override
                                 public void onDataChanged(SmartObjectResource<Boolean> resource, Boolean updatedValue) {
-                                    logger.info(String.format("%s/%s/%s/%s", BASIC_TOPIC, getMqttSmartObjectId(), TELEMETRY_TOPIC, resourceEntry.getKey()), smartObjectResource.getType()+": "+updatedValue);
-                                    /*try {
+                                    //logger.info(String.format("%s/%s/%s/%s", BASIC_TOPIC, getMqttSmartObjectId(), TELEMETRY_TOPIC, resourceEntry.getKey()), smartObjectResource.getType()+": "+updatedValue);
+                                    try {
                                         publishTelemetryData(
                                                 String.format("%s/%s/%s/%s", BASIC_TOPIC, getMqttSmartObjectId(), TELEMETRY_TOPIC, resourceEntry.getKey()),
                                                 new TelemetryMessage<>(smartObjectResource.getType(), updatedValue));
                                     } catch (MqttException | JsonProcessingException e) {
                                         e.printStackTrace();
-                                    }*/
+                                    }
                                 }
                             });
                         }
@@ -124,14 +126,14 @@ public class ParkingLotMqttSmartObject extends MqttSmartObject{
                                 @Override
                                 public void onDataChanged(SmartObjectResource<Led> resource, Led updatedValue) {
 
-                                    logger.info(String.format("%s/%s/%s/%s", BASIC_TOPIC, getMqttSmartObjectId(), TELEMETRY_TOPIC, resourceEntry.getKey()), smartObjectResource.getType()+": "+updatedValue);
-                                   /* try {
+                                    //logger.info(String.format("%s/%s/%s/%s", BASIC_TOPIC, getMqttSmartObjectId(), TELEMETRY_TOPIC, resourceEntry.getKey()), smartObjectResource.getType()+": "+updatedValue);
+                                    try {
                                         publishTelemetryData(
                                                 String.format("%s/%s/%s/%s", BASIC_TOPIC, getMqttSmartObjectId(), TELEMETRY_TOPIC, resourceEntry.getKey()),
                                                 new TelemetryMessage<>(smartObjectResource.getType(), updatedValue));
                                     } catch (MqttException | JsonProcessingException e) {
                                         e.printStackTrace();
-                                    }*/
+                                    }
                                 }
                             });
                         }

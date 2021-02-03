@@ -3,6 +3,7 @@ package process;
 import device.ChargingStationMqttSmartObject;
 
 import device.ParkingLotMqttSmartObject;
+import model.GpsLocationDescriptor;
 import org.eclipse.paho.client.mqttv3.IMqttClient;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttClientPersistence;
@@ -45,6 +46,7 @@ public class SmartObjectProcess {
 
             //Generate Random Charging Station UUID
             String chargingStationId = UUID.randomUUID().toString();
+            GpsLocationDescriptor gpsLocation  = new GpsLocationDescriptor();
 
             //Generate Random Charging Station UUID
             String parkingLotId = UUID.randomUUID().toString();
@@ -73,7 +75,7 @@ public class SmartObjectProcess {
             logger.info("Connected !");
 
             ChargingStationMqttSmartObject charhingstationMqttSmartObject = new ChargingStationMqttSmartObject();
-            charhingstationMqttSmartObject.init(chargingStationId, mqttClient, new HashMap<String, resource.SmartObjectResource<?>>(){
+            charhingstationMqttSmartObject.init(chargingStationId, gpsLocation, mqttClient, new HashMap<String, resource.SmartObjectResource<?>>(){
                 {
                     put("energy_consumption", new EnergyConsumptionSensorResource());
                     put("temperature", new TemperatureSensorResource());
@@ -86,7 +88,7 @@ public class SmartObjectProcess {
 
 
             ParkingLotMqttSmartObject parkingLotMqttSmartObject = new ParkingLotMqttSmartObject();
-            parkingLotMqttSmartObject.init(parkingLotId, mqttClient, new HashMap<String, resource.SmartObjectResource<?>>(){
+            parkingLotMqttSmartObject.init(parkingLotId, gpsLocation, mqttClient, new HashMap<String, resource.SmartObjectResource<?>>(){
                 {
                     put("vehicle_presence", new VehiclePresenceSensorResource());
                     put("led", new LedActuatorResource());

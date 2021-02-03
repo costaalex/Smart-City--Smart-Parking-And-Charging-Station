@@ -21,15 +21,21 @@ public abstract class MqttSmartObject {
 
     private String mqttSmartObjectId;
 
+    private GpsLocationDescriptor gpsLocation;
+
     private ObjectMapper mapper;
 
     private IMqttClient mqttClient;
 
-    private GpsLocationDescriptor gpsLocation;
-
     private Map<String, SmartObjectResource<?>> resourceMap;
 
     public MqttSmartObject() {
+        this.mapper = new ObjectMapper();
+    }
+
+    public MqttSmartObject(String mqttSmartObjectId, GpsLocationDescriptor gpsLocation) {
+        this.mqttSmartObjectId = mqttSmartObjectId;
+        this.gpsLocation = gpsLocation;
         this.mapper = new ObjectMapper();
     }
 
@@ -41,6 +47,14 @@ public abstract class MqttSmartObject {
 
     public void setMqttSmartObjectId(String mqttSmartObjectId) {
         this.mqttSmartObjectId = mqttSmartObjectId;
+    }
+
+    public GpsLocationDescriptor getGpsLocation() {
+        return gpsLocation;
+    }
+
+    public void setGpsLocation(GpsLocationDescriptor gpsLocation) {
+        this.gpsLocation = gpsLocation;
     }
 
     public ObjectMapper getMapper() {
