@@ -20,7 +20,7 @@ public class SmartObjectProcess {
     private static final Logger logger = LoggerFactory.getLogger(SmartObjectProcess.class);
 
     //BROKER URL
-    private static String BROKER_URL = "tcp://155.185.228.19:7883";
+    private static String BROKER_URL = "tcp://localhost:1883";
 
     //Message Limit generated and sent by the producer
     private static final int MESSAGE_COUNT = 1000;
@@ -61,8 +61,8 @@ public class SmartObjectProcess {
             //Define MQTT Connection Options such as reconnection, persistent/clean session and connection timeout
             //Authentication option can be added -> See AuthProducer example
             MqttConnectOptions options = new MqttConnectOptions();
-            options.setUserName(MQTT_USERNAME);
-            options.setPassword(new String(MQTT_PASSWORD).toCharArray());
+           // options.setUserName(MQTT_USERNAME);
+           // options.setPassword(new String(MQTT_PASSWORD).toCharArray());
             options.setAutomaticReconnect(true);
             options.setCleanSession(true);
             options.setConnectionTimeout(10);

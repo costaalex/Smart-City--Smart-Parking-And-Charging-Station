@@ -24,6 +24,8 @@ public abstract class MqttSmartObject {
 
     private IMqttClient mqttClient;
 
+    //PUT GPS COORDINATES HERE 
+
     private Map<String, SmartObjectResource<?>> resourceMap;
 
     public MqttSmartObject() {
