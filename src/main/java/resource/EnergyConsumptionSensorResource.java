@@ -1,6 +1,7 @@
 package resource;
 
 
+import model.ChargeStatusDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -9,7 +10,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 
-public class EnergyConsumptionSensorResource extends SmartObjectResource<Double> {
+public class EnergyConsumptionSensorResource extends SmartObjectResource<Double> implements ResourceDataListener<ChargeStatusDescriptor>{
 
     private static Logger logger = LoggerFactory.getLogger(EnergyConsumptionSensorResource.class);
 
@@ -102,6 +103,19 @@ public class EnergyConsumptionSensorResource extends SmartObjectResource<Double>
 
     public void setActive(boolean active) {
         isActive = active;
+    }
+
+    @Override
+    public void onDataChanged(SmartObjectResource<ChargeStatusDescriptor> smartObjectResource, ChargeStatusDescriptor updatedValue) {
+        if (smartObjectResource != null && smartObjectResource.getType().equals(ChargeStatusSensorResource.RESOURCE_TYPE)) {
+            if (updatedValue == ChargeStatusDescriptor.CHARGING) {     //If a vehicle is CHARGING, the temperature is rising
+                logger.info("Energy Consumption Sensor is notified that a vehicle is CHARGING - charge status sensor: {}", smartObjectResource.getId());
+                isActive = true;
+            }
+            else{
+                isActive = false;
+            }
+        }
     }
 
     public static void main(String[] args) {

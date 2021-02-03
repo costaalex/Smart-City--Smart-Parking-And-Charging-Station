@@ -74,7 +74,7 @@ public class TemperatureSensorResource extends SmartObjectResource<Double> imple
             updateTimer.schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    if(temperatureIsRising) {                                                 //if temperatureIsRising because CHARGING and < than max temp posible, increase it
+                    if(temperatureIsRising) {    //if temperatureIsRising because CHARGING and < than max temp posible, increase it
                         if (updatedTemperatureSensorValue < MAX_TEMPERATURE)
                             updatedTemperatureSensorValue += random.nextDouble();
                     }
