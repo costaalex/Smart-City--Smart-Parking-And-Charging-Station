@@ -94,7 +94,6 @@ public class ChargingStationMqttSmartObject extends MqttSmartObject{
 
     private void registerToAvailableResources(){
         try{
-
             super.getResourceMap().entrySet().forEach(resourceEntry -> {
 
                 if(resourceEntry.getKey() != null && resourceEntry.getValue() != null){
