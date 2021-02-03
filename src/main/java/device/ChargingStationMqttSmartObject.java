@@ -114,12 +114,14 @@ public class ChargingStationMqttSmartObject extends MqttSmartObject{
                             public void onDataChanged(SmartObjectResource<Boolean> resource, Boolean updatedValue) {
                                 //logger.info(String.format("%s/%s/%s/%s", BASIC_TOPIC, getMqttSmartObjectId(), TELEMETRY_TOPIC, resourceEntry.getKey()), smartObjectResource.getType()+": "+updatedValue);
                                 try {
+                                    //Sleep to let all listeners be synchronized
+                                    Thread.sleep(20);
                                     publishTelemetryData(
                                             String.format("%s/%s/%s/%s", BASIC_TOPIC, getMqttSmartObjectId(), TELEMETRY_TOPIC, resourceEntry.getKey()),
                                             new TelemetryMessage<>(smartObjectResource.getType(), updatedValue));
 
 
-                                } catch (MqttException | JsonProcessingException e) {
+                                } catch (MqttException | JsonProcessingException | InterruptedException e) {
                                     e.printStackTrace();
                                 }
                             }
