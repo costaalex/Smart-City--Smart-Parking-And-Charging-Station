@@ -47,7 +47,7 @@ public class ChargeStatusSensorResource extends SmartObjectResource<ChargeStatus
     private void init(){
 
         try{
-            Random random = new Random(System.currentTimeMillis());
+            this.random = new Random(System.currentTimeMillis());
             this.updatedChargeStatus = ChargeStatusDescriptor.UNPLUGGED;
 
             startPeriodicEventValueUpdateTask();
