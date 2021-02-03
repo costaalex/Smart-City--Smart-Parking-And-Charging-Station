@@ -10,13 +10,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.UUID;
 
-/**
- * Simple MQTT Consumer using the library Eclipse Paho
- *
- * @author Marco Picone, Ph.D. - picone.m@gmail.com
- * @project mqtt-playground
- * @created 14/10/2020 - 09:19
- */
 public class DataCollectorAndManager {
 
     private final static Logger logger = LoggerFactory.getLogger(DataCollectorAndManager.class);

@@ -62,7 +62,7 @@ public class ParkingLotMqttSmartObject extends MqttSmartObject{
 
         }
     protected void registerToControlChannel() {
-
+        final String[] a = new String[0];
         try{
             String deviceControlTopic = String.format("%s/%s/%s", BASIC_TOPIC, getMqttSmartObjectId(), CONTROL_TOPIC);
 
@@ -72,12 +72,21 @@ public class ParkingLotMqttSmartObject extends MqttSmartObject{
                 @Override
                 public void messageArrived(String topic, MqttMessage message) throws Exception {
 
-                    if(message != null)
+                    if (message != null){
                         logger.info("[CONTROL CHANNEL] -> Control Message Received -> {}", new String(message.getPayload()));
+                        // TODO set led color from payload
+                        a[0] = "green";  // red, yellow
+                    }
                     else
                         logger.error("[CONTROL CHANNEL] -> Null control message received !");
                 }
             });
+            if(a[0].equals("green"))
+                ((LedActuatorResource) super.getResourceMap().get("led")).setIsActive(Led.GREEN);
+            else if(a[0].equals("red"))
+                ((LedActuatorResource) super.getResourceMap().get("led")).setIsActive(Led.RED);
+            else if(a[0].equals("yellow"))
+                ((LedActuatorResource) super.getResourceMap().get("led")).setIsActive(Led.YELLOW);
 
         }catch (Exception e){
             logger.error("ERROR Registering to Control Channel ! Msg: {}", e.getLocalizedMessage());
