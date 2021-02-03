@@ -3,6 +3,7 @@ package device;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import message.TelemetryMessage;
+import model.GpsLocationDescriptor;
 import org.eclipse.paho.client.mqttv3.IMqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import resource.SmartObjectResource;
@@ -24,7 +25,7 @@ public abstract class MqttSmartObject {
 
     private IMqttClient mqttClient;
 
-    //PUT GPS COORDINATES HERE 
+    private GpsLocationDescriptor gpsLocation;
 
     private Map<String, SmartObjectResource<?>> resourceMap;
 

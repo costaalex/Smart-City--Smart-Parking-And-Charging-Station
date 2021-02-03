@@ -95,8 +95,8 @@ public class SmartObjectProcess {
             parkingLotMqttSmartObject.start();
 
             //Start to publish MESSAGE_COUNT messages
-            for(int i = 0; i < MESSAGE_COUNT; i++) {
-
+            //for(int i = 0; i < MESSAGE_COUNT; i++) {
+            while(true){
                     //Send data as simple numeric value
                // double sensorValue = engineTemperatureSensor.getTemperatureValue();
                // String payloadString = Double.toString(sensorValue);
@@ -112,10 +112,10 @@ public class SmartObjectProcess {
             }
 
             //Disconnect from the broker and close the connection
-            mqttClient.disconnect();
-            mqttClient.close();
+            //mqttClient.disconnect();
+            //mqttClient.close();
 
-            logger.info("Disconnected !");
+            //logger.info("Disconnected !");
 
         }catch (Exception e){
             e.printStackTrace();
