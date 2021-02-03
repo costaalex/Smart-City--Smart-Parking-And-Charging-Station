@@ -16,13 +16,15 @@ public class TemperatureSensorResource extends SmartObjectResource<Double> imple
 
     public static final String RESOURCE_TYPE = "iot:sensor:temperature";
 
-    private static final long UPDATE_PERIOD = 10000; //10 Seconds
+    private static final long UPDATE_PERIOD = 5000; //10 Seconds
 
-    private static final long TASK_DELAY_TIME = 5000; //5 Seconds before starting the periodic update task
+    private static final long TASK_DELAY_TIME = 0; //5 Seconds before starting the periodic update task
 
     private static final Double MIN_TEMPERATURE = 20.0;
 
     private static final Double MAX_TEMPERATURE = 80.0;
+
+    private static final Double MAX_TEMPERATURE_VARIATION = 3.0;
 
     private Boolean temperatureIsRising = false;
 
@@ -76,11 +78,11 @@ public class TemperatureSensorResource extends SmartObjectResource<Double> imple
                 public void run() {
                     if(temperatureIsRising) {    //if temperatureIsRising because CHARGING and < than max temp posible, increase it
                         if (updatedTemperatureSensorValue < MAX_TEMPERATURE)
-                            updatedTemperatureSensorValue += random.nextDouble();
+                            updatedTemperatureSensorValue += MAX_TEMPERATURE_VARIATION * random.nextDouble();
                     }
                     else
                         if (updatedTemperatureSensorValue > MIN_TEMPERATURE)
-                            updatedTemperatureSensorValue -= random.nextDouble();
+                            updatedTemperatureSensorValue -= MAX_TEMPERATURE_VARIATION * random.nextDouble();
                     //logger.info("Updated Parking Lot: {}", updatedParkingSensorStatus.getIsVehiclePresent());
 
                     notifyUpdate(updatedTemperatureSensorValue);

@@ -20,18 +20,12 @@ public class EnergyConsumptionSensorResource extends SmartObjectResource<Double>
     //kWh - kilowatt-hour
     private static final double MAX_ENERGY_VALUE = 1.0;
 
-    //kWh - kilowatt-hour
-    private static final double MIN_ENERGY_VARIATION = 0.1;
-
-    //kWh - kilowatt-hour
-    private static final double MAX_ENERGY_VARIATION = 0.5;
-
     private static final String LOG_DISPLAY_NAME = "EnergyConsumptionSensor";
 
     //Ms associated to data update
     private static final long UPDATE_PERIOD = 5000;
 
-    private static final long TASK_DELAY_TIME = 5000;
+    private static final long TASK_DELAY_TIME = 0;
 
     public static final String RESOURCE_TYPE = "iot.sensor.energy_consumption";
 
@@ -41,7 +35,7 @@ public class EnergyConsumptionSensorResource extends SmartObjectResource<Double>
 
     private Timer updateTimer = null;
 
-    private boolean isActive = true;
+    private boolean isConsumingEnergy = false;
 
     public EnergyConsumptionSensorResource() {
         super(UUID.randomUUID().toString(), RESOURCE_TYPE);
@@ -53,7 +47,7 @@ public class EnergyConsumptionSensorResource extends SmartObjectResource<Double>
         try{
 
             this.random = new Random(System.currentTimeMillis());
-            this.updatedValue = MIN_ENERGY_VALUE + this.random.nextDouble()*(MAX_ENERGY_VALUE - MIN_ENERGY_VALUE);
+            this.updatedValue = 0.0;
 
             startPeriodicEventValueUpdateTask();
 
@@ -74,9 +68,9 @@ public class EnergyConsumptionSensorResource extends SmartObjectResource<Double>
                 @Override
                 public void run() {
 
-                    if(isActive){
-                        double variation = (MIN_ENERGY_VARIATION + MAX_ENERGY_VARIATION *random.nextDouble()) * (random.nextDouble() > 0.5 ? 1.0 : -1.0);
-                        updatedValue = updatedValue + variation;
+                    if(isConsumingEnergy){
+                        double value = MIN_ENERGY_VALUE + (MAX_ENERGY_VALUE * random.nextDouble()) ;
+                        updatedValue = value;
                     }
                     else
                         updatedValue = 0.0;
@@ -98,11 +92,11 @@ public class EnergyConsumptionSensorResource extends SmartObjectResource<Double>
     }
 
     public boolean isActive() {
-        return isActive;
+        return isConsumingEnergy;
     }
 
     public void setActive(boolean active) {
-        isActive = active;
+        isConsumingEnergy = active;
     }
 
     @Override
@@ -110,10 +104,10 @@ public class EnergyConsumptionSensorResource extends SmartObjectResource<Double>
         if (smartObjectResource != null && smartObjectResource.getType().equals(ChargeStatusSensorResource.RESOURCE_TYPE)) {
             if (updatedValue == ChargeStatusDescriptor.CHARGING) {     //If a vehicle is CHARGING, the temperature is rising
                 logger.info("Energy Consumption Sensor is notified that a vehicle is CHARGING - charge status sensor: {}", smartObjectResource.getId());
-                isActive = true;
+                isConsumingEnergy = true;
             }
             else{
-                isActive = false;
+                isConsumingEnergy = false;
             }
         }
     }

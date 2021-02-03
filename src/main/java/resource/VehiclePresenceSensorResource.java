@@ -12,9 +12,11 @@ public class VehiclePresenceSensorResource extends SmartObjectResource<Boolean> 
 
     public static final String RESOURCE_TYPE = "iot:sensor:vehicle_presence";
 
-    private static final long UPDATE_PERIOD = 1000; //10 Seconds
+    private static final long UPDATE_PERIOD = 5000; //10 Seconds
 
-    private static final long TASK_DELAY_TIME = 5000; //5 Seconds before starting the periodic update task
+    private static final long TASK_DELAY_TIME = 0; //5 Seconds before starting the periodic update task
+
+    private static final Integer VEHICLE_PRESENCE_PROBABILITY = 4;
 
     private Boolean updatedVehiclePresenceStatus;
 
@@ -67,11 +69,16 @@ public class VehiclePresenceSensorResource extends SmartObjectResource<Boolean> 
             updateTimer.schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    if (isActive())
-                        updatedVehiclePresenceStatus = random.nextBoolean();
-                    else
+                    if (isActive()) {
+                        if (updatedVehiclePresenceStatus == true) {                    //if vehicle present, it has 3/4 probability to stay present
+                            if (random.nextInt(VEHICLE_PRESENCE_PROBABILITY) == 0)
+                                updatedVehiclePresenceStatus = false;
+
+                        }
+                        else
+                            updatedVehiclePresenceStatus = random.nextBoolean();
+                    }else
                         updatedVehiclePresenceStatus = false;
-                    //logger.info("Updated Parking Availability: {}", updatedParkingSensorStatus.getIsVehiclePresent());
 
                     notifyUpdate(updatedVehiclePresenceStatus);
 

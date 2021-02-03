@@ -25,21 +25,11 @@ public class SmartObjectProcess {
     //BROKER URL
     private static String BROKER_URL = "tcp://localhost:1883";
 
-    //Message Limit generated and sent by the producer
-    private static final int MESSAGE_COUNT = 1000;
-
     //MQTT account username to connect to the target broker
     private static final String MQTT_USERNAME = "254892";
 
     //MQTT account password to connect to the target broker
     private static final String MQTT_PASSWORD = "zpfupimt";
-
-    //Basic Topic used to publish generated demo data (the topic is associated to the user)
-    private static final String MQTT_BASIC_TOPIC = "/iot/user/254892/";
-
-    //Additional Topic structure used to publish generated demo data. It is merged with the Basic Topic to obtain
-    //the final used topic
-    private static final String TOPIC = "?????????????";//"sensor/temperature";
 
     private static final Double MIN_LATITUDE = 44.0;
     private static final Double MAX_LATITUDE = 46.0;
@@ -54,16 +44,14 @@ public class SmartObjectProcess {
         try{
 
             for(int i=0; i<1; i++) {
-                createChargingStationMqttSmartObject(CHARGING_STATION);
+                createMqttSmartObject(CHARGING_STATION);
             }
-
-            /*
-
-            for(int i=0; i<1; i++) {
-                createChargingStationMqttSmartObject(PARKING_LOT);
+/*
+            for(int i=0; i<2; i++) {
+                createMqttSmartObject(PARKING_LOT);
             }
+*/
 
-             */
 
             //Start to publish MESSAGE_COUNT messages
             //for(int i = 0; i < MESSAGE_COUNT; i++) {
@@ -93,7 +81,7 @@ public class SmartObjectProcess {
         }
 
     }
-    private static void createChargingStationMqttSmartObject(String mqttSmartObjectType){
+    private static void createMqttSmartObject(String mqttSmartObjectType){
         try{
             //Generate Random Charging Station UUID
             String mqttSmartObjectId = UUID.randomUUID().toString();
@@ -129,10 +117,10 @@ public class SmartObjectProcess {
                 ChargingStationMqttSmartObject charhingstationMqttSmartObject = new ChargingStationMqttSmartObject();
                 charhingstationMqttSmartObject.init(mqttSmartObjectId, gpsLocation, mqttClient, new HashMap<String, resource.SmartObjectResource<?>>() {
                     {
-                        //put("energy_consumption", new EnergyConsumptionSensorResource());
-                        //put("temperature", new TemperatureSensorResource());
                         put("vehicle_presence", new VehiclePresenceSensorResource());
                         put("charge_status", new ChargeStatusSensorResource());
+                        put("temperature", new TemperatureSensorResource());
+                        put("energy_consumption", new EnergyConsumptionSensorResource());
                         put("led", new LedActuatorResource());
                     }
                 });

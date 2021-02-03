@@ -18,9 +18,11 @@ public class ChargeStatusSensorResource extends SmartObjectResource<ChargeStatus
 
     public static final String RESOURCE_TYPE = "iot:sensor:charge_status";
 
-    private static final long UPDATE_PERIOD = 1000; //10 Seconds
+    private static final long UPDATE_PERIOD = 5000; //10 Seconds
 
-    private static final long TASK_DELAY_TIME = 5000; //5 Seconds before starting the periodic update task
+    private static final long TASK_DELAY_TIME = 0; //5 Seconds before starting the periodic update task
+
+    private static final Integer CHARGING_IF_PRESENT_PROBABILITY = 4;
 
     private ChargeStatusDescriptor updatedChargeStatus;
 
@@ -95,22 +97,18 @@ public class ChargeStatusSensorResource extends SmartObjectResource<ChargeStatus
             if (updatedValue == true) {     //If a new vehicle arrived, choose a random value
                 logger.info("Vehicle detected by sensor: {}", smartObjectResource.getId());
 
-                switch (random.nextInt(3)) {
-                    case 0:
-                        updatedChargeStatus = ChargeStatusDescriptor.UNPLUGGED;
-                        break;
-                    case 1:
+                if(updatedChargeStatus == ChargeStatusDescriptor.CHARGING) {
+                    if (random.nextInt(CHARGING_IF_PRESENT_PROBABILITY) == 0)
                         updatedChargeStatus = ChargeStatusDescriptor.PLUGGED;
-                        break;
-                    case 2:
+                }else {
+                    if (random.nextBoolean())
                         updatedChargeStatus = ChargeStatusDescriptor.CHARGING;
-                        break;
+                    else
+                        updatedChargeStatus = ChargeStatusDescriptor.PLUGGED;
                 }
             }
-            else{       //If the parking lot is empty, put in UNPLUGGED status
+            else      //If the parking lot is empty, put in UNPLUGGED status
                 updatedChargeStatus = ChargeStatusDescriptor.UNPLUGGED;
-            }
-
         }
     }
 

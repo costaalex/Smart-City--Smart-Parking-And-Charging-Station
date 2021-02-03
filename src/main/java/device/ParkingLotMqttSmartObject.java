@@ -50,10 +50,9 @@ public class ParkingLotMqttSmartObject extends MqttSmartObject{
 
                     logger.info("Starting Charging Station Emulator ....");
 
-                    registerToControlChannel();
+                    registerToControlChannel(BASIC_TOPIC);
 
                     registerToAvailableResources();
-
 
                 }
 
@@ -61,30 +60,6 @@ public class ParkingLotMqttSmartObject extends MqttSmartObject{
                 logger.error("Error Starting the Charging Station Emulator ! Msg: {}", e.getLocalizedMessage());
             }
 
-        }
-
-        private void registerToControlChannel() {
-
-            try{
-
-                String deviceControlTopic = String.format("%s/%s/%s", BASIC_TOPIC, super.getMqttSmartObjectId(), CONTROL_TOPIC);
-
-                logger.info("Registering to Control Topic ({}) ... ", deviceControlTopic);
-
-                super.getMqttClient().subscribe(deviceControlTopic, new IMqttMessageListener() {
-                    @Override
-                    public void messageArrived(String topic, MqttMessage message) throws Exception {
-
-                        if(message != null)
-                            logger.info("[CONTROL CHANNEL] -> Control Message Received -> {}", new String(message.getPayload()));
-                        else
-                            logger.error("[CONTROL CHANNEL] -> Null control message received !");
-                    }
-                });
-
-            }catch (Exception e){
-                logger.error("ERROR Registering to Control Channel ! Msg: {}", e.getLocalizedMessage());
-            }
         }
 
         private void registerToAvailableResources(){
@@ -106,9 +81,8 @@ public class ParkingLotMqttSmartObject extends MqttSmartObject{
                             vehiclePresenceSensorResource.addDataListener(new ResourceDataListener<Boolean>() {
                                 @Override
                                 public void onDataChanged(SmartObjectResource<Boolean> resource, Boolean updatedValue) {
-                                    //logger.info(String.format("%s/%s/%s/%s", BASIC_TOPIC, getMqttSmartObjectId(), TELEMETRY_TOPIC, resourceEntry.getKey()), smartObjectResource.getType()+": "+updatedValue);
                                     try {
-                                        publishTelemetryData(
+                                        publishTelemetryData(logger,
                                                 String.format("%s/%s/%s/%s", BASIC_TOPIC, getMqttSmartObjectId(), TELEMETRY_TOPIC, resourceEntry.getKey()),
                                                 new TelemetryMessage<>(smartObjectResource.getType(), updatedValue));
                                     } catch (MqttException | JsonProcessingException e) {
@@ -125,10 +99,8 @@ public class ParkingLotMqttSmartObject extends MqttSmartObject{
                             ledActuatorResource.addDataListener(new ResourceDataListener<Led>() {
                                 @Override
                                 public void onDataChanged(SmartObjectResource<Led> resource, Led updatedValue) {
-
-                                    //logger.info(String.format("%s/%s/%s/%s", BASIC_TOPIC, getMqttSmartObjectId(), TELEMETRY_TOPIC, resourceEntry.getKey()), smartObjectResource.getType()+": "+updatedValue);
                                     try {
-                                        publishTelemetryData(
+                                        publishTelemetryData(logger,
                                                 String.format("%s/%s/%s/%s", BASIC_TOPIC, getMqttSmartObjectId(), TELEMETRY_TOPIC, resourceEntry.getKey()),
                                                 new TelemetryMessage<>(smartObjectResource.getType(), updatedValue));
                                     } catch (MqttException | JsonProcessingException e) {
@@ -173,23 +145,5 @@ public class ParkingLotMqttSmartObject extends MqttSmartObject{
             //TODO Implement a proper closing method
         }
 
-        protected void publishTelemetryData(String topic, TelemetryMessage<?> telemetryMessage) throws MqttException, JsonProcessingException {
 
-            logger.info("Sending to topic: {} -> Data: {}", topic, telemetryMessage);
-
-            if(super.getMqttClient() != null && super.getMqttClient().isConnected() && telemetryMessage != null && topic != null){
-
-                String messagePayload = super.getMapper().writeValueAsString(telemetryMessage);
-
-                MqttMessage mqttMessage = new MqttMessage(messagePayload.getBytes());
-                mqttMessage.setQos(2);
-
-                super.getMqttClient().publish(topic, mqttMessage);
-
-                logger.info("Data Correctly Published to topic: {}", topic);
-
-            }
-            else
-                logger.error("Error: Topic or Msg = Null or MQTT Client is not Connected !");
-        }
 }
