@@ -1,5 +1,6 @@
 package resource;
 
+import model.ChargeStatusDescriptor;
 import model.GpsLocationDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,7 +10,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 
-public class TemperatureSensorResource extends SmartObjectResource<Double> {
+public class TemperatureSensorResource extends SmartObjectResource<Double> implements ResourceDataListener<ChargeStatusDescriptor>{
 
     private static final Logger logger = LoggerFactory.getLogger(VehiclePresenceSensorResource.class);
 
@@ -19,9 +20,11 @@ public class TemperatureSensorResource extends SmartObjectResource<Double> {
 
     private static final long TASK_DELAY_TIME = 5000; //5 Seconds before starting the periodic update task
 
-    private static final Double MIN_TEMPERATURE = 10.0;
+    private static final Double MIN_TEMPERATURE = 20.0;
 
-    private static final Double MAX_TEMPERATURE = 100.0;
+    private static final Double MAX_TEMPERATURE = 80.0;
+
+    private Boolean temperatureIsRising = false;
 
     private Double updatedTemperatureSensorValue;
 
@@ -71,7 +74,13 @@ public class TemperatureSensorResource extends SmartObjectResource<Double> {
             updateTimer.schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    updatedTemperatureSensorValue = MIN_TEMPERATURE + (MAX_TEMPERATURE - MIN_TEMPERATURE) * random.nextDouble();
+                    if(temperatureIsRising) {                                                 //if temperatureIsRising because CHARGING and < than max temp posible, increase it
+                        if (updatedTemperatureSensorValue < MAX_TEMPERATURE)
+                            updatedTemperatureSensorValue += random.nextDouble();
+                    }
+                    else
+                        if (updatedTemperatureSensorValue > MIN_TEMPERATURE)
+                            updatedTemperatureSensorValue -= random.nextDouble();
                     //logger.info("Updated Parking Lot: {}", updatedParkingSensorStatus.getIsVehiclePresent());
 
                     notifyUpdate(updatedTemperatureSensorValue);
@@ -88,6 +97,21 @@ public class TemperatureSensorResource extends SmartObjectResource<Double> {
     public Double loadUpdatedValue() {
         return this.updatedTemperatureSensorValue;
     }
+
+    @Override
+    public void onDataChanged(SmartObjectResource<ChargeStatusDescriptor> smartObjectResource, ChargeStatusDescriptor updatedValue) {
+        if (smartObjectResource != null && smartObjectResource.getType().equals(ChargeStatusSensorResource.RESOURCE_TYPE)) {
+            if (updatedValue == ChargeStatusDescriptor.CHARGING) {     //If a vehicle is CHARGING, the temperature is rising
+                logger.info("Temperature Sensor is notified that a vehicle is CHARGING - charge status sensor: {}", smartObjectResource.getId());
+                temperatureIsRising = true;
+            }
+            else{
+                temperatureIsRising = false;
+            }
+        }
+    }
+
+
 
     public static void main(String[] args) {
         TemperatureSensorResource temperatureSensorResource = new TemperatureSensorResource();
