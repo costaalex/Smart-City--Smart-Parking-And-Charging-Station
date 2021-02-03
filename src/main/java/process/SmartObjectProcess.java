@@ -2,6 +2,7 @@ package process;
 
 import device.ChargingStationMqttSmartObject;
 
+import device.MqttSmartObject;
 import device.ParkingLotMqttSmartObject;
 import model.GpsLocationDescriptor;
 import org.eclipse.paho.client.mqttv3.IMqttClient;
@@ -14,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import resource.*;
 
 import java.util.HashMap;
+import java.util.Random;
 import java.util.UUID;
 
 public class SmartObjectProcess {
@@ -37,64 +39,28 @@ public class SmartObjectProcess {
 
     //Additional Topic structure used to publish generated demo data. It is merged with the Basic Topic to obtain
     //the final used topic
-    private static final String TOPIC = "sensor/temperature";
+    private static final String TOPIC = "?????????????";//"sensor/temperature";
+
+    private static final Double MIN_LATITUDE = 44000000.0;
+    private static final Double MAX_LATITUDE = 46000000.0;
+    private static final Double MIN_LONGITUDE = 8000000.0;
+    private static final Double MAX_LONGITUDE = 12000000.0;
+    private static final String CHARGING_STATION = "charging_station";
+    private static final String PARKING_LOT = "parking_lot";
 
     public static void main(String[] args) {
         logger.info("MQTT Auth Producer Tester Started ...");
 
         try{
 
-            //Generate Random Charging Station UUID
-            String chargingStationId = UUID.randomUUID().toString();
-            GpsLocationDescriptor gpsLocation  = new GpsLocationDescriptor();
+            for(int i=1; i<5; i++) {
+                createChargingStationMqttSmartObject(CHARGING_STATION);
+            }
 
-            //Generate Random Charging Station UUID
-            String parkingLotId = UUID.randomUUID().toString();
+            for(int i=1; i<10; i++) {
+                createChargingStationMqttSmartObject(PARKING_LOT);
+            }
 
-            //Represents a persistent data store, used to store outbound and inbound messages while they
-            //are in flight, enabling delivery to the QoS specified. In that case use a memory persistence.
-            //When the application stops all the temporary data will be deleted.
-            MqttClientPersistence persistence = new MemoryPersistence();
-
-            //The the persistence is not passed to the constructor the default file persistence is used.
-            //In case of a file-based storage the same MQTT client UUID should be used
-            IMqttClient mqttClient = new MqttClient(BROKER_URL, chargingStationId, persistence);
-
-            //Define MQTT Connection Options such as reconnection, persistent/clean session and connection timeout
-            //Authentication option can be added -> See AuthProducer example
-            MqttConnectOptions options = new MqttConnectOptions();
-           // options.setUserName(MQTT_USERNAME);
-           // options.setPassword(new String(MQTT_PASSWORD).toCharArray());
-            options.setAutomaticReconnect(true);
-            options.setCleanSession(true);
-            options.setConnectionTimeout(10);
-
-            //Connect to the target broker
-            mqttClient.connect(options);
-
-            logger.info("Connected !");
-
-            ChargingStationMqttSmartObject charhingstationMqttSmartObject = new ChargingStationMqttSmartObject();
-            charhingstationMqttSmartObject.init(chargingStationId, gpsLocation, mqttClient, new HashMap<String, resource.SmartObjectResource<?>>(){
-                {
-                    put("energy_consumption", new EnergyConsumptionSensorResource());
-                    put("temperature", new TemperatureSensorResource());
-                    put("vehicle_presence", new VehiclePresenceSensorResource());
-                    put("charge_status", new ChargeStatusSensorResource());
-                    put("led", new LedActuatorResource());
-                }
-            });
-            charhingstationMqttSmartObject.start();
-
-
-            ParkingLotMqttSmartObject parkingLotMqttSmartObject = new ParkingLotMqttSmartObject();
-            parkingLotMqttSmartObject.init(parkingLotId, gpsLocation, mqttClient, new HashMap<String, resource.SmartObjectResource<?>>(){
-                {
-                    put("vehicle_presence", new VehiclePresenceSensorResource());
-                    put("led", new LedActuatorResource());
-                }
-            });
-            parkingLotMqttSmartObject.start();
 
             //Start to publish MESSAGE_COUNT messages
             //for(int i = 0; i < MESSAGE_COUNT; i++) {
@@ -123,6 +89,67 @@ public class SmartObjectProcess {
             e.printStackTrace();
         }
 
+    }
+    private static void createChargingStationMqttSmartObject(String mqttSmartObjectType){
+        try{
+            //Generate Random Charging Station UUID
+            String mqttSmartObjectId = UUID.randomUUID().toString();
+            Random random = new Random(System.currentTimeMillis());
+            Double latitude = (MIN_LATITUDE + (MAX_LATITUDE - MIN_LATITUDE) * random.nextDouble()) / 0.000001;
+            Double longitude = (MIN_LONGITUDE + (MAX_LONGITUDE - MIN_LONGITUDE) * random.nextDouble()) / 0.000001;
+            GpsLocationDescriptor gpsLocation  = new GpsLocationDescriptor(latitude, longitude);
+
+            //Represents a persistent data store, used to store outbound and inbound messages while they
+            //are in flight, enabling delivery to the QoS specified. In that case use a memory persistence.
+            //When the application stops all the temporary data will be deleted.
+            MqttClientPersistence persistence = new MemoryPersistence();
+
+            //The the persistence is not passed to the constructor the default file persistence is used.
+            //In case of a file-based storage the same MQTT client UUID should be used
+            IMqttClient mqttClient = new MqttClient(BROKER_URL, mqttSmartObjectId, persistence);
+
+            //Define MQTT Connection Options such as reconnection, persistent/clean session and connection timeout
+            //Authentication option can be added -> See AuthProducer example
+            MqttConnectOptions options = new MqttConnectOptions();
+            // options.setUserName(MQTT_USERNAME);
+            // options.setPassword(new String(MQTT_PASSWORD).toCharArray());
+            options.setAutomaticReconnect(true);
+            options.setCleanSession(true);
+            options.setConnectionTimeout(10);
+
+            //Connect to the target broker
+            mqttClient.connect(options);
+
+            if(mqttSmartObjectType.equals(CHARGING_STATION)) {
+                logger.info("Connected new Charging Station!");
+
+                ChargingStationMqttSmartObject charhingstationMqttSmartObject = new ChargingStationMqttSmartObject();
+                charhingstationMqttSmartObject.init(mqttSmartObjectId, gpsLocation, mqttClient, new HashMap<String, resource.SmartObjectResource<?>>() {
+                    {
+                        put("energy_consumption", new EnergyConsumptionSensorResource());
+                        put("temperature", new TemperatureSensorResource());
+                        put("vehicle_presence", new VehiclePresenceSensorResource());
+                        put("charge_status", new ChargeStatusSensorResource());
+                        put("led", new LedActuatorResource());
+                    }
+                });
+                charhingstationMqttSmartObject.start();
+            }
+            else if(mqttSmartObjectType.equals(PARKING_LOT)){
+                logger.info("Connected new Parking Lot!");
+
+                ParkingLotMqttSmartObject parkingLotMqttSmartObject = new ParkingLotMqttSmartObject();
+                parkingLotMqttSmartObject.init(mqttSmartObjectId, gpsLocation, mqttClient, new HashMap<String, resource.SmartObjectResource<?>>(){
+                    {
+                        put("vehicle_presence", new VehiclePresenceSensorResource());
+                        put("led", new LedActuatorResource());
+                    }
+                });
+                parkingLotMqttSmartObject.start();
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
 }
