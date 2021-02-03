@@ -19,11 +19,11 @@ public class LedActuatorResource extends SmartObjectResource<Led>{
         this.isActive = Led.GREEN;
     }
 
-    public Led getActive() {
+    public Led getIsActive() {
         return isActive;
     }
 
-    public void setActive(Led active) {
+    public void setIsActive(Led active) {
         isActive = active;
         notifyUpdate(isActive);
     }
@@ -35,21 +35,21 @@ public class LedActuatorResource extends SmartObjectResource<Led>{
 
     public static void main(String[] args) {
 
-        LedActuatorResource rawResource = new LedActuatorResource();
+        LedActuatorResource ledActuatorResourceResource = new LedActuatorResource();
         logger.info("New {} Resource Created with Id: {} ! New Value: {}",
-                rawResource.getType(),
-                rawResource.getId(),
-                rawResource.loadUpdatedValue());
+                ledActuatorResourceResource.getType(),
+                ledActuatorResourceResource.getId(),
+                ledActuatorResourceResource.loadUpdatedValue());
 
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try{
                     for(int i=0; i<100; i++){
-                        if (rawResource.getActive() == Led.GREEN)
-                            rawResource.setActive(Led.RED);
+                        if (ledActuatorResourceResource.getIsActive() == Led.GREEN)
+                            ledActuatorResourceResource.setIsActive(Led.RED);
                         else
-                            rawResource.setActive(Led.GREEN);
+                            ledActuatorResourceResource.setIsActive(Led.GREEN);
                         Thread.sleep(1000);
                     }
                 }catch (Exception e){
@@ -58,7 +58,7 @@ public class LedActuatorResource extends SmartObjectResource<Led>{
             }
         }).start();
 
-        rawResource.addDataListener(new ResourceDataListener<Led>() {
+        ledActuatorResourceResource.addDataListener(new ResourceDataListener<Led>() {
             @Override
             public void onDataChanged(SmartObjectResource<Led> resource, Led updatedValue) {
 
