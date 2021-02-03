@@ -84,47 +84,5 @@ public abstract class MqttSmartObject {
         this.resourceMap = resourceMap;
     }
 
-    protected void registerToControlChannel(String basicTopic) {
 
-        try{
-            String deviceControlTopic = String.format("%s/%s/%s", basicTopic, getMqttSmartObjectId(), CONTROL_TOPIC);
-
-            logger.info("Registering to Control Topic ({}) ... ", deviceControlTopic);
-
-            getMqttClient().subscribe(deviceControlTopic, new IMqttMessageListener() {
-                @Override
-                public void messageArrived(String topic, MqttMessage message) throws Exception {
-
-                    if(message != null)
-                        logger.info("[CONTROL CHANNEL] -> Control Message Received -> {}", new String(message.getPayload()));
-                    else
-                        logger.error("[CONTROL CHANNEL] -> Null control message received !");
-                }
-            });
-
-        }catch (Exception e){
-            logger.error("ERROR Registering to Control Channel ! Msg: {}", e.getLocalizedMessage());
-        }
-    }
-
-
-    public void publishTelemetryData(Logger logger, String topic, TelemetryMessage<?> telemetryMessage) throws MqttException, JsonProcessingException {
-
-        logger.info("Sending to topic: {} -> Data: {}", topic, telemetryMessage);
-
-        if(getMqttClient() != null && getMqttClient().isConnected() && telemetryMessage != null && topic != null){
-
-            String messagePayload = getMapper().writeValueAsString(telemetryMessage);
-
-            MqttMessage mqttMessage = new MqttMessage(messagePayload.getBytes());
-            mqttMessage.setQos(2);
-
-            getMqttClient().publish(topic, mqttMessage);
-
-            logger.info("Data Correctly Published to topic: {}", topic);
-
-        }
-        else
-            logger.error("Error: Topic or Msg = Null or MQTT Client is not Connected !");
-    }
 }

@@ -50,7 +50,7 @@ public class ParkingLotMqttSmartObject extends MqttSmartObject{
 
                     logger.info("Starting Charging Station Emulator ....");
 
-                    registerToControlChannel(BASIC_TOPIC);
+                    registerToControlChannel();
 
                     registerToAvailableResources();
 
@@ -61,6 +61,28 @@ public class ParkingLotMqttSmartObject extends MqttSmartObject{
             }
 
         }
+    protected void registerToControlChannel() {
+
+        try{
+            String deviceControlTopic = String.format("%s/%s/%s", BASIC_TOPIC, getMqttSmartObjectId(), CONTROL_TOPIC);
+
+            logger.info("Registering to Control Topic ({}) ... ", deviceControlTopic);
+
+            getMqttClient().subscribe(deviceControlTopic, new IMqttMessageListener() {
+                @Override
+                public void messageArrived(String topic, MqttMessage message) throws Exception {
+
+                    if(message != null)
+                        logger.info("[CONTROL CHANNEL] -> Control Message Received -> {}", new String(message.getPayload()));
+                    else
+                        logger.error("[CONTROL CHANNEL] -> Null control message received !");
+                }
+            });
+
+        }catch (Exception e){
+            logger.error("ERROR Registering to Control Channel ! Msg: {}", e.getLocalizedMessage());
+        }
+    }
 
         private void registerToAvailableResources(){
             try{
@@ -82,7 +104,7 @@ public class ParkingLotMqttSmartObject extends MqttSmartObject{
                                 @Override
                                 public void onDataChanged(SmartObjectResource<Boolean> resource, Boolean updatedValue) {
                                     try {
-                                        publishTelemetryData(logger,
+                                        publishTelemetryData(
                                                 String.format("%s/%s/%s/%s", BASIC_TOPIC, getMqttSmartObjectId(), TELEMETRY_TOPIC, resourceEntry.getKey()),
                                                 new TelemetryMessage<>(smartObjectResource.getType(), updatedValue));
                                     } catch (MqttException | JsonProcessingException e) {
@@ -100,7 +122,7 @@ public class ParkingLotMqttSmartObject extends MqttSmartObject{
                                 @Override
                                 public void onDataChanged(SmartObjectResource<Led> resource, Led updatedValue) {
                                     try {
-                                        publishTelemetryData(logger,
+                                        publishTelemetryData(
                                                 String.format("%s/%s/%s/%s", BASIC_TOPIC, getMqttSmartObjectId(), TELEMETRY_TOPIC, resourceEntry.getKey()),
                                                 new TelemetryMessage<>(smartObjectResource.getType(), updatedValue));
                                     } catch (MqttException | JsonProcessingException e) {
@@ -137,7 +159,25 @@ public class ParkingLotMqttSmartObject extends MqttSmartObject{
                 logger.error("Error Registering to Resource ! Msg: {}", e.getLocalizedMessage());
             }
         }
+    public void publishTelemetryData(String topic, TelemetryMessage<?> telemetryMessage) throws MqttException, JsonProcessingException {
 
+        logger.info("Sending to topic: {} -> Data: {}", topic, telemetryMessage);
+
+        if(getMqttClient() != null && getMqttClient().isConnected() && telemetryMessage != null && topic != null){
+
+            String messagePayload = getMapper().writeValueAsString(telemetryMessage);
+
+            MqttMessage mqttMessage = new MqttMessage(messagePayload.getBytes());
+            mqttMessage.setQos(2);
+
+            getMqttClient().publish(topic, mqttMessage);
+
+            logger.info("Data Correctly Published to topic: {}", topic);
+
+        }
+        else
+            logger.error("Error: Topic or Msg = Null or MQTT Client is not Connected !");
+    }
         /**
          * Stop the emulated vehicle
          */

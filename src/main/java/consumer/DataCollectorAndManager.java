@@ -17,9 +17,9 @@ import java.util.UUID;
  * @project mqtt-playground
  * @created 14/10/2020 - 09:19
  */
-public class SimpleTestConsumer {
+public class DataCollectorAndManager {
 
-    private final static Logger logger = LoggerFactory.getLogger(SimpleTestConsumer.class);
+    private final static Logger logger = LoggerFactory.getLogger(DataCollectorAndManager.class);
 
     //IP Address of the target MQTT Broker
     private static String BROKER_ADDRESS = "127.0.0.1";

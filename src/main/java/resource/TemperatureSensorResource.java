@@ -77,14 +77,14 @@ public class TemperatureSensorResource extends SmartObjectResource<Double> imple
                 @Override
                 public void run() {
                     if(temperatureIsRising) {    //if temperatureIsRising because CHARGING and < than max temp posible, increase it
-                        if (updatedTemperatureSensorValue < MAX_TEMPERATURE)
-                            updatedTemperatureSensorValue += MAX_TEMPERATURE_VARIATION * random.nextDouble();
+                        updatedTemperatureSensorValue += MAX_TEMPERATURE_VARIATION * random.nextDouble();
                     }
-                    else
-                        if (updatedTemperatureSensorValue > MIN_TEMPERATURE)
-                            updatedTemperatureSensorValue -= MAX_TEMPERATURE_VARIATION * random.nextDouble();
-                    //logger.info("Updated Parking Lot: {}", updatedParkingSensorStatus.getIsVehiclePresent());
-
+                    else {
+                        Double newTemperature = MAX_TEMPERATURE_VARIATION * random.nextDouble();
+                        if ((updatedTemperatureSensorValue - newTemperature) > MIN_TEMPERATURE)
+                            updatedTemperatureSensorValue -= newTemperature;
+                        //logger.info("Updated Parking Lot: {}", updatedParkingSensorStatus.getIsVehiclePresent());
+                    }
                     notifyUpdate(updatedTemperatureSensorValue);
 
                 }
