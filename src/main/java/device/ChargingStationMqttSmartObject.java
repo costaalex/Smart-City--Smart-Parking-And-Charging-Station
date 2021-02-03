@@ -108,6 +108,7 @@ public class ChargingStationMqttSmartObject extends MqttSmartObject{
                     if(smartObjectResource.getType().equals(VehiclePresenceSensorResource.RESOURCE_TYPE)){
 
                         VehiclePresenceSensorResource vehiclePresenceSensorResource = (VehiclePresenceSensorResource)smartObjectResource;
+                        //vehiclePresenceSensorResource.addDataListener(super.getResourceMap().get("charge_status").);
                         vehiclePresenceSensorResource.addDataListener(new ResourceDataListener<Boolean>() {
                             @Override
                             public void onDataChanged(SmartObjectResource<Boolean> resource, Boolean updatedValue) {
