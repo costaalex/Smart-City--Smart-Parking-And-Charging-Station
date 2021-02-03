@@ -57,10 +57,13 @@ public class SmartObjectProcess {
                 createChargingStationMqttSmartObject(CHARGING_STATION);
             }
 
+            /*
+
             for(int i=0; i<1; i++) {
                 createChargingStationMqttSmartObject(PARKING_LOT);
             }
 
+             */
 
             //Start to publish MESSAGE_COUNT messages
             //for(int i = 0; i < MESSAGE_COUNT; i++) {
@@ -126,8 +129,8 @@ public class SmartObjectProcess {
                 ChargingStationMqttSmartObject charhingstationMqttSmartObject = new ChargingStationMqttSmartObject();
                 charhingstationMqttSmartObject.init(mqttSmartObjectId, gpsLocation, mqttClient, new HashMap<String, resource.SmartObjectResource<?>>() {
                     {
-                        put("energy_consumption", new EnergyConsumptionSensorResource());
-                        put("temperature", new TemperatureSensorResource());
+                        //put("energy_consumption", new EnergyConsumptionSensorResource());
+                        //put("temperature", new TemperatureSensorResource());
                         put("vehicle_presence", new VehiclePresenceSensorResource());
                         put("charge_status", new ChargeStatusSensorResource());
                         put("led", new LedActuatorResource());

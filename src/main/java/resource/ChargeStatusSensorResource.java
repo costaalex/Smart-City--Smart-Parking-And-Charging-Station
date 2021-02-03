@@ -17,7 +17,7 @@ public class ChargeStatusSensorResource extends SmartObjectResource<ChargeStatus
 
     public static final String RESOURCE_TYPE = "iot:sensor:charge_status";
 
-    private static final long UPDATE_PERIOD = 10000; //10 Seconds
+    private static final long UPDATE_PERIOD = 1000; //10 Seconds
 
     private static final long TASK_DELAY_TIME = 5000; //5 Seconds before starting the periodic update task
 

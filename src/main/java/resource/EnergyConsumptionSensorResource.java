@@ -9,11 +9,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 
-/**
- * @author Marco Picone, Ph.D. - picone.m@gmail.com
- * @project coap-demo-smarthome
- * @created 11/11/2020 - 14:43
- */
 public class EnergyConsumptionSensorResource extends SmartObjectResource<Double> {
 
     private static Logger logger = LoggerFactory.getLogger(EnergyConsumptionSensorResource.class);
