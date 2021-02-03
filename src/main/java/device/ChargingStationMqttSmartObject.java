@@ -165,6 +165,23 @@ public class ChargingStationMqttSmartObject extends MqttSmartObject{
                     }
 
                     //Register to EnergyConsumptionResource Notification  -- Double
+                    if(smartObjectResource.getType().equals(EnergyConsumptionSensorResource.RESOURCE_TYPE)){
+
+                        EnergyConsumptionSensorResource energyConsumptionSensorResource = (EnergyConsumptionSensorResource)smartObjectResource;
+                        energyConsumptionSensorResource.addDataListener(new ResourceDataListener<Double>() {
+                            @Override
+                            public void onDataChanged(SmartObjectResource<Double> resource, Double updatedValue) {
+                                //logger.info(String.format("%s/%s/%s/%s", BASIC_TOPIC, getMqttSmartObjectId(), TELEMETRY_TOPIC, resourceEntry.getKey()), smartObjectResource.getType()+": "+updatedValue);
+                                try {
+                                    publishTelemetryData(
+                                            String.format("%s/%s/%s/%s", BASIC_TOPIC, getMqttSmartObjectId(), TELEMETRY_TOPIC, resourceEntry.getKey()),
+                                            new TelemetryMessage<>(smartObjectResource.getType(), updatedValue));
+                                } catch (MqttException | JsonProcessingException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
+                    }
 
                     //Register to LedActuatorResource         -- Led
                     if(smartObjectResource.getType().equals(LedActuatorResource.RESOURCE_TYPE)){
