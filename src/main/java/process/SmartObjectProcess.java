@@ -41,10 +41,10 @@ public class SmartObjectProcess {
     //the final used topic
     private static final String TOPIC = "?????????????";//"sensor/temperature";
 
-    private static final Double MIN_LATITUDE = 44000000.0;
-    private static final Double MAX_LATITUDE = 46000000.0;
-    private static final Double MIN_LONGITUDE = 8000000.0;
-    private static final Double MAX_LONGITUDE = 12000000.0;
+    private static final Double MIN_LATITUDE = 44.0;
+    private static final Double MAX_LATITUDE = 46.0;
+    private static final Double MIN_LONGITUDE = 8.0;
+    private static final Double MAX_LONGITUDE = 12.0;
     private static final String CHARGING_STATION = "charging_station";
     private static final String PARKING_LOT = "parking_lot";
 
@@ -95,8 +95,8 @@ public class SmartObjectProcess {
             //Generate Random Charging Station UUID
             String mqttSmartObjectId = UUID.randomUUID().toString();
             Random random = new Random(System.currentTimeMillis());
-            Double latitude = (MIN_LATITUDE + (MAX_LATITUDE - MIN_LATITUDE) * random.nextDouble()) / 0.000001;
-            Double longitude = (MIN_LONGITUDE + (MAX_LONGITUDE - MIN_LONGITUDE) * random.nextDouble()) / 0.000001;
+            Double latitude = (MIN_LATITUDE + (MAX_LATITUDE - MIN_LATITUDE) * random.nextDouble());
+            Double longitude = (MIN_LONGITUDE + (MAX_LONGITUDE - MIN_LONGITUDE) * random.nextDouble());
             GpsLocationDescriptor gpsLocation  = new GpsLocationDescriptor(latitude, longitude);
 
             //Represents a persistent data store, used to store outbound and inbound messages while they
@@ -121,7 +121,7 @@ public class SmartObjectProcess {
             mqttClient.connect(options);
 
             if(mqttSmartObjectType.equals(CHARGING_STATION)) {
-                logger.info("Connected new Charging Station!");
+                logger.info("Connected new Charging Station - id: {}, lat: {}, long: {}",mqttSmartObjectId, latitude, longitude);
 
                 ChargingStationMqttSmartObject charhingstationMqttSmartObject = new ChargingStationMqttSmartObject();
                 charhingstationMqttSmartObject.init(mqttSmartObjectId, gpsLocation, mqttClient, new HashMap<String, resource.SmartObjectResource<?>>() {
@@ -136,7 +136,7 @@ public class SmartObjectProcess {
                 charhingstationMqttSmartObject.start();
             }
             else if(mqttSmartObjectType.equals(PARKING_LOT)){
-                logger.info("Connected new Parking Lot!");
+                logger.info("Connected new Parking Lot - id: {}, lat: {}, long: {}",mqttSmartObjectId, latitude, longitude);
 
                 ParkingLotMqttSmartObject parkingLotMqttSmartObject = new ParkingLotMqttSmartObject();
                 parkingLotMqttSmartObject.init(mqttSmartObjectId, gpsLocation, mqttClient, new HashMap<String, resource.SmartObjectResource<?>>(){
