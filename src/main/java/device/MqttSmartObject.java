@@ -8,8 +8,10 @@ import resource.SmartObjectResource;
 
 import java.util.Map;
 
+import static process.SmartObjectProcess.MQTT_USERNAME;
+
 public abstract class MqttSmartObject {
-    protected static final String BASIC_TOPIC = "smartcity";
+    protected static final String BASIC_TOPIC = "/iot/user/" + MQTT_USERNAME + "/smartcity";
 
     protected static final String TELEMETRY_TOPIC = "telemetry";
 

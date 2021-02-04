@@ -168,7 +168,7 @@ public class ParkingLotMqttSmartObject extends MqttSmartObject{
             logger.error("Error: Topic or Msg = Null or MQTT Client is not Connected !");
     }
         /**
-         * Stop the emulated vehicle
+         * Stop the emulated Smart Object
          */
         public void stop(){
             //TODO Implement a proper closing method

@@ -26,7 +26,7 @@ public class SmartObjectProcess {
     private static String BROKER_URL = "tcp://localhost:1883";
 
     //MQTT account username to connect to the target broker
-    private static final String MQTT_USERNAME = "254892";
+    public static final String MQTT_USERNAME = "254892";
 
     //MQTT account password to connect to the target broker
     private static final String MQTT_PASSWORD = "zpfupimt";
