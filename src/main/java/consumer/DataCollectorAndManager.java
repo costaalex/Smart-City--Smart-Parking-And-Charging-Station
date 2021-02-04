@@ -68,6 +68,7 @@ public class DataCollectorAndManager {
             //Connect to the target broker
             client.connect(options);
 
+            mapper = new ObjectMapper();
             logger.info("Connected ! Client Id: {}", clientId);
 
             //Subscribe to the target topic #. In that case the consumer will receive (if authorized) all the message
