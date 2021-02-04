@@ -10,14 +10,13 @@ public class SingletonDataCollector {
     // static variable single_instance of type Singleton
     static SingletonDataCollector single_instance = null;
 
-    public Map<String, SmartObject> chargingStationMap;             //key: idSmartObject, value: SmartObject
-    public Map<String, SmartObject> parkingLotMap;
+    public Map<String, SmartObject> smartObjectsMap;             //key: idSmartObject, value: SmartObject
+
 
     // private constructor restricted to this class itself
     private SingletonDataCollector()
     {
-        chargingStationMap = new HashMap<>();
-        parkingLotMap = new HashMap<>();
+        smartObjectsMap = new HashMap<>();
     }
 
     // static method to create instance of Singleton class

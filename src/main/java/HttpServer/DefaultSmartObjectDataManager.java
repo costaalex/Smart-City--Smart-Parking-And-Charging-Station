@@ -30,11 +30,11 @@ public class DefaultSmartObjectDataManager implements ISmartObjectDataManager{
     public Optional<Map<String, SmartObjectResource<?>>> getSmartObjectById(String id) {
         if (single_instance == null)
             return Optional.empty();
-        SmartObject smartObject = single_instance.chargingStationMap.get(id);
-        SmartObject smartObject = single_instance.parkingLotMap.get(id);
+
+        SmartObject smartObject = single_instance.smartObjectsMap.get(id);
         if (smartObject != null)
             return Optional.of(smartObject.getResourceMap());
-        else if ()
+       // else if ()
         return Optional.empty();
     }
 

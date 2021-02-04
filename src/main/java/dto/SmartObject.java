@@ -2,6 +2,7 @@ package dto;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import model.GpsLocationDescriptor;
+import model.SmartObjectTypeDescriptor;
 import resource.SmartObjectResource;
 
 import java.util.HashMap;
@@ -15,20 +16,22 @@ public class SmartObject {
 
     private ObjectMapper mapper;
 
+    private SmartObjectTypeDescriptor smartObjectType; // CHARGING_STATION, PPARKING_LOT
+
     private Map<String, SmartObjectResource<?>> resourceMap;  //key = sensor_type, value = sensor
 
     public SmartObject() {
         this.mapper = new ObjectMapper();
     }
 
-    public SmartObject(String smartObjectId, GpsLocationDescriptor gpsLocation) {
+    public SmartObject(String smartObjectId, GpsLocationDescriptor gpsLocation, SmartObjectTypeDescriptor smartObjectType) {
         this.smartObjectId = smartObjectId;
         this.gpsLocation = gpsLocation;
         this.mapper = new ObjectMapper();
         this.resourceMap = new HashMap<>();
     }
 
-    public SmartObject(String smartObjectId) {
+    public SmartObject(String smartObjectId, SmartObjectTypeDescriptor smartObjectType) {
         this.smartObjectId = smartObjectId;
         this.gpsLocation = null;
         this.mapper = new ObjectMapper();

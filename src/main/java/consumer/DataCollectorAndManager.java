@@ -9,6 +9,7 @@ import message.TelemetryMessage;
 import model.ChargeStatusDescriptor;
 import model.GpsLocationDescriptor;
 import model.Led;
+import model.SmartObjectTypeDescriptor;
 import org.eclipse.paho.client.mqttv3.*;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.slf4j.Logger;
@@ -81,9 +82,9 @@ public class DataCollectorAndManager {
                 logger.info("Message Received -> Topic: {} - Payload: {}", topic, new String(payload));
 
                 if (topic.contains(CHARGING_TOPIC))
-                    updateChargingStationMap(topic, msg);
+                    updateSmartObjectsMap(topic, msg);
                 else if (topic.contains(PARKING_TOPIC))
-                    updateParkingLotMap(topic, msg);
+                    updateSmartObjectsMap(topic, msg);
 
             });
 
@@ -123,7 +124,7 @@ public class DataCollectorAndManager {
         }
     }
 
-    private static void updateChargingStationMap(String topic, MqttMessage msg) {
+    private static void updateSmartObjectsMap(String topic, MqttMessage msg) {
         String[] parts = topic.split("/");
         String smartObjectId = parts[5];
         if(topic.contains(MqttSmartObject.GENERAL)){
@@ -134,12 +135,16 @@ public class DataCollectorAndManager {
                 Double longitude = generalMessageOptional.get().getLongitude();
                 logger.info("New Charging Station Gps Location Data Received. lat: {}, long: {}", latitude, longitude);
 
-                if ( !SingletonDataCollector.getInstance().chargingStationMap.containsKey(smartObjectId) ) {
-                    SmartObject smartObject = new SmartObject(smartObjectId, new GpsLocationDescriptor(latitude, longitude));
-                    SingletonDataCollector.getInstance().chargingStationMap.put(smartObjectId, smartObject);
+                if ( !SingletonDataCollector.getInstance().smartObjectsMap.containsKey(smartObjectId) ) {
+                    SmartObject smartObject;
+                    if(topic.contains(CHARGING_TOPIC))
+                        smartObject = new SmartObject(smartObjectId, new GpsLocationDescriptor(latitude, longitude), SmartObjectTypeDescriptor.CHARGING_STATION);
+                    else
+                        smartObject = new SmartObject(smartObjectId, new GpsLocationDescriptor(latitude, longitude), SmartObjectTypeDescriptor.PPARKING_LOT);
+                    SingletonDataCollector.getInstance().smartObjectsMap.put(smartObjectId, smartObject);
                 }
                 else{
-                    SingletonDataCollector.getInstance().chargingStationMap.get(smartObjectId).setGpsLocation(new GpsLocationDescriptor(latitude, longitude));
+                    SingletonDataCollector.getInstance().smartObjectsMap.get(smartObjectId).setGpsLocation(new GpsLocationDescriptor(latitude, longitude));
                 }
             }
         }
@@ -180,26 +185,31 @@ public class DataCollectorAndManager {
                 }
 
                 //If is the first value (charge station not exists in DataCollector)
-                Map<String, SmartObject> chargingStationMap = SingletonDataCollector.getInstance().chargingStationMap;
+                Map<String, SmartObject> chargingStationMap = SingletonDataCollector.getInstance().smartObjectsMap;
                 if (!chargingStationMap.containsKey(smartObjectId) && sensor != null) {
                     logger.info("New Energy Consumption Saved for: {}", topic);
 
-                    SmartObject chargingStation = new SmartObject(smartObjectId);
+                    SmartObject smartObject;
+                    if(topic.contains(CHARGING_TOPIC))
+                        smartObject = new SmartObject(smartObjectId, SmartObjectTypeDescriptor.CHARGING_STATION);
+                    else
+                        smartObject = new SmartObject(smartObjectId, SmartObjectTypeDescriptor.PPARKING_LOT);
+
                     Map<String, SmartObjectResource<?>> resourceMap = new HashMap<>();
                     resourceMap.put(sensor_type, sensor);
-                    chargingStation.setResourceMap(resourceMap);
-                    SingletonDataCollector.getInstance().chargingStationMap.put(smartObjectId, chargingStation);
+                    smartObject.setResourceMap(resourceMap);
+                    SingletonDataCollector.getInstance().smartObjectsMap.put(smartObjectId, smartObject);
                 }
                 else{
                     logger.info("New Energy Consumption Saved for: {}", topic);
-                    SingletonDataCollector.getInstance().chargingStationMap.get(smartObjectId).getResourceMap().put(sensor_type, sensor);
+                    SingletonDataCollector.getInstance().smartObjectsMap.get(smartObjectId).getResourceMap().put(sensor_type, sensor);
                 }
 
             }
         }
     }
 
-    private static void updateParkingLotMap(String topic, MqttMessage msg) {
+   /* private static void updateParkingLotMap(String topic, MqttMessage msg) {
         String[] parts = topic.split("/");
         String smartObjectId = parts[5];
         if(topic.contains(MqttSmartObject.GENERAL)){
@@ -256,4 +266,6 @@ public class DataCollectorAndManager {
             }
         }
     }
+    */
+
 }
