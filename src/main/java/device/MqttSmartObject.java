@@ -1,8 +1,11 @@
 package device;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import model.GpsLocationDescriptor;
 import org.eclipse.paho.client.mqttv3.IMqttClient;
+import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.slf4j.Logger;
 import resource.SmartObjectResource;
 
@@ -18,6 +21,8 @@ public abstract class MqttSmartObject {
     protected static final String EVENT_TOPIC = "event";
 
     protected static final String CONTROL_TOPIC = "control";
+
+    protected static final String GENERAL = "general";
 
     protected static final String COMMAND_TOPIC = "command";
 
@@ -82,6 +87,8 @@ public abstract class MqttSmartObject {
     public void setResourceMap(Map<String, SmartObjectResource<?>> resourceMap) {
         this.resourceMap = resourceMap;
     }
+
+
 
 
 }

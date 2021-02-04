@@ -38,7 +38,7 @@ public class ParkingLotMqttSmartObject extends MqttSmartObject{
         }
 
         /**
-         * Start vehicle behaviour
+         * Start Smart Object behaviour
          */
         public void start(){
 
@@ -53,6 +53,14 @@ public class ParkingLotMqttSmartObject extends MqttSmartObject{
                     registerToControlChannel();
 
                     registerToAvailableResources();
+
+                    try {
+                        publishGeneralData(
+                                String.format("%s/%s/%s/%s", PARKING_TOPIC, getMqttSmartObjectId(), GENERAL),
+                                super.getGpsLocation());
+                    } catch (MqttException | JsonProcessingException e) {
+                        e.printStackTrace();
+                    }
 
                 }
 
@@ -173,6 +181,27 @@ public class ParkingLotMqttSmartObject extends MqttSmartObject{
         public void stop(){
             //TODO Implement a proper closing method
         }
+
+    public void publishGeneralData(String topic, GpsLocationDescriptor gpsLocationDescriptor) throws MqttException, JsonProcessingException {
+
+        logger.info("Sending to topic: {} -> Data: {}", topic, gpsLocationDescriptor);
+
+        if(getMqttClient() != null && getMqttClient().isConnected() && gpsLocationDescriptor != null && topic != null){
+
+            String messagePayload = getMapper().writeValueAsString(gpsLocationDescriptor);
+
+            MqttMessage mqttMessage = new MqttMessage(messagePayload.getBytes());
+            mqttMessage.setQos(2);
+            mqttMessage.setRetained(true);                                              //Send when client connects
+
+            getMqttClient().publish(topic, mqttMessage);
+
+            logger.info("Data Correctly Published to topic: {}", topic);
+
+        }
+        else
+            logger.error("Error: Topic or Msg = Null or MQTT Client is not Connected !");
+    }
 
 
 }
