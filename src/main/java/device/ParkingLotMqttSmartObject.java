@@ -19,7 +19,7 @@ import java.util.Map;
 public class ParkingLotMqttSmartObject extends MqttSmartObject{
         private static final Logger logger = LoggerFactory.getLogger(ChargingStationMqttSmartObject.class);
 
-        private static final String BASIC_TOPIC = "smartcity/parkinglot";
+        public static final String PARKING_TOPIC = BASIC_TOPIC + "/parkinglot";
 
         /**
          * Init the charging station smart object with its ID, the MQTT Client and the Map of managed resources
@@ -64,7 +64,7 @@ public class ParkingLotMqttSmartObject extends MqttSmartObject{
     protected void registerToControlChannel() {
         final String[] a = new String[0];
         try{
-            String deviceControlTopic = String.format("%s/%s/%s", BASIC_TOPIC, getMqttSmartObjectId(), CONTROL_TOPIC);
+            String deviceControlTopic = String.format("%s/%s/%s", PARKING_TOPIC, getMqttSmartObjectId(), CONTROL_TOPIC);
 
             logger.info("Registering to Control Topic ({}) ... ", deviceControlTopic);
 
@@ -114,7 +114,7 @@ public class ParkingLotMqttSmartObject extends MqttSmartObject{
                                 public void onDataChanged(SmartObjectResource<Boolean> resource, Boolean updatedValue) {
                                     try {
                                         publishTelemetryData(
-                                                String.format("%s/%s/%s/%s", BASIC_TOPIC, getMqttSmartObjectId(), TELEMETRY_TOPIC, resourceEntry.getKey()),
+                                                String.format("%s/%s/%s/%s", PARKING_TOPIC, getMqttSmartObjectId(), TELEMETRY_TOPIC, resourceEntry.getKey()),
                                                 new TelemetryMessage<>(smartObjectResource.getType(), updatedValue));
                                     } catch (MqttException | JsonProcessingException e) {
                                         e.printStackTrace();
@@ -132,7 +132,7 @@ public class ParkingLotMqttSmartObject extends MqttSmartObject{
                                 public void onDataChanged(SmartObjectResource<Led> resource, Led updatedValue) {
                                     try {
                                         publishTelemetryData(
-                                                String.format("%s/%s/%s/%s", BASIC_TOPIC, getMqttSmartObjectId(), TELEMETRY_TOPIC, resourceEntry.getKey()),
+                                                String.format("%s/%s/%s/%s", PARKING_TOPIC, getMqttSmartObjectId(), TELEMETRY_TOPIC, resourceEntry.getKey()),
                                                 new TelemetryMessage<>(smartObjectResource.getType(), updatedValue));
                                     } catch (MqttException | JsonProcessingException e) {
                                         e.printStackTrace();
@@ -140,26 +140,6 @@ public class ParkingLotMqttSmartObject extends MqttSmartObject{
                                 }
                             });
                         }
-
-                    /*
-                    //Register to BatterySensorResource Notification
-                    if(smartObjectResource.getType().equals(BatterySensorResource.RESOURCE_TYPE)){
-
-                        BatterySensorResource batterySensorResource = (BatterySensorResource)smartObjectResource;
-                        batterySensorResource.addDataListener(new ResourceDataListener<Double>() {
-                            @Override
-                            public void onDataChanged(SmartObjectResource<Double> resource, Double updatedValue) {
-                                try {
-                                    publishTelemetryData(
-                                            String.format("%s/%s/%s/%s", BASIC_TOPIC, vehicleId, TELEMETRY_TOPIC, resourceEntry.getKey()),
-                                            new TelemetryMessage<>(smartObjectResource.getType(), updatedValue));
-                                } catch (MqttException | JsonProcessingException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        });
-                    }
-                    */
 
                     }
                 });

@@ -20,7 +20,7 @@ public class ChargingStationMqttSmartObject extends MqttSmartObject{
 
     private static final Logger logger = LoggerFactory.getLogger(ChargingStationMqttSmartObject.class);
 
-    private static final String BASIC_TOPIC = "smartcity/charging_station";
+    public static final String CHARGING_TOPIC = BASIC_TOPIC + "/charging_station";
 
     private static final Integer SLEEP_TIME = 50;
 
@@ -71,7 +71,7 @@ public class ChargingStationMqttSmartObject extends MqttSmartObject{
     protected void registerToControlChannel() {
 
         try{
-            String deviceControlTopic = String.format("%s/%s/%s", BASIC_TOPIC, getMqttSmartObjectId(), CONTROL_TOPIC);
+            String deviceControlTopic = String.format("%s/%s/%s", CHARGING_TOPIC, getMqttSmartObjectId(), CONTROL_TOPIC);
 
             logger.info("Registering to Control Topic ({}) ... ", deviceControlTopic);
 
@@ -115,7 +115,7 @@ public class ChargingStationMqttSmartObject extends MqttSmartObject{
                                     //Sleep to let all listeners be synchronized
                                     Thread.sleep(SLEEP_TIME);
                                     publishTelemetryData(
-                                            String.format("%s/%s/%s/%s", BASIC_TOPIC, getMqttSmartObjectId(), TELEMETRY_TOPIC, resourceEntry.getKey()),
+                                            String.format("%s/%s/%s/%s", CHARGING_TOPIC, getMqttSmartObjectId(), TELEMETRY_TOPIC, resourceEntry.getKey()),
                                             new TelemetryMessage<>(smartObjectResource.getType(), updatedValue));
 
 
@@ -135,11 +135,10 @@ public class ChargingStationMqttSmartObject extends MqttSmartObject{
                         chargeStatusSensorResource.addDataListener(new ResourceDataListener<ChargeStatusDescriptor>() {
                             @Override
                             public void onDataChanged(SmartObjectResource<ChargeStatusDescriptor> resource, ChargeStatusDescriptor updatedValue) {
-                                // logger.info(String.format("%s/%s/%s/%s", BASIC_TOPIC, getMqttSmartObjectId(), TELEMETRY_TOPIC, resourceEntry.getKey()), smartObjectResource.getType()+": "+updatedValue);
-                                 try {
+                                try {
                                      Thread.sleep(SLEEP_TIME);
                                      publishTelemetryData(
-                                            String.format("%s/%s/%s/%s", BASIC_TOPIC, getMqttSmartObjectId(), TELEMETRY_TOPIC, resourceEntry.getKey()),
+                                            String.format("%s/%s/%s/%s", CHARGING_TOPIC, getMqttSmartObjectId(), TELEMETRY_TOPIC, resourceEntry.getKey()),
                                             new TelemetryMessage<>(smartObjectResource.getType(), updatedValue));
                                 } catch (MqttException | JsonProcessingException | InterruptedException e) {
                                     e.printStackTrace();
@@ -155,12 +154,10 @@ public class ChargingStationMqttSmartObject extends MqttSmartObject{
                         temperatureSensorResource.addDataListener(new ResourceDataListener<Double>() {
                             @Override
                             public void onDataChanged(SmartObjectResource<Double> resource, Double updatedValue) {
-                                //logger.info(String.format("%s/%s/%s/%s", BASIC_TOPIC, getMqttSmartObjectId(), TELEMETRY_TOPIC, resourceEntry.getKey()), smartObjectResource.getType()+": "+updatedValue);
-
                                try {
                                    Thread.sleep(SLEEP_TIME);
                                     publishTelemetryData(
-                                            String.format("%s/%s/%s/%s", BASIC_TOPIC, getMqttSmartObjectId(), TELEMETRY_TOPIC, resourceEntry.getKey()),
+                                            String.format("%s/%s/%s/%s", CHARGING_TOPIC, getMqttSmartObjectId(), TELEMETRY_TOPIC, resourceEntry.getKey()),
                                             new TelemetryMessage<>(smartObjectResource.getType(), updatedValue));
                                 } catch (MqttException | JsonProcessingException | InterruptedException e) {
                                     e.printStackTrace();
@@ -179,7 +176,7 @@ public class ChargingStationMqttSmartObject extends MqttSmartObject{
                                 try {
                                     Thread.sleep(SLEEP_TIME);
                                     publishTelemetryData(
-                                            String.format("%s/%s/%s/%s", BASIC_TOPIC, getMqttSmartObjectId(), TELEMETRY_TOPIC, resourceEntry.getKey()),
+                                            String.format("%s/%s/%s/%s", CHARGING_TOPIC, getMqttSmartObjectId(), TELEMETRY_TOPIC, resourceEntry.getKey()),
                                             new TelemetryMessage<>(smartObjectResource.getType(), updatedValue));
                                 } catch (MqttException | JsonProcessingException | InterruptedException e) {
                                     e.printStackTrace();
@@ -198,7 +195,7 @@ public class ChargingStationMqttSmartObject extends MqttSmartObject{
                                 try {
                                     Thread.sleep(SLEEP_TIME);
                                     publishTelemetryData(
-                                            String.format("%s/%s/%s/%s", BASIC_TOPIC, getMqttSmartObjectId(), TELEMETRY_TOPIC, resourceEntry.getKey()),
+                                            String.format("%s/%s/%s/%s", CHARGING_TOPIC, getMqttSmartObjectId(), TELEMETRY_TOPIC, resourceEntry.getKey()),
                                             new TelemetryMessage<>(smartObjectResource.getType(), updatedValue));
                                 } catch (MqttException | JsonProcessingException | InterruptedException e) {
                                     e.printStackTrace();
@@ -237,7 +234,7 @@ public class ChargingStationMqttSmartObject extends MqttSmartObject{
     }
 
     /**
-     * Stop the emulated vehicle
+     * Stop the emulated Smart Object
      */
     public void stop(){
         //TODO Implement a proper closing method

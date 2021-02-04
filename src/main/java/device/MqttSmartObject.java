@@ -14,6 +14,8 @@ import resource.SmartObjectResource;
 import java.util.Map;
 
 public abstract class MqttSmartObject {
+    protected static final String BASIC_TOPIC = "smartcity";
+
     protected static final String TELEMETRY_TOPIC = "telemetry";
 
     protected static final String EVENT_TOPIC = "event";

@@ -1,5 +1,8 @@
 package consumer;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import device.ChargingStationMqttSmartObject;
+import device.ParkingLotMqttSmartObject;
 import org.eclipse.paho.client.mqttv3.IMqttClient;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttClientPersistence;
@@ -8,7 +11,11 @@ import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
 import java.util.UUID;
+
+import static device.ChargingStationMqttSmartObject.CHARGING_TOPIC;
+import static device.ParkingLotMqttSmartObject.PARKING_TOPIC;
 
 public class DataCollectorAndManager {
 
@@ -21,6 +28,11 @@ public class DataCollectorAndManager {
     private static int BROKER_PORT = 1883;
 
     private static final String TARGET_TOPIC = "#";
+
+    private static ObjectMapper mapper;
+
+    private HashMap<String, ChargingStationMqttSmartObject> chargingStationMap;
+    private HashMap<String, ParkingLotMqttSmartObject> parkingLotMap;
 
     public static void main(String [ ] args) {
 
@@ -63,11 +75,25 @@ public class DataCollectorAndManager {
                 //The msg variable is a MqttMessage object containing all the information about the received message
             	byte[] payload = msg.getPayload();
                 logger.info("Message Received -> Topic: {} - Payload: {}", topic, new String(payload));
+
+                if (topic.contains(CHARGING_TOPIC))
+                    updateChargingStationMap();
+                else if (topic.contains(PARKING_TOPIC))
+                    updateParkingLotMap();
+
             });
 
         }catch (Exception e){
             e.printStackTrace();
         }
+
+    }
+
+    private static void updateChargingStationMap() {
+
+    }
+
+    private static void updateParkingLotMap() {
 
     }
 }
