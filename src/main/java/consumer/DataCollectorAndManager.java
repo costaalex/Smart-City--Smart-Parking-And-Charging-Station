@@ -167,12 +167,12 @@ public class DataCollectorAndManager {
                         logger.info("New Vehicle Presence Data Received : {}", newVehiclePresenceValue);
                         break;
                     case ChargeStatusSensorResource.RESOURCE_TYPE:
-                        ChargeStatusDescriptor newChargeStatusValue = (ChargeStatusDescriptor) telemetryMessageOptional.get().getDataValue();
+                        ChargeStatusDescriptor newChargeStatusValue = ChargeStatusDescriptor.valueOf(telemetryMessageOptional.get().getDataValue().toString());
                         sensor = new ChargeStatusSensorResource(sensor_type, timestamp, newChargeStatusValue);
                         logger.info("New Charge Status Data Received : {}", newChargeStatusValue);
                         break;
                     case LedActuatorResource.RESOURCE_TYPE:
-                        Led newLedValue = (Led) telemetryMessageOptional.get().getDataValue();
+                        Led newLedValue = Led.valueOf(telemetryMessageOptional.get().getDataValue().toString());
                         sensor = new LedActuatorResource(sensor_type, timestamp, newLedValue);
                         logger.info("New Led Actuator Data Received : {}", newLedValue);
                         break;
@@ -180,7 +180,8 @@ public class DataCollectorAndManager {
                 }
 
                 //If is the first value (charge station not exists in DataCollector)
-                if (!SingletonDataCollector.getInstance().chargingStationMap.containsKey(smartObjectId) && sensor != null) {
+                Map<String, SmartObject> chargingStationMap = SingletonDataCollector.getInstance().chargingStationMap;
+                if (!chargingStationMap.containsKey(smartObjectId) && sensor != null) {
                     logger.info("New Energy Consumption Saved for: {}", topic);
 
                     SmartObject chargingStation = new SmartObject(smartObjectId);
@@ -190,6 +191,7 @@ public class DataCollectorAndManager {
                     SingletonDataCollector.getInstance().chargingStationMap.put(smartObjectId, chargingStation);
                 }
                 else{
+                    logger.info("New Energy Consumption Saved for: {}", topic);
                     SingletonDataCollector.getInstance().chargingStationMap.get(smartObjectId).getResourceMap().put(sensor_type, sensor);
                 }
 
