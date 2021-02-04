@@ -3,8 +3,8 @@ package model;
 
 public class GpsLocationDescriptor {
 
-    private double latitude;
-    private double longitude;
+    private Double latitude;
+    private Double longitude;
 
     public GpsLocationDescriptor() {
         this.latitude = 0.0;

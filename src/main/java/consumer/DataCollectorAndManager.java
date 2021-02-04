@@ -2,10 +2,13 @@ package consumer;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import device.MqttSmartObject;
 import dto.SingletonDataCollector;
 import dto.SmartObject;
 import message.TelemetryMessage;
+import model.ChargeStatusDescriptor;
 import model.GpsLocationDescriptor;
+import model.Led;
 import org.eclipse.paho.client.mqttv3.*;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.slf4j.Logger;
@@ -104,56 +107,150 @@ public class DataCollectorAndManager {
             return Optional.empty();
         }
     }
+    private static Optional<GpsLocationDescriptor> parseGeneralMessagePayload(MqttMessage mqttMessage){
+        try{
+            if(mqttMessage == null)
+                return Optional.empty();
+
+            byte[] payloadByteArray = mqttMessage.getPayload();
+            String payloadString = new String(payloadByteArray);
+
+            return Optional.ofNullable(mapper.readValue(payloadString, new TypeReference<GpsLocationDescriptor>() {}));
+
+        }catch (Exception e){
+            return Optional.empty();
+        }
+    }
 
     private static void updateChargingStationMap(String topic, MqttMessage msg) {
         String[] parts = topic.split("/");
-        String smartObjectId = parts[6];
+        String smartObjectId = parts[5];
+        if(topic.contains(MqttSmartObject.GENERAL)){
+            Optional<GpsLocationDescriptor> generalMessageOptional = parseGeneralMessagePayload(msg);
+            //set gps location to a charging station
+            if (generalMessageOptional.isPresent() ) {
+                Double latitude = generalMessageOptional.get().getLatitude();
+                Double longitude = generalMessageOptional.get().getLongitude();
+                logger.info("New Charging Station Gps Location Data Received. lat: {}, long: {}", latitude, longitude);
 
-        Optional<TelemetryMessage<?>> telemetryMessageOptional = parseTelemetryMessagePayload(msg);
+                if ( !SingletonDataCollector.getInstance().chargingStationMap.containsKey(smartObjectId) ) {
+                    SmartObject smartObject = new SmartObject(smartObjectId, new GpsLocationDescriptor(latitude, longitude));
+                    SingletonDataCollector.getInstance().chargingStationMap.put(smartObjectId, smartObject);
+                }
+                else{
+                    SingletonDataCollector.getInstance().chargingStationMap.get(smartObjectId).setGpsLocation(new GpsLocationDescriptor(latitude, longitude));
+                }
+            }
+        }
+        else if(topic.contains(MqttSmartObject.TELEMETRY_TOPIC)) {
+            Optional<TelemetryMessage<?>> telemetryMessageOptional = parseTelemetryMessagePayload(msg);
+            SmartObjectResource<?> sensor = null;
+            long timestamp = telemetryMessageOptional.get().getTimestamp();
+            String sensor_type = telemetryMessageOptional.get().getType();
+            if (telemetryMessageOptional.isPresent() && telemetryMessageOptional.get().getType() != null) {
+                switch (telemetryMessageOptional.get().getType()) {
+                    case EnergyConsumptionSensorResource.RESOURCE_TYPE:
+                        Double newEnergyConsumptionValue = (Double) telemetryMessageOptional.get().getDataValue();
+                        sensor = new EnergyConsumptionSensorResource(sensor_type, timestamp, newEnergyConsumptionValue);
+                        logger.info("New Energy Consumption Data Received : {}", newEnergyConsumptionValue);
+                        break;
 
-        if(telemetryMessageOptional.isPresent() ) {
-            switch (telemetryMessageOptional.get().getType()) {
-                case EnergyConsumptionSensorResource.RESOURCE_TYPE:
-                    Double newValue = (Double) telemetryMessageOptional.get().getDataValue();
-                    long timestamp = telemetryMessageOptional.get().getTimestamp();
-                    String sensor_type = telemetryMessageOptional.get().getType();
+                    case TemperatureSensorResource.RESOURCE_TYPE:
+                        Double newTemperatureValue = (Double) telemetryMessageOptional.get().getDataValue();
+                        sensor = new TemperatureSensorResource(sensor_type, timestamp, newTemperatureValue);
+                        logger.info("New Temperature Data Received : {}", newTemperatureValue);
+                        break;
+                    case VehiclePresenceSensorResource.RESOURCE_TYPE:
+                        Boolean newVehiclePresenceValue = (Boolean) telemetryMessageOptional.get().getDataValue();
+                        sensor = new VehiclePresenceSensorResource(sensor_type, timestamp, newVehiclePresenceValue);
+                        logger.info("New Vehicle Presence Data Received : {}", newVehiclePresenceValue);
+                        break;
+                    case ChargeStatusSensorResource.RESOURCE_TYPE:
+                        ChargeStatusDescriptor newChargeStatusValue = (ChargeStatusDescriptor) telemetryMessageOptional.get().getDataValue();
+                        sensor = new ChargeStatusSensorResource(sensor_type, timestamp, newChargeStatusValue);
+                        logger.info("New Charge Status Data Received : {}", newChargeStatusValue);
+                        break;
+                    case LedActuatorResource.RESOURCE_TYPE:
+                        Led newLedValue = (Led) telemetryMessageOptional.get().getDataValue();
+                        sensor = new LedActuatorResource(sensor_type, timestamp, newLedValue);
+                        logger.info("New Led Actuator Data Received : {}", newLedValue);
+                        break;
 
-                    logger.info("New Energy Consumption Data Received : {}", newValue);
+                }
 
-                    //If is the first value
-                    if (!SingletonDataCollector.getInstance().chargingStationMap.containsKey(smartObjectId)) {
-                        logger.info("New Battery Level Saved for: {}", topic);
+                //If is the first value (charge station not exists in DataCollector)
+                if (!SingletonDataCollector.getInstance().chargingStationMap.containsKey(smartObjectId) && sensor != null) {
+                    logger.info("New Energy Consumption Saved for: {}", topic);
 
-                        SmartObject chargingStation = new SmartObject(smartObjectId, new GpsLocationDescriptor(/*latitude, longitude*/));
-                        EnergyConsumptionSensorResource sensor = new EnergyConsumptionSensorResource(sensor_type, timestamp, newValue);
+                    SmartObject chargingStation = new SmartObject(smartObjectId);
+                    Map<String, SmartObjectResource<?>> resourceMap = new HashMap<>();
+                    resourceMap.put(sensor_type, sensor);
+                    chargingStation.setResourceMap(resourceMap);
+                    SingletonDataCollector.getInstance().chargingStationMap.put(smartObjectId, chargingStation);
+                }
+                else{
+                    SingletonDataCollector.getInstance().chargingStationMap.get(smartObjectId).getResourceMap().put(sensor_type, sensor);
+                }
 
-                        Map<String, EnergyConsumptionSensorResource> resourceMap = new HashMap<>();
-                        resourceMap.put(sensor_type, sensor);
-
-                        SingletonDataCollector.getInstance().chargingStationMap.put(smartObjectId, chargingStation);
-
-                        //isAlarmNotified = false;
-                    }
-
-                    break;
-
-                case TemperatureSensorResource.RESOURCE_TYPE:
-
-                    break;
-                case VehiclePresenceSensorResource.RESOURCE_TYPE:
-
-                    break;
-                case ChargeStatusSensorResource.RESOURCE_TYPE:
-
-                    break;
-                case LedActuatorResource.RESOURCE_TYPE:
-
-                    break;
             }
         }
     }
 
     private static void updateParkingLotMap(String topic, MqttMessage msg) {
+        String[] parts = topic.split("/");
+        String smartObjectId = parts[5];
+        if(topic.contains(MqttSmartObject.GENERAL)){
+            Optional<GpsLocationDescriptor> generalMessageOptional = parseGeneralMessagePayload(msg);
+            //set gps location to a charging station
+            if (generalMessageOptional.isPresent() ) {
+                Double latitude = generalMessageOptional.get().getLatitude();
+                Double longitude = generalMessageOptional.get().getLongitude();
+                logger.info("New Parking Lot Gps Location Data Received. lat: {}, long: {}", latitude, longitude);
 
+                if ( !SingletonDataCollector.getInstance().parkingLotMap.containsKey(smartObjectId) ) {
+                    SmartObject smartObject = new SmartObject(smartObjectId, new GpsLocationDescriptor(latitude, longitude));
+                    SingletonDataCollector.getInstance().parkingLotMap.put(smartObjectId, smartObject);
+                }
+                else{
+                    SingletonDataCollector.getInstance().parkingLotMap.get(smartObjectId).setGpsLocation(new GpsLocationDescriptor(latitude, longitude));
+                }
+            }
+        }
+        else if(topic.contains(MqttSmartObject.TELEMETRY_TOPIC)) {
+            Optional<TelemetryMessage<?>> telemetryMessageOptional = parseTelemetryMessagePayload(msg);
+            SmartObjectResource<?> sensor = null;
+            long timestamp = telemetryMessageOptional.get().getTimestamp();
+            String sensor_type = telemetryMessageOptional.get().getType();
+            if (telemetryMessageOptional.isPresent() && telemetryMessageOptional.get().getType() != null) {
+                switch (telemetryMessageOptional.get().getType()) {
+                    case VehiclePresenceSensorResource.RESOURCE_TYPE:
+                        Boolean newVehiclePresenceValue = (Boolean) telemetryMessageOptional.get().getDataValue();
+                        sensor = new VehiclePresenceSensorResource(sensor_type, timestamp, newVehiclePresenceValue);
+                        logger.info("New Vehicle Presence Data Received : {}", newVehiclePresenceValue);
+                        break;
+
+                    case LedActuatorResource.RESOURCE_TYPE:
+                        Led newLedValue = (Led) telemetryMessageOptional.get().getDataValue();
+                        sensor = new LedActuatorResource(sensor_type, timestamp, newLedValue);
+                        logger.info("New Led Actuator Data Received : {}", newLedValue);
+                        break;
+                }
+
+                //If is the first value (parking lot not exists in DataCollector)
+                if (!SingletonDataCollector.getInstance().parkingLotMap.containsKey(smartObjectId) && sensor != null) {
+                    logger.info("New Energy Consumption Saved for: {}", topic);
+
+                    SmartObject chargingStation = new SmartObject(smartObjectId);
+                    Map<String, SmartObjectResource<?>> resourceMap = new HashMap<>();
+                    resourceMap.put(sensor_type, sensor);
+                    chargingStation.setResourceMap(resourceMap);
+                    SingletonDataCollector.getInstance().parkingLotMap.put(smartObjectId, chargingStation);
+                }
+                else{
+                    SingletonDataCollector.getInstance().parkingLotMap.get(smartObjectId).getResourceMap().put(sensor_type, sensor);
+                }
+
+            }
+        }
     }
 }

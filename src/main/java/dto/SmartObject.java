@@ -28,6 +28,13 @@ public class SmartObject {
         this.resourceMap = new HashMap<>();
     }
 
+    public SmartObject(String smartObjectId) {
+        this.smartObjectId = smartObjectId;
+        this.gpsLocation = null;
+        this.mapper = new ObjectMapper();
+        this.resourceMap = new HashMap<>();
+    }
+
     public String getSmartObjectId() {
         return smartObjectId;
     }
