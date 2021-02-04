@@ -10,7 +10,7 @@ public class TelemetryMessage<T> {
     @JsonProperty("type")
     private String type;
 
-    @JsonProperty("data")
+    @JsonProperty("dataValue")
     private T dataValue;
 
     public TelemetryMessage() {

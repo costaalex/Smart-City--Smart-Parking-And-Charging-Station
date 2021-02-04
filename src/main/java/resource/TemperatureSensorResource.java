@@ -2,6 +2,7 @@ package resource;
 
 import model.ChargeStatusDescriptor;
 import model.GpsLocationDescriptor;
+import model.Led;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,6 +36,11 @@ public class TemperatureSensorResource extends SmartObjectResource<Double> imple
     public TemperatureSensorResource() {
         super(UUID.randomUUID().toString(), TemperatureSensorResource.RESOURCE_TYPE);
         init();
+    }
+
+    public TemperatureSensorResource(String type, long timestamp, Double updatedTemperatureSensorValue) {  // server side
+        super(type, timestamp);
+        this.updatedTemperatureSensorValue = updatedTemperatureSensorValue;
     }
 
     public TemperatureSensorResource(String id, String type, Double temperatureSensorValue) {

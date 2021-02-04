@@ -27,7 +27,7 @@ public class EnergyConsumptionSensorResource extends SmartObjectResource<Double>
 
     private static final long TASK_DELAY_TIME = 0;
 
-    public static final String RESOURCE_TYPE = "iot.sensor.energy_consumption";
+    public static final String RESOURCE_TYPE = "iot:sensor:energy_consumption";
 
     private Double updatedValue;
 
@@ -40,6 +40,11 @@ public class EnergyConsumptionSensorResource extends SmartObjectResource<Double>
     public EnergyConsumptionSensorResource() {
         super(UUID.randomUUID().toString(), RESOURCE_TYPE);
         init();
+    }
+
+    public EnergyConsumptionSensorResource(String type, long timestamp, Double updatedValue) {
+        super(type, timestamp);
+        this.updatedValue = updatedValue;
     }
 
     private void init(){

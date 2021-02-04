@@ -15,14 +15,28 @@ public abstract class SmartObjectResource<T> {
 
     private String type;
     private String id;
+    private long timestamp;
+
 
     public SmartObjectResource() {
         this.resourceListenerList = new ArrayList<>();
     }
 
+    public SmartObjectResource(String type, long timestamp) {
+        this.type = type;
+        this.timestamp = timestamp;
+    }
+
     public SmartObjectResource(String id, String type) {
         this.id = id;
         this.type = type;
+        this.resourceListenerList = new ArrayList<>();
+    }
+
+    public SmartObjectResource(String id, String type, long timestamp) {
+        this.id = id;
+        this.type = type;
+        this.timestamp = timestamp;
         this.resourceListenerList = new ArrayList<>();
     }
 
@@ -62,6 +76,14 @@ public abstract class SmartObjectResource<T> {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public long getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
     }
 
     @Override

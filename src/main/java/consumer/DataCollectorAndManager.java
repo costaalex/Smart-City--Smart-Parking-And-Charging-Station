@@ -1,17 +1,20 @@
 package consumer;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import device.ChargingStationMqttSmartObject;
-import device.ParkingLotMqttSmartObject;
-import org.eclipse.paho.client.mqttv3.IMqttClient;
-import org.eclipse.paho.client.mqttv3.MqttClient;
-import org.eclipse.paho.client.mqttv3.MqttClientPersistence;
-import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
+import dto.SingletonDataCollector;
+import dto.SmartObject;
+import message.TelemetryMessage;
+import model.GpsLocationDescriptor;
+import org.eclipse.paho.client.mqttv3.*;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import resource.*;
 
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import static device.ChargingStationMqttSmartObject.CHARGING_TOPIC;
@@ -30,9 +33,6 @@ public class DataCollectorAndManager {
     private static final String TARGET_TOPIC = "#";
 
     private static ObjectMapper mapper;
-
-    private HashMap<String, ChargingStationMqttSmartObject> chargingStationMap;
-    private HashMap<String, ParkingLotMqttSmartObject> parkingLotMap;
 
     public static void main(String [ ] args) {
 
@@ -77,9 +77,9 @@ public class DataCollectorAndManager {
                 logger.info("Message Received -> Topic: {} - Payload: {}", topic, new String(payload));
 
                 if (topic.contains(CHARGING_TOPIC))
-                    updateChargingStationMap();
+                    updateChargingStationMap(topic, msg);
                 else if (topic.contains(PARKING_TOPIC))
-                    updateParkingLotMap();
+                    updateParkingLotMap(topic, msg);
 
             });
 
@@ -89,11 +89,71 @@ public class DataCollectorAndManager {
 
     }
 
-    private static void updateChargingStationMap() {
 
+    private static Optional<TelemetryMessage<?>> parseTelemetryMessagePayload(MqttMessage mqttMessage){
+        try{
+            if(mqttMessage == null)
+                return Optional.empty();
+
+            byte[] payloadByteArray = mqttMessage.getPayload();
+            String payloadString = new String(payloadByteArray);
+
+            return Optional.ofNullable(mapper.readValue(payloadString, new TypeReference<TelemetryMessage<?>>() {}));
+
+        }catch (Exception e){
+            return Optional.empty();
+        }
     }
 
-    private static void updateParkingLotMap() {
+    private static void updateChargingStationMap(String topic, MqttMessage msg) {
+        String[] parts = topic.split("/");
+        String smartObjectId = parts[6];
+
+        Optional<TelemetryMessage<?>> telemetryMessageOptional = parseTelemetryMessagePayload(msg);
+
+        if(telemetryMessageOptional.isPresent() ) {
+            switch (telemetryMessageOptional.get().getType()) {
+                case EnergyConsumptionSensorResource.RESOURCE_TYPE:
+                    Double newValue = (Double) telemetryMessageOptional.get().getDataValue();
+                    long timestamp = telemetryMessageOptional.get().getTimestamp();
+                    String sensor_type = telemetryMessageOptional.get().getType();
+
+                    logger.info("New Energy Consumption Data Received : {}", newValue);
+
+                    //If is the first value
+                    if (!SingletonDataCollector.getInstance().chargingStationMap.containsKey(smartObjectId)) {
+                        logger.info("New Battery Level Saved for: {}", topic);
+
+                        SmartObject chargingStation = new SmartObject(smartObjectId, new GpsLocationDescriptor(/*latitude, longitude*/));
+                        EnergyConsumptionSensorResource sensor = new EnergyConsumptionSensorResource(sensor_type, timestamp, newValue);
+
+                        Map<String, EnergyConsumptionSensorResource> resourceMap = new HashMap<>();
+                        resourceMap.put(sensor_type, sensor);
+
+                        SingletonDataCollector.getInstance().chargingStationMap.put(smartObjectId, chargingStation);
+
+                        //isAlarmNotified = false;
+                    }
+
+                    break;
+
+                case TemperatureSensorResource.RESOURCE_TYPE:
+
+                    break;
+                case VehiclePresenceSensorResource.RESOURCE_TYPE:
+
+                    break;
+                case ChargeStatusSensorResource.RESOURCE_TYPE:
+
+                    break;
+                case LedActuatorResource.RESOURCE_TYPE:
+
+                    break;
+            }
+        }
+    }
+
+    private static void updateParkingLotMap(String topic, MqttMessage msg) {
 
     }
 }

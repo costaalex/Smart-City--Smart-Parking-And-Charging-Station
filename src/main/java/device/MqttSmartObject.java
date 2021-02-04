@@ -14,7 +14,7 @@ import java.util.Map;
 import static process.SmartObjectProcess.MQTT_USERNAME;
 
 public abstract class MqttSmartObject {
-    protected static final String BASIC_TOPIC = "/iot/user/" + MQTT_USERNAME + "/smartcity";
+    protected static final String BASIC_TOPIC = "iot/user/" + MQTT_USERNAME + "/smartcity";
 
     protected static final String TELEMETRY_TOPIC = "telemetry";
 
@@ -35,8 +35,6 @@ public abstract class MqttSmartObject {
     private IMqttClient mqttClient;
 
     private Map<String, SmartObjectResource<?>> resourceMap;
-
-    private Logger logger;
 
     public MqttSmartObject() {
         this.mapper = new ObjectMapper();

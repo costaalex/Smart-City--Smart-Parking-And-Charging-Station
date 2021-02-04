@@ -33,6 +33,11 @@ public class ChargeStatusSensorResource extends SmartObjectResource<ChargeStatus
         init();
     }
 
+    public ChargeStatusSensorResource(String type, long timestamp, ChargeStatusDescriptor updatedChargeStatus) {
+        super(type, timestamp);
+        this.updatedChargeStatus = updatedChargeStatus;
+    }
+
     public ChargeStatusSensorResource(String id, String type, ChargeStatusDescriptor updatedChargeStatus) {
         super(id, type);
         this.updatedChargeStatus = updatedChargeStatus;

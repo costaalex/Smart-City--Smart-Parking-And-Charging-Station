@@ -19,6 +19,11 @@ public class LedActuatorResource extends SmartObjectResource<Led>{
         this.isActive = Led.GREEN;
     }
 
+    public LedActuatorResource(String type, long timestamp, Led isActive) {  // server side
+        super(type, timestamp);
+        this.isActive = isActive;
+    }
+
     public Led getIsActive() {
         return isActive;
     }
