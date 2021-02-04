@@ -16,6 +16,13 @@ public class AverageParkingDuration {
         return sumParkingDuration;
     }
 
+    public Double addParkingDuration(Double parkingDuration){
+        sumParkingDuration += parkingDuration;
+        occurrences++;
+
+        return getAverageParkingDuration();
+    }
+
     public void setSumParkingDuration(Double sumParkingDuration) {
         this.sumParkingDuration = sumParkingDuration;
     }

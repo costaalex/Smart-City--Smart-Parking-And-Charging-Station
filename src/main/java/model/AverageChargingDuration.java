@@ -18,6 +18,13 @@ public class AverageChargingDuration {
         return sumChargingDuration;
     }
 
+    public Double addChargingDuration(Double chargingDuration){
+        sumChargingDuration += chargingDuration;
+        occurrences++;
+
+        return getAverageChargingDuration();
+    }
+
     public void setSumChargingDuration(Double sumChargingDuration) {
         this.sumChargingDuration = sumChargingDuration;
     }
