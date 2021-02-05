@@ -46,7 +46,7 @@ public class SmartObjectApi {
             SmartObjectTypeDescriptor smartObjectType = null;
 
             if (type != null) {
-                if (type.equals("parkinglot"))
+                if (type.equals("parking_lot"))
                     smartObjectType = SmartObjectTypeDescriptor.PARKING_LOT;
                 else if (type.equals("charging_station"))
                     smartObjectType = SmartObjectTypeDescriptor.CHARGING_STATION;

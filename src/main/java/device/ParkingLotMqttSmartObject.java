@@ -19,7 +19,7 @@ import java.util.Map;
 public class ParkingLotMqttSmartObject extends MqttSmartObject{
         private static final Logger logger = LoggerFactory.getLogger(ChargingStationMqttSmartObject.class);
 
-        public static final String PARKING_TOPIC = BASIC_TOPIC + "/parkinglot";
+        public static final String PARKING_TOPIC = BASIC_TOPIC + "/parking_lot";
 
         /**
          * Init the charging station smart object with its ID, the MQTT Client and the Map of managed resources
@@ -175,12 +175,6 @@ public class ParkingLotMqttSmartObject extends MqttSmartObject{
         else
             logger.error("Error: Topic or Msg = Null or MQTT Client is not Connected !");
     }
-        /**
-         * Stop the emulated Smart Object
-         */
-        public void stop(){
-            //TODO Implement a proper closing method
-        }
 
     public void publishGeneralData(String topic, GpsLocationDescriptor gpsLocationDescriptor) throws MqttException, JsonProcessingException {
 
@@ -203,5 +197,11 @@ public class ParkingLotMqttSmartObject extends MqttSmartObject{
             logger.error("Error: Topic or Msg = Null or MQTT Client is not Connected !");
     }
 
+    /**
+     * Stop the emulated Smart Object
+     */
+    public void stop(){
+        //TODO Implement a proper closing method
+    }
 
 }
