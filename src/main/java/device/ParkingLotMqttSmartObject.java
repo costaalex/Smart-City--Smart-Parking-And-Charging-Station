@@ -135,6 +135,7 @@ public class ParkingLotMqttSmartObject extends MqttSmartObject{
                         if(smartObjectResource.getType().equals(LedActuatorResource.RESOURCE_TYPE)){
 
                             LedActuatorResource ledActuatorResource = (LedActuatorResource)smartObjectResource;
+                            ledActuatorResource.addDataListener((ResourceDataListener<Led>) super.getResourceMap().get("vehicle_presence"));
                             ledActuatorResource.addDataListener(new ResourceDataListener<Led>() {
                                 @Override
                                 public void onDataChanged(SmartObjectResource<Led> resource, Led updatedValue) {
