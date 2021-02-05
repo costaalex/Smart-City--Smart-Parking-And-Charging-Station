@@ -234,7 +234,7 @@ public class DataCollectorAndManager {
 
         if(lastParkingDurationForParkingLotSeconds != 0) {
             Double newOverallAverageParkingDuration = SingletonDataCollector.getInstance().averageParkingDurationDescriptor.addParkingDurationSeconds(lastParkingDurationForParkingLotSeconds);
-            logger.info("New Overall Charging Average {} seconds.", newOverallAverageParkingDuration);
+            logger.info("New Overall Parking Average {} seconds.", newOverallAverageParkingDuration);
         }
     }
 
