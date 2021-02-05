@@ -14,10 +14,10 @@ public class DefaultSmartObjectDataManager implements ISmartObjectDataManager{
     SingletonDataCollector single_instance = SingletonDataCollector.getInstance();
 
     @Override
-    public Optional<GpsLocationDescriptor> getSmartObjectLocationList() {
+    public Optional<Map<String, GpsLocationDescriptor>> getSmartObjectLocationList() {
         if (single_instance == null)
             return Optional.empty();
-        //Iterare sulla mappa e prendere gps
+        //Iterare sulla mappa e prendere coppie id, gps
         return Optional.empty();
     }
 
@@ -27,16 +27,6 @@ public class DefaultSmartObjectDataManager implements ISmartObjectDataManager{
             return Optional.empty();
 
         return Optional.ofNullable(single_instance.smartObjectsMap.get(id));
-    }
-
-    @Override
-    public Optional<Map<String, SmartObject>> getSensorBySmartObjectId(String sensorType) {
-        if (single_instance == null)
-            return Optional.empty();
-
-        single_instance.smartObjectsMap.get("ss").getResourceMap().get("mcd");
-
-        return Optional.empty();
     }
 
     @Override
