@@ -140,7 +140,7 @@ public class DataCollectorAndManager {
                     if(topic.contains(CHARGING_TOPIC))
                         smartObject = new SmartObject(smartObjectId, new GpsLocationDescriptor(latitude, longitude), SmartObjectTypeDescriptor.CHARGING_STATION);
                     else
-                        smartObject = new SmartObject(smartObjectId, new GpsLocationDescriptor(latitude, longitude), SmartObjectTypeDescriptor.PPARKING_LOT);
+                        smartObject = new SmartObject(smartObjectId, new GpsLocationDescriptor(latitude, longitude), SmartObjectTypeDescriptor.PARKING_LOT);
                     SingletonDataCollector.getInstance().smartObjectsMap.put(smartObjectId, smartObject);
                 }
                 else{
@@ -193,7 +193,7 @@ public class DataCollectorAndManager {
                     if(topic.contains(CHARGING_TOPIC))
                         smartObject = new SmartObject(smartObjectId, SmartObjectTypeDescriptor.CHARGING_STATION);
                     else
-                        smartObject = new SmartObject(smartObjectId, SmartObjectTypeDescriptor.PPARKING_LOT);
+                        smartObject = new SmartObject(smartObjectId, SmartObjectTypeDescriptor.PARKING_LOT);
 
                     Map<String, SmartObjectResource<?>> resourceMap = new HashMap<>();
                     resourceMap.put(sensor_type, sensor);

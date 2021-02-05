@@ -8,7 +8,7 @@ import java.util.Map;
 
 public class SingletonDataCollector {
     // static variable single_instance of type Singleton
-    static SingletonDataCollector single_instance = null;
+    private static SingletonDataCollector single_instance = null;
 
     public Map<String, SmartObject> smartObjectsMap;             //key: idSmartObject, value: SmartObject
 
