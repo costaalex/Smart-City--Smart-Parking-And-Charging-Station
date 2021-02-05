@@ -18,7 +18,14 @@ public class DefaultSmartObjectDataManager implements ISmartObjectDataManager{
         if (single_instance == null)
             return Optional.empty();
         //Iterare sulla mappa e prendere coppie id, gps
-        return Optional.empty();
+        Map<String, SmartObject> smartObjectsMap = single_instance.smartObjectsMap;
+        Map<String, GpsLocationDescriptor> smartObjectsLocationMap = new HashMap<>();
+        for (Map.Entry<String, SmartObject> entry : smartObjectsMap.entrySet()) {
+            String smartObjectId = entry.getKey();
+            GpsLocationDescriptor gpsLocationDescriptor = entry.getValue().getGpsLocation();
+            smartObjectsLocationMap.put(smartObjectId, gpsLocationDescriptor);
+        }
+        return  Optional.ofNullable(smartObjectsLocationMap);
     }
 
     @Override
