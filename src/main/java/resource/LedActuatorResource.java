@@ -5,18 +5,22 @@ import model.Led;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Random;
 import java.util.UUID;
 
-public class LedActuatorResource extends SmartObjectResource<Led>{
+public class LedActuatorResource extends SmartObjectResource<Led> implements ResourceDataListener<Boolean>{
     private static Logger logger = LoggerFactory.getLogger(Led.class);
 
     public static final String RESOURCE_TYPE = "iot.actuator.led";
 
     private Led isActive;
 
+    private Random random = null;
+
     public LedActuatorResource() {
         super(UUID.randomUUID().toString(), RESOURCE_TYPE);
         this.isActive = Led.GREEN;
+
     }
 
     public LedActuatorResource(String type, long timestamp, Led isActive) {  // server side
@@ -37,6 +41,23 @@ public class LedActuatorResource extends SmartObjectResource<Led>{
     public Led loadUpdatedValue() {
         return this.isActive;
     }
+
+    @Override
+    public void onDataChanged(SmartObjectResource<Boolean> smartObjectResource, Boolean updatedValue) {
+        if (smartObjectResource != null && smartObjectResource.getType().equals(VehiclePresenceSensorResource.RESOURCE_TYPE)) {
+            if (updatedValue == true) {     //If a new vehicle arrived, set led red
+                logger.info("Vehicle detected by sensor: {}.. setting parking led RED.", smartObjectResource.getId());
+                isActive = Led.RED;
+            }
+            else      //If the parking lot is empty, set led GREEN or YELLOW
+                this.random = new Random(System.currentTimeMillis());
+                if (random.nextBoolean())
+                    isActive = Led.GREEN;
+                else
+                    isActive = Led.YELLOW;
+        }
+    }
+
 
     public static void main(String[] args) {
 
