@@ -81,6 +81,6 @@ public class AverageParkingDurationDescriptor {
         if(occurrences > 0)
             return Math.floor(sumParkingDurationMillis / 1.0) / 1000.0 / occurrences;
         else
-            return null;
+            return 0.0;
     }
 }
