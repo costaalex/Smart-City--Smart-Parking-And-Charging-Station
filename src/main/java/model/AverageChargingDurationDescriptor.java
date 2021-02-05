@@ -40,6 +40,8 @@ public class AverageChargingDurationDescriptor {
                 occurrences++;
                 LoggerFactory.getLogger(DataCollectorAndManager.class).info("---lastChargingStartTimestamp: {}, actual: {}, sumChargingDurationMinutes : {}, sum: {}",lastChargingStartTimestamp, timestamp, diffInMillis, sumChargingDurationMillis);
                 lastChargeStatus = newChargeStatus;
+
+                return diffInMillis * 1000.0; // return last charging duration in seconds
             } //if started charging
             else if((lastChargeStatus == ChargeStatusDescriptor.PLUGGED || lastChargeStatus == ChargeStatusDescriptor.UNPLUGGED)
                     && newChargeStatus == ChargeStatusDescriptor.CHARGING){
@@ -52,7 +54,7 @@ public class AverageChargingDurationDescriptor {
             lastChargingStartTimestamp = timestamp;
         }
 
-        return getAverageChargingDurationSeconds();
+        return 0.0;
     }
     public Double addChargingDurationSeconds(Double chargingDurationSeconds){
         sumChargingDurationMillis += chargingDurationSeconds * 1000;
