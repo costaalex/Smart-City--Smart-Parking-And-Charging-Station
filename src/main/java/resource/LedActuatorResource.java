@@ -49,7 +49,7 @@ public class LedActuatorResource extends SmartObjectResource<Led> implements Res
             }
             else      //If the parking lot is empty, set led GREEN
                 isActive = Led.GREEN;
-
+            notify();
         }
     }
 
