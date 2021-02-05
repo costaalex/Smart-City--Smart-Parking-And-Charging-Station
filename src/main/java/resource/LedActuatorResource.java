@@ -15,8 +15,6 @@ public class LedActuatorResource extends SmartObjectResource<Led> implements Res
 
     private Led isActive;
 
-    private Random random = null;
-
     public LedActuatorResource() {
         super(UUID.randomUUID().toString(), RESOURCE_TYPE);
         this.isActive = Led.GREEN;
@@ -49,12 +47,9 @@ public class LedActuatorResource extends SmartObjectResource<Led> implements Res
                 logger.info("Vehicle detected by sensor: {}.. setting parking led RED.", smartObjectResource.getId());
                 isActive = Led.RED;
             }
-            else      //If the parking lot is empty, set led GREEN or YELLOW
-                this.random = new Random(System.currentTimeMillis());
-                if (random.nextBoolean())
-                    isActive = Led.GREEN;
-                else
-                    isActive = Led.YELLOW;
+            else      //If the parking lot is empty, set led GREEN
+                isActive = Led.GREEN;
+
         }
     }
 
