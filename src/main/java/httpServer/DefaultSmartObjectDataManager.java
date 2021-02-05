@@ -6,6 +6,7 @@ import model.GpsLocationDescriptor;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.BiConsumer;
 
 public class DefaultSmartObjectDataManager implements ISmartObjectDataManager{
     SingletonDataCollector single_instance = SingletonDataCollector.getInstance();
@@ -38,6 +39,8 @@ public class DefaultSmartObjectDataManager implements ISmartObjectDataManager{
         if (single_instance == null)
             return Optional.empty();
 
+        single_instance.smartObjectsMap.get("ss").getResourceMap().get("mcd");
+
         return Optional.empty();
     }
 
@@ -45,6 +48,10 @@ public class DefaultSmartObjectDataManager implements ISmartObjectDataManager{
     public Optional<Map<String, SmartObject>> getChargingStationList() {
         if (single_instance == null)
             return Optional.empty();
+
+        Map<String, SmartObject> smartObjectsMap = single_instance.smartObjectsMap;
+
+
 
         return Optional.empty();
     }
