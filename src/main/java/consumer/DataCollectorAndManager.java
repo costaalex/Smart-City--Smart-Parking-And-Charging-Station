@@ -189,13 +189,17 @@ public class DataCollectorAndManager {
                         Boolean newVehiclePresenceValue = (Boolean) telemetryMessageOptional.get().getDataValue();
                         sensor = new VehiclePresenceSensorResource(sensor_type, timestamp, newVehiclePresenceValue);
                         logger.info("New Vehicle Presence Data Received : {}", newVehiclePresenceValue);
+
+                        if(topic.contains(PARKING_TOPIC))
+                            updateParkingDurationAverage(newVehiclePresenceValue, timestamp, smartObjectId);
+
                         break;
                     case ChargeStatusSensorResource.RESOURCE_TYPE:
                         ChargeStatusDescriptor newChargeStatusValue = ChargeStatusDescriptor.valueOf(telemetryMessageOptional.get().getDataValue().toString());
                         sensor = new ChargeStatusSensorResource(sensor_type, timestamp, newChargeStatusValue);
                         logger.info("New Charge Status Data Received : {}", newChargeStatusValue);
 
-                        updateChargindDurationAverage(newChargeStatusValue, timestamp, smartObjectId);
+                        updateChargingDurationAverage(newChargeStatusValue, timestamp, smartObjectId);
 
                         break;
                     case LedActuatorResource.RESOURCE_TYPE:
@@ -212,15 +216,25 @@ public class DataCollectorAndManager {
             }
         }
     }
-    private static void updateChargindDurationAverage(ChargeStatusDescriptor newChargeStatusValue, long timestamp, String smartObjectId){
+    private static void updateChargingDurationAverage(ChargeStatusDescriptor newChargeStatusValue, long timestamp, String smartObjectId){
         //add charging duration to a specific charging station and calculate new average
-        Double lastChargingDurationForStation = SingletonDataCollector.getInstance().smartObjectsMap.get(smartObjectId).getAverageChargingDurationDescriptor().addChargingDurationFromStatusAndTimestamp(newChargeStatusValue, timestamp);
+        Double lastChargingDurationForStationSeconds = SingletonDataCollector.getInstance().smartObjectsMap.get(smartObjectId).getAverageChargingDurationDescriptor().addChargingDurationFromStatusAndTimestamp(newChargeStatusValue, timestamp);
         logger.info("New Average Charging duration for: {}: {} seconds.", smartObjectId, SingletonDataCollector.getInstance().smartObjectsMap.get(smartObjectId).getAverageChargingDurationDescriptor().getAverageChargingDurationSeconds());
 
         //calculate new overall charging average
-        if(lastChargingDurationForStation != 0) {
-            Double newOverallAverageChargingDuration = SingletonDataCollector.getInstance().averageChargingDurationDescriptor.addChargingDurationSeconds(lastChargingDurationForStation);
+        if(lastChargingDurationForStationSeconds != 0) {
+            Double newOverallAverageChargingDuration = SingletonDataCollector.getInstance().averageChargingDurationDescriptor.addChargingDurationSeconds(lastChargingDurationForStationSeconds);
             logger.info("New Overall Charging Average {} seconds.", newOverallAverageChargingDuration);
+        }
+    }
+    private static void updateParkingDurationAverage(Boolean newParkingStatusValue, long timestamp, String smartObjectId){
+        Double lastParkingDurationForParkingLotSeconds = SingletonDataCollector.getInstance().smartObjectsMap.get(smartObjectId).getAverageParkingDurationDescriptor().addParkingDurationFromStatusAndTimestamp(newParkingStatusValue, timestamp);
+        logger.info("New Average Parking duration for: {}: {} seconds.", smartObjectId, SingletonDataCollector.getInstance().smartObjectsMap.get(smartObjectId).getAverageParkingDurationDescriptor().getAverageParkingDurationSeconds());
+        //calculate new overall charging average
+
+        if(lastParkingDurationForParkingLotSeconds != 0) {
+            Double newOverallAverageParkingDuration = SingletonDataCollector.getInstance().averageParkingDurationDescriptor.addParkingDurationSeconds(lastParkingDurationForParkingLotSeconds);
+            logger.info("New Overall Charging Average {} seconds.", newOverallAverageParkingDuration);
         }
     }
 
