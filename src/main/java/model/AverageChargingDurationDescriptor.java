@@ -30,7 +30,7 @@ public class AverageChargingDurationDescriptor {
         return sumChargingDurationMillis / 1000.0;
     }
 
-    public Double addChargingDuration(ChargeStatusDescriptor newChargeStatus, long timestamp){
+    public Double addChargingDurationFromStatusAndTimestamp(ChargeStatusDescriptor newChargeStatus, long timestamp){
         if(lastChargingStartTimestamp != -1){
             //if not charging anymore calculate occupation time and
             if(lastChargeStatus == ChargeStatusDescriptor.CHARGING
@@ -54,6 +54,12 @@ public class AverageChargingDurationDescriptor {
 
         return getAverageChargingDurationSeconds();
     }
+    public Double addChargingDurationSeconds(Double chargingDurationSeconds){
+        sumChargingDurationMillis += chargingDurationSeconds * 1000;
+        occurrences++;
+        return getAverageChargingDurationSeconds();
+    }
+
 
     public static long getDateDiff(long timeUpdate, long timeNow, TimeUnit timeUnit)
     {

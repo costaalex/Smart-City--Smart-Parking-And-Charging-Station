@@ -193,11 +193,10 @@ public class DataCollectorAndManager {
                     case ChargeStatusSensorResource.RESOURCE_TYPE:
                         ChargeStatusDescriptor newChargeStatusValue = ChargeStatusDescriptor.valueOf(telemetryMessageOptional.get().getDataValue().toString());
                         sensor = new ChargeStatusSensorResource(sensor_type, timestamp, newChargeStatusValue);
-
-                        Double newAverageChargingDuration = smartObjectsMapSingleton.get(smartObjectId).getAverageChargingDurationDescriptor().addChargingDuration(newChargeStatusValue, timestamp);
-
                         logger.info("New Charge Status Data Received : {}", newChargeStatusValue);
-                        logger.info("New Average Charging duration for: {}: {} seconds.", smartObjectId, newAverageChargingDuration);
+
+                        updateChargindDurationAverage(newChargeStatusValue, timestamp, smartObjectId);
+
                         break;
                     case LedActuatorResource.RESOURCE_TYPE:
                         Led newLedValue = Led.valueOf(telemetryMessageOptional.get().getDataValue().toString());
@@ -211,6 +210,17 @@ public class DataCollectorAndManager {
 
 
             }
+        }
+    }
+    private static void updateChargindDurationAverage(ChargeStatusDescriptor newChargeStatusValue, long timestamp, String smartObjectId){
+        //add charging duration to a specific charging station and calculate new average
+        Double newAverageChargingDurationForStation = SingletonDataCollector.getInstance().smartObjectsMap.get(smartObjectId).getAverageChargingDurationDescriptor().addChargingDurationFromStatusAndTimestamp(newChargeStatusValue, timestamp);
+        logger.info("New Average Charging duration for: {}: {} seconds.", smartObjectId, newAverageChargingDurationForStation);
+
+        //calculate new overall charging average
+        if(newAverageChargingDurationForStation != 0) {
+            Double newOverallAverageChargingDuration = SingletonDataCollector.getInstance().averageChargingDurationDescriptor.addChargingDurationSeconds(newAverageChargingDurationForStation);
+            logger.info("New Overall Charging Average {} seconds.", newOverallAverageChargingDuration);
         }
     }
 
