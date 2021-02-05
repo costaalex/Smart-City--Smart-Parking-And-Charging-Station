@@ -1,7 +1,7 @@
 package dto;
 
-import device.ChargingStationMqttSmartObject;
-import device.ParkingLotMqttSmartObject;
+import model.AverageChargingDurationDescriptor;
+import model.AverageParkingDurationDescriptor;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,11 +12,15 @@ public class SingletonDataCollector {
 
     public Map<String, SmartObject> smartObjectsMap;             //key: idSmartObject, value: SmartObject
 
+    public AverageChargingDurationDescriptor averageChargingDurationDescriptor;
+    public AverageParkingDurationDescriptor averageParkingDurationDescriptor;
 
     // private constructor restricted to this class itself
     private SingletonDataCollector()
     {
         smartObjectsMap = new HashMap<>();
+        averageChargingDurationDescriptor = new AverageChargingDurationDescriptor();
+        averageParkingDurationDescriptor = new AverageParkingDurationDescriptor();
     }
 
     // static method to create instance of Singleton class

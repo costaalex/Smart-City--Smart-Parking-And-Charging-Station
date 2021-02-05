@@ -20,7 +20,7 @@ public class ChargeStatusSensorResource extends SmartObjectResource<ChargeStatus
 
     private static final long UPDATE_PERIOD = 5000; //10 Seconds
 
-    private static final long TASK_DELAY_TIME = 0; //5 Seconds before starting the periodic update task
+    private static final long TASK_DELAY_TIME = 5000; //5 Seconds before starting the periodic update task
 
     private static final Integer CHARGING_IF_PRESENT_PROBABILITY = 4;
 

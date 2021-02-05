@@ -25,7 +25,7 @@ public class EnergyConsumptionSensorResource extends SmartObjectResource<Double>
     //Ms associated to data update
     private static final long UPDATE_PERIOD = 5000;
 
-    private static final long TASK_DELAY_TIME = 0;
+    private static final long TASK_DELAY_TIME = 5000;
 
     public static final String RESOURCE_TYPE = "iot:sensor:energy_consumption";
 

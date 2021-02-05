@@ -1,15 +1,17 @@
 package model;
 
-public class AverageParkingDuration {
+public class AverageParkingDurationDescriptor {
     private Double sumParkingDuration;
     private Integer occurrences;
 
-    public AverageParkingDuration(Double sumParkingDuration, Integer occurrences) {
+    public AverageParkingDurationDescriptor(Double sumParkingDuration, Integer occurrences) {
         this.sumParkingDuration = sumParkingDuration;
         this.occurrences = occurrences;
     }
 
-    public AverageParkingDuration() {
+    public AverageParkingDurationDescriptor() {
+        sumParkingDuration = 0.0;
+        occurrences = 0;
     }
 
     public Double getSumParkingDuration() {

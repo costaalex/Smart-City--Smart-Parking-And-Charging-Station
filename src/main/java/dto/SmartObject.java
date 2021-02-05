@@ -1,6 +1,8 @@
 package dto;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import model.AverageChargingDurationDescriptor;
+import model.AverageParkingDurationDescriptor;
 import model.GpsLocationDescriptor;
 import model.SmartObjectTypeDescriptor;
 import resource.SmartObjectResource;
@@ -20,8 +22,13 @@ public class SmartObject {
 
     private Map<String, SmartObjectResource<?>> resourceMap;  //key = sensor_type, value = sensor
 
+    public AverageChargingDurationDescriptor averageChargingDurationDescriptor;
+    public AverageParkingDurationDescriptor averageParkingDurationDescriptor;
+
     public SmartObject() {
         this.mapper = new ObjectMapper();
+        averageChargingDurationDescriptor = new AverageChargingDurationDescriptor();
+        averageParkingDurationDescriptor = new AverageParkingDurationDescriptor();
     }
 
     public SmartObject(String smartObjectId, GpsLocationDescriptor gpsLocation, SmartObjectTypeDescriptor smartObjectType) {
@@ -29,6 +36,8 @@ public class SmartObject {
         this.gpsLocation = gpsLocation;
         this.mapper = new ObjectMapper();
         this.resourceMap = new HashMap<>();
+        averageChargingDurationDescriptor = new AverageChargingDurationDescriptor();
+        averageParkingDurationDescriptor = new AverageParkingDurationDescriptor();
     }
 
     public SmartObject(String smartObjectId, SmartObjectTypeDescriptor smartObjectType) {
@@ -36,8 +45,26 @@ public class SmartObject {
         this.gpsLocation = null;
         this.mapper = new ObjectMapper();
         this.resourceMap = new HashMap<>();
+        averageChargingDurationDescriptor = new AverageChargingDurationDescriptor();
+        averageParkingDurationDescriptor = new AverageParkingDurationDescriptor();
     }
 
+    public AverageChargingDurationDescriptor getAverageChargingDurationDescriptor() {
+        return averageChargingDurationDescriptor;
+    }
+
+    public AverageParkingDurationDescriptor getAverageParkingDurationDescriptor() {
+        return averageParkingDurationDescriptor;
+    }
+   /*
+    public void setAverageChargingDurationDescriptor(AverageChargingDurationDescriptor averageChargingDurationDescriptor) {
+        this.averageChargingDurationDescriptor = averageChargingDurationDescriptor;
+    }
+
+    public void setAverageParkingDurationDescriptor(AverageParkingDurationDescriptor averageParkingDurationDescriptor) {
+        this.averageParkingDurationDescriptor = averageParkingDurationDescriptor;
+    }
+*/
     public String getSmartObjectId() {
         return smartObjectId;
     }
