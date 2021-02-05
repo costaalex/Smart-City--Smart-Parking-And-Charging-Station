@@ -36,6 +36,7 @@ public class SmartObject {
         this.gpsLocation = gpsLocation;
         this.mapper = new ObjectMapper();
         this.resourceMap = new HashMap<>();
+        this.smartObjectType = smartObjectType;
         averageChargingDurationDescriptor = new AverageChargingDurationDescriptor();
         averageParkingDurationDescriptor = new AverageParkingDurationDescriptor();
     }
@@ -45,6 +46,7 @@ public class SmartObject {
         this.gpsLocation = null;
         this.mapper = new ObjectMapper();
         this.resourceMap = new HashMap<>();
+        this.smartObjectType = smartObjectType;
         averageChargingDurationDescriptor = new AverageChargingDurationDescriptor();
         averageParkingDurationDescriptor = new AverageParkingDurationDescriptor();
     }
@@ -65,6 +67,15 @@ public class SmartObject {
         this.averageParkingDurationDescriptor = averageParkingDurationDescriptor;
     }
 */
+
+    public SmartObjectTypeDescriptor getSmartObjectType() {
+        return smartObjectType;
+    }
+
+    public void setSmartObjectType(SmartObjectTypeDescriptor smartObjectType) {
+        this.smartObjectType = smartObjectType;
+    }
+
     public String getSmartObjectId() {
         return smartObjectId;
     }

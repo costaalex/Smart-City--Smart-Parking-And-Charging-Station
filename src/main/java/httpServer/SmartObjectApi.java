@@ -57,12 +57,12 @@ public class SmartObjectApi {
 
             //No filter applied
             if(smartObjectType == null)
-                smartObjectList = this.conf.getInventoryDataManager().getSmartObjectList();
+                smartObjectList = this.conf.getInventoryDataManager().getSmartObjectsList();
             else if(smartObjectType == SmartObjectTypeDescriptor.PARKING_LOT) {
-                smartObjectList = this.conf.getInventoryDataManager().getParkingLotList();
+                smartObjectList = this.conf.getInventoryDataManager().getSmartObjectsList(SmartObjectTypeDescriptor.PARKING_LOT);
             }
             else if(smartObjectType == SmartObjectTypeDescriptor.CHARGING_STATION) {
-                smartObjectList = this.conf.getInventoryDataManager().getChargingStationList();
+                smartObjectList = this.conf.getInventoryDataManager().getSmartObjectsList(SmartObjectTypeDescriptor.CHARGING_STATION);
             }
             else
                 return Response.status(Response.Status.BAD_REQUEST).type(MediaType.APPLICATION_JSON_TYPE).entity(new ErrorMessage(Response.Status.BAD_REQUEST.getStatusCode(),"Type is not valid !")).build();
