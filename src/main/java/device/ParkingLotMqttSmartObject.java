@@ -117,6 +117,7 @@ public class ParkingLotMqttSmartObject extends MqttSmartObject{
                         if(smartObjectResource.getType().equals(VehiclePresenceSensorResource.RESOURCE_TYPE)){
 
                             VehiclePresenceSensorResource vehiclePresenceSensorResource = (VehiclePresenceSensorResource)smartObjectResource;
+                            vehiclePresenceSensorResource.addDataListener((ResourceDataListener<Boolean>) super.getResourceMap().get("led"));
                             vehiclePresenceSensorResource.addDataListener(new ResourceDataListener<Boolean>() {
                                 @Override
                                 public void onDataChanged(SmartObjectResource<Boolean> resource, Boolean updatedValue) {
@@ -135,7 +136,6 @@ public class ParkingLotMqttSmartObject extends MqttSmartObject{
                         if(smartObjectResource.getType().equals(LedActuatorResource.RESOURCE_TYPE)){
 
                             LedActuatorResource ledActuatorResource = (LedActuatorResource)smartObjectResource;
-                            ledActuatorResource.addDataListener((ResourceDataListener<Led>) super.getResourceMap().get("vehicle_presence"));
                             ledActuatorResource.addDataListener(new ResourceDataListener<Led>() {
                                 @Override
                                 public void onDataChanged(SmartObjectResource<Led> resource, Led updatedValue) {
