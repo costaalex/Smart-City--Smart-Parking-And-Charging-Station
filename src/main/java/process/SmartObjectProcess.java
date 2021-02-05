@@ -46,11 +46,11 @@ public class SmartObjectProcess {
             for(int i=0; i<1; i++) {
                 createMqttSmartObject(CHARGING_STATION);
             }
-/*
-            for(int i=0; i<2; i++) {
+
+            for(int i=0; i<1; i++) {
                 createMqttSmartObject(PARKING_LOT);
             }
-*/
+
 
 
             //Start to publish MESSAGE_COUNT messages

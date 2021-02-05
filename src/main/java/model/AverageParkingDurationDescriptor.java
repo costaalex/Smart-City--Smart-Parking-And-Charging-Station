@@ -39,7 +39,7 @@ public class AverageParkingDurationDescriptor {
                 occurrences++;
                 lastParkingState = false;
 
-                return diffInMillis * 1000.0; // return last parking duration in seconds
+                return diffInMillis / 1000.0; // return last parking duration in seconds
             }//if parked now
             else if(lastParkingState == false && newParkingState == true){
                 lastParkingStartTimestamp = timestamp;
@@ -59,8 +59,8 @@ public class AverageParkingDurationDescriptor {
         return timeUnit.convert(diffInMillies, TimeUnit.MILLISECONDS);
     }
 
-    public Double addParkingDurationSeconds(Double parkingDurationMillis){
-        sumParkingDurationMillis += Math.floor(parkingDurationMillis * 1000);
+    public Double addParkingDurationSeconds(Double parkingDurationSeconds){
+        sumParkingDurationMillis += Math.floor(parkingDurationSeconds * 1000);
         occurrences++;
         return getAverageParkingDurationSeconds();
     }
@@ -79,7 +79,7 @@ public class AverageParkingDurationDescriptor {
 
     public Double getAverageParkingDurationSeconds(){
         if(occurrences > 0)
-            return sumParkingDurationMillis / 1000.0 / occurrences;
+            return Math.floor(sumParkingDurationMillis / 1.0) / 1000.0 / occurrences;
         else
             return null;
     }

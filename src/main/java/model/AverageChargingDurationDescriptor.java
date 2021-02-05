@@ -43,7 +43,7 @@ public class AverageChargingDurationDescriptor {
                 lastChargeStatus = newChargeStatus;
 
 
-                return diffInMillis * 1000.0; // return last charging duration in seconds
+                return diffInMillis / 1000.0; // return last charging duration in seconds
             } //if started charging
             else if((lastChargeStatus == ChargeStatusDescriptor.PLUGGED || lastChargeStatus == ChargeStatusDescriptor.UNPLUGGED)
                     && newChargeStatus == ChargeStatusDescriptor.CHARGING){
@@ -100,9 +100,8 @@ public class AverageChargingDurationDescriptor {
     }
 
     public Double getAverageChargingDurationSeconds(){
-        DecimalFormat decimalFormat = new DecimalFormat("#.##");
         if(occurrences > 0)
-            return Math.floor(sumChargingDurationMillis / 1000.0) / occurrences;
+            return Math.floor(sumChargingDurationMillis / 1.0) / 1000.0 / occurrences;
         else
             return 0.0;
     }
