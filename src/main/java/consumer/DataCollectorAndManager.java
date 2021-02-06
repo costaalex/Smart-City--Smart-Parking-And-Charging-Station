@@ -161,11 +161,13 @@ public class DataCollectorAndManager {
                     logger.info("LLLL: {}",SingletonDataCollector.getInstance().smartObjectsMap.toString());
                 }
                 else{
+
                     SingletonDataCollector.getInstance().smartObjectsMap.get(smartObjectId).setGpsLocation(new GpsLocationDescriptor(latitude, longitude));
                     logger.info("GGGG: {}",SingletonDataCollector.getInstance().smartObjectsMap.toString());
                 }
 
             }
+            Map<String, SmartObject> smartObjectsMap = SingletonDataCollector.getInstance().smartObjectsMap;
             logger.info("SINGLETON New Charging Station Gps Location Data Received. lat: {}, long: {}", SingletonDataCollector.getInstance().smartObjectsMap.get(smartObjectId).getGpsLocation().getLatitude(), SingletonDataCollector.getInstance().smartObjectsMap.get(smartObjectId).getGpsLocation().getLongitude());
 
         }
