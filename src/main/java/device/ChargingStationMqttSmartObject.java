@@ -2,6 +2,7 @@ package device;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import message.ControlMessage;
 import message.TelemetryMessage;
 import model.ChargeStatusDescriptor;
 import model.GpsLocationDescriptor;
@@ -15,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import resource.*;
 
 import java.util.Map;
+import java.util.Optional;
 
 public class ChargingStationMqttSmartObject extends MqttSmartObject{
 
@@ -78,21 +80,35 @@ public class ChargingStationMqttSmartObject extends MqttSmartObject{
     }
     protected void registerToControlChannel() {
 
+        final Led[] ledReceived = new Led[1];
         try{
             String deviceControlTopic = String.format("%s/%s/%s", CHARGING_TOPIC, getMqttSmartObjectId(), CONTROL_TOPIC);
 
-            logger.info("Registering to Control Topic ({}) ... ", deviceControlTopic);
+            logger.info("Charging Station Mqtt Registering to Control Topic ({}) ... ", deviceControlTopic);
 
             getMqttClient().subscribe(deviceControlTopic, new IMqttMessageListener() {
                 @Override
                 public void messageArrived(String topic, MqttMessage message) throws Exception {
 
-                    if(message != null)
+                    if (message != null){
                         logger.info("[CONTROL CHANNEL] -> Control Message Received -> {}", new String(message.getPayload()));
+                        // TODO set led color from payload
+                        Optional<ControlMessage<?>> generalMessageOptional = parseControlMessagePayload(message);
+
+                        if (generalMessageOptional.isPresent() ) {
+                            ledReceived[0] = (Led) generalMessageOptional.get().getDataValue();
+                        }
+                    }
                     else
                         logger.error("[CONTROL CHANNEL] -> Null control message received !");
                 }
             });
+            if(ledReceived[0] == Led.GREEN)
+                ((LedActuatorResource) super.getResourceMap().get("led")).setIsActive(Led.GREEN);
+            else if(ledReceived[0] == Led.RED)
+                ((LedActuatorResource) super.getResourceMap().get("led")).setIsActive(Led.RED);
+            else if(ledReceived[0] == Led.YELLOW)
+                ((LedActuatorResource) super.getResourceMap().get("led")).setIsActive(Led.YELLOW);
 
         }catch (Exception e){
             logger.error("ERROR Registering to Control Channel ! Msg: {}", e.getLocalizedMessage());

@@ -1,7 +1,9 @@
 package device;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import message.ControlMessage;
 import model.GpsLocationDescriptor;
 import org.eclipse.paho.client.mqttv3.IMqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
@@ -10,6 +12,7 @@ import org.slf4j.Logger;
 import resource.SmartObjectResource;
 
 import java.util.Map;
+import java.util.Optional;
 
 import static process.SmartObjectProcess.MQTT_USERNAME;
 
@@ -86,7 +89,20 @@ public abstract class MqttSmartObject {
         this.resourceMap = resourceMap;
     }
 
+    protected Optional<ControlMessage<?>> parseControlMessagePayload(MqttMessage mqttMessage){
+        try{
+            if(mqttMessage == null)
+                return Optional.empty();
 
+            byte[] payloadByteArray = mqttMessage.getPayload();
+            String payloadString = new String(payloadByteArray);
+
+            return Optional.ofNullable(mapper.readValue(payloadString, new TypeReference<ControlMessage<?>>() {}));
+
+        }catch (Exception e){
+            return Optional.empty();
+        }
+    }
 
 
 }

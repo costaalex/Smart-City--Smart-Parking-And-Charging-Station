@@ -3,6 +3,7 @@ package device;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import message.ControlMessage;
 import message.TelemetryMessage;
 import model.ChargeStatusDescriptor;
 import model.GpsLocationDescriptor;
@@ -78,7 +79,7 @@ public class ParkingLotMqttSmartObject extends MqttSmartObject{
         try{
             String deviceControlTopic = String.format("%s/%s/%s", PARKING_TOPIC, getMqttSmartObjectId(), CONTROL_TOPIC);
 
-            logger.info("Registering to Control Topic ({}) ... ", deviceControlTopic);
+            logger.info("Parking Lot Mqtt Registering to Control Topic ({}) ... ", deviceControlTopic);
 
             getMqttClient().subscribe(deviceControlTopic, new IMqttMessageListener() {
                 @Override
@@ -87,11 +88,10 @@ public class ParkingLotMqttSmartObject extends MqttSmartObject{
                     if (message != null){
                         logger.info("[CONTROL CHANNEL] -> Control Message Received -> {}", new String(message.getPayload()));
                         // TODO set led color from payload
-                        Optional<Led> generalMessageOptional = parseControlMessagePayload(message);
+                        Optional<ControlMessage<?>> generalMessageOptional = parseControlMessagePayload(message);
 
-                        //set gps location to a charging station
                         if (generalMessageOptional.isPresent() ) {
-                            ledReceived[0] = generalMessageOptional.get();
+                            ledReceived[0] = (Led) generalMessageOptional.get().getDataValue();
                         }
                     }
                     else
@@ -109,20 +109,7 @@ public class ParkingLotMqttSmartObject extends MqttSmartObject{
             logger.error("ERROR Registering to Control Channel ! Msg: {}", e.getLocalizedMessage());
         }
     }
-    private static Optional<Led> parseControlMessagePayload(MqttMessage mqttMessage){
-        try{
-            if(mqttMessage == null)
-                return Optional.empty();
 
-            byte[] payloadByteArray = mqttMessage.getPayload();
-            String payloadString = new String(payloadByteArray);
-
-            return Optional.ofNullable(mapper.readValue(payloadString, new TypeReference<Led>() {}));
-
-        }catch (Exception e){
-            return Optional.empty();
-        }
-    }
 
         private void registerToAvailableResources(){
             try{

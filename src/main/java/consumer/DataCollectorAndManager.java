@@ -1,10 +1,14 @@
 package consumer;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import device.ChargingStationMqttSmartObject;
 import device.MqttSmartObject;
+import device.ParkingLotMqttSmartObject;
 import dto.SingletonDataCollector;
 import dto.SmartObject;
+import message.ControlMessage;
 import message.TelemetryMessage;
 import model.ChargeStatusDescriptor;
 import model.GpsLocationDescriptor;
@@ -22,7 +26,9 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static device.ChargingStationMqttSmartObject.CHARGING_TOPIC;
+import static device.MqttSmartObject.CONTROL_TOPIC;
 import static device.ParkingLotMqttSmartObject.PARKING_TOPIC;
+import static process.SmartObjectProcess.MQTT_USERNAME;
 
 public class DataCollectorAndManager {
 
@@ -37,6 +43,7 @@ public class DataCollectorAndManager {
     private static final String TARGET_TOPIC = "#";
 
     private static ObjectMapper mapper;
+    static IMqttClient client;
 
     public static void main(String [ ] args) {
 
@@ -54,7 +61,7 @@ public class DataCollectorAndManager {
 
             //The the persistence is not passed to the constructor the default file persistence is used.
             //In case of a file-based storage the same MQTT client UUID should be used
-            IMqttClient client = new MqttClient(
+            client = new MqttClient(
                     String.format("tcp://%s:%d", BROKER_ADDRESS, BROKER_PORT), //Create the URL from IP and PORT
                     clientId,
                     persistence);
@@ -81,12 +88,7 @@ public class DataCollectorAndManager {
             	byte[] payload = msg.getPayload();
                 logger.info("Message Received -> Topic: {} - Payload: {}", topic, new String(payload));
 
-
                 updateSmartObjectsMap(topic, msg);
-
-
-
-
             });
 
         }catch (Exception e){
@@ -94,7 +96,6 @@ public class DataCollectorAndManager {
         }
 
     }
-
 
     private static Optional<TelemetryMessage<?>> parseTelemetryMessagePayload(MqttMessage mqttMessage){
         try{
@@ -110,6 +111,7 @@ public class DataCollectorAndManager {
             return Optional.empty();
         }
     }
+
     private static Optional<GpsLocationDescriptor> parseGeneralMessagePayload(MqttMessage mqttMessage){
         try{
             if(mqttMessage == null)
@@ -238,4 +240,33 @@ public class DataCollectorAndManager {
         }
     }
 
+    public static void publishControlData(String idSmartObject, ControlMessage<?> controlMessage) throws MqttException, JsonProcessingException {
+
+        SmartObjectTypeDescriptor smartObjectTypeDescriptor = SingletonDataCollector.getInstance().getSmartObjectTypeFromId(idSmartObject);
+        String topic = null;
+        switch (smartObjectTypeDescriptor){
+            case PARKING_LOT:
+                topic = String.format("%s/%s/%s", PARKING_TOPIC, idSmartObject, CONTROL_TOPIC);
+                break;
+            case CHARGING_STATION:
+                topic = String.format("%s/%s/%s", CHARGING_TOPIC, idSmartObject, CONTROL_TOPIC);
+                break;
+        }
+        logger.info("Sending to topic: {} -> Data: {}", topic, controlMessage);
+
+        if(client != null && client.isConnected() && controlMessage != null && topic != null){
+
+            String messagePayload = mapper.writeValueAsString(controlMessage);
+
+            MqttMessage mqttMessage = new MqttMessage(messagePayload.getBytes());
+            mqttMessage.setQos(2);
+
+            client.publish(topic, mqttMessage);
+
+            logger.info("Data Correctly Published to idSmartObject: {}", idSmartObject);
+
+        }
+        else
+            logger.error("Error: Topic or Msg = Null or MQTT Client is not Connected !");
+    }
 }

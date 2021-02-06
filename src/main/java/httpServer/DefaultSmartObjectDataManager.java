@@ -1,10 +1,15 @@
 package httpServer;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import consumer.DataCollectorAndManager;
 import dto.SingletonDataCollector;
 import dto.SmartObject;
+import message.ControlMessage;
+import message.TelemetryMessage;
 import model.GpsLocationDescriptor;
 import model.Led;
 import model.SmartObjectTypeDescriptor;
+import org.eclipse.paho.client.mqttv3.MqttException;
 import resource.LedActuatorResource;
 import resource.SmartObjectResource;
 
@@ -68,6 +73,12 @@ public class DefaultSmartObjectDataManager implements ISmartObjectDataManager{
         LedActuatorResource ledActuator = (LedActuatorResource)single_instance.smartObjectsMap.get(idSmartObject).getResourceMap().get("led");
         ledActuator.setIsActive(led);
         //Publish New Led Actuator Status
+        try {
+            DataCollectorAndManager.publishControlData(idSmartObject, new ControlMessage<>(ledActuator.getType(), led));
+        } catch (MqttException | JsonProcessingException e) {
+            e.printStackTrace();
+        }
+
         return true;
     }
 

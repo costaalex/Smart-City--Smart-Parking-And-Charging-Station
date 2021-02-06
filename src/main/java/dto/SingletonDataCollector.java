@@ -2,6 +2,7 @@ package dto;
 
 import model.AverageChargingDurationDescriptor;
 import model.AverageParkingDurationDescriptor;
+import model.SmartObjectTypeDescriptor;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,4 +32,15 @@ public class SingletonDataCollector {
 
         return single_instance;
     }
+
+
+    public SmartObjectTypeDescriptor getSmartObjectTypeFromId(String smartObjectId){
+        for (Map.Entry<String, SmartObject> entry : smartObjectsMap.entrySet()) {
+            String id = entry.getKey();
+            if(id.equals(smartObjectId))
+                return entry.getValue().getSmartObjectType();
+        }
+        return  null;
+    }
+
 }
