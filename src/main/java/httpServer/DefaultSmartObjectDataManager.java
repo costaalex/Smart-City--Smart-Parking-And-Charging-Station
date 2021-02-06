@@ -65,8 +65,9 @@ public class DefaultSmartObjectDataManager implements ISmartObjectDataManager{
     public boolean setLed(String idSmartObject, Led led) {
         if (single_instance == null)
             return false;
-        LedActuatorResource ledSensor = (LedActuatorResource)single_instance.smartObjectsMap.get(idSmartObject).getResourceMap().get("led");
-        ledSensor.setIsActive(led);
+        LedActuatorResource ledActuator = (LedActuatorResource)single_instance.smartObjectsMap.get(idSmartObject).getResourceMap().get("led");
+        ledActuator.setIsActive(led);
+        //Publish New Led Actuator Status
         return true;
     }
 
