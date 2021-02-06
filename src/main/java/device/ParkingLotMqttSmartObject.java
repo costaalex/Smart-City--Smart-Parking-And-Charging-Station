@@ -1,6 +1,7 @@
 package device;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import message.TelemetryMessage;
 import model.ChargeStatusDescriptor;
@@ -15,12 +16,14 @@ import org.slf4j.LoggerFactory;
 import resource.*;
 
 import java.util.Map;
+import java.util.Optional;
 
 public class ParkingLotMqttSmartObject extends MqttSmartObject{
         private static final Logger logger = LoggerFactory.getLogger(ChargingStationMqttSmartObject.class);
 
         public static final String PARKING_TOPIC = BASIC_TOPIC + "/parking_lot";
 
+        private static ObjectMapper mapper;
         /**
          * Init the charging station smart object with its ID, the MQTT Client and the Map of managed resources
          * @param chargingStationId
@@ -33,7 +36,7 @@ public class ParkingLotMqttSmartObject extends MqttSmartObject{
             super.setGpsLocation(gpsLocation);
             this.setMqttClient(mqttClient);
             this.setResourceMap(resourceMap);
-
+            mapper = new ObjectMapper();
             logger.info("Charging Station Smart Object correctly created ! Resource Number: {}", resourceMap.keySet().size());
         }
 
@@ -70,7 +73,8 @@ public class ParkingLotMqttSmartObject extends MqttSmartObject{
 
         }
     protected void registerToControlChannel() {
-        final String[] a = new String[0];
+
+        final Led[] ledReceived = new Led[1];
         try{
             String deviceControlTopic = String.format("%s/%s/%s", PARKING_TOPIC, getMqttSmartObjectId(), CONTROL_TOPIC);
 
@@ -83,21 +87,40 @@ public class ParkingLotMqttSmartObject extends MqttSmartObject{
                     if (message != null){
                         logger.info("[CONTROL CHANNEL] -> Control Message Received -> {}", new String(message.getPayload()));
                         // TODO set led color from payload
-                        a[0] = "green";  // red, yellow
+                        Optional<Led> generalMessageOptional = parseControlMessagePayload(message);
+
+                        //set gps location to a charging station
+                        if (generalMessageOptional.isPresent() ) {
+                            ledReceived[0] = generalMessageOptional.get();
+                        }
                     }
                     else
                         logger.error("[CONTROL CHANNEL] -> Null control message received !");
                 }
             });
-            if(a[0].equals("green"))
+            if(ledReceived[0] == Led.GREEN)
                 ((LedActuatorResource) super.getResourceMap().get("led")).setIsActive(Led.GREEN);
-            else if(a[0].equals("red"))
+            else if(ledReceived[0] == Led.RED)
                 ((LedActuatorResource) super.getResourceMap().get("led")).setIsActive(Led.RED);
-            else if(a[0].equals("yellow"))
+            else if(ledReceived[0] == Led.YELLOW)
                 ((LedActuatorResource) super.getResourceMap().get("led")).setIsActive(Led.YELLOW);
 
         }catch (Exception e){
             logger.error("ERROR Registering to Control Channel ! Msg: {}", e.getLocalizedMessage());
+        }
+    }
+    private static Optional<Led> parseControlMessagePayload(MqttMessage mqttMessage){
+        try{
+            if(mqttMessage == null)
+                return Optional.empty();
+
+            byte[] payloadByteArray = mqttMessage.getPayload();
+            String payloadString = new String(payloadByteArray);
+
+            return Optional.ofNullable(mapper.readValue(payloadString, new TypeReference<Led>() {}));
+
+        }catch (Exception e){
+            return Optional.empty();
         }
     }
 
@@ -136,6 +159,7 @@ public class ParkingLotMqttSmartObject extends MqttSmartObject{
                         if(smartObjectResource.getType().equals(LedActuatorResource.RESOURCE_TYPE)){
 
                             LedActuatorResource ledActuatorResource = (LedActuatorResource)smartObjectResource;
+                            ledActuatorResource.addDataListener((ResourceDataListener<Led>) super.getResourceMap().get("vehicle_presence"));
                             ledActuatorResource.addDataListener(new ResourceDataListener<Led>() {
                                 @Override
                                 public void onDataChanged(SmartObjectResource<Led> resource, Led updatedValue) {

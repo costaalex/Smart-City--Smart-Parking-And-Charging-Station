@@ -1,12 +1,13 @@
 package resource;
 
 import model.GpsLocationDescriptor;
+import model.Led;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
-public class VehiclePresenceSensorResource extends SmartObjectResource<Boolean> {
+public class VehiclePresenceSensorResource extends SmartObjectResource<Boolean> implements ResourceDataListener<Led>{
 
     private static final Logger logger = LoggerFactory.getLogger(VehiclePresenceSensorResource.class);
 
@@ -99,6 +100,22 @@ public class VehiclePresenceSensorResource extends SmartObjectResource<Boolean> 
     public Boolean loadUpdatedValue() {
         return this.updatedVehiclePresenceStatus;
     }
+
+    @Override
+    public void onDataChanged(SmartObjectResource<Led> smartObjectResource, Led updatedValue) {
+        if (smartObjectResource != null && smartObjectResource.getType().equals(LedActuatorResource.RESOURCE_TYPE)) {
+            if (updatedValue == Led.YELLOW) {     //If a new vehicle arrived, set led red
+                logger.info("Led YELLOW color detected - sensor: {}.. setting parking inactive.", smartObjectResource.getId());
+                isActive = false;
+            }
+            else if(updatedValue == Led.GREEN){
+                logger.info("Led GREEN color detected - sensor: {}.. setting parking active.", smartObjectResource.getId());
+                isActive = true;
+            }
+
+        }
+    }
+
 
     public static void main(String[] args) {
         VehiclePresenceSensorResource vehiclePresenceSensorResource = new VehiclePresenceSensorResource();
