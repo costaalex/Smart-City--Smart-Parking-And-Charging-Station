@@ -18,6 +18,7 @@
         <jackson.version>2.9.8</jackson.version>
         <jackson.databind.version>2.9.10.4</jackson.databind.version>
         <apache-commons.version>3.9</apache-commons.version>
+        <javax.inject>1</javax.inject>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -69,11 +70,31 @@
             <version>${apache-commons.version}</version>
         </dependency>
 
-        <dependency>
+       <!-- <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
             <version>${jackson.databind.version}</version>
+        </dependency>-->
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.version}</version>
         </dependency>
+        <!-- ##################### -->
+
+        <dependency>
+            <groupId>javax.inject</groupId>
+            <artifactId>javax.inject</artifactId>
+            <version>${javax.inject}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+
 
         <!-- Dropwizard Framework -->
 
@@ -136,6 +157,7 @@
             <artifactId>httpclient</artifactId>
             <version>${apache.httpclient}</version>
         </dependency>
+
         <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
