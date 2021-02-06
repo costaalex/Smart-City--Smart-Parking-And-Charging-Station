@@ -43,4 +43,12 @@ public class SingletonDataCollector {
         return  null;
     }
 
+    @Override
+    public String toString() {
+        return "SingletonDataCollector{" +
+                "smartObjectsMap=" + smartObjectsMap.toString() +
+                ", averageChargingDurationDescriptor=" + averageChargingDurationDescriptor +
+                ", averageParkingDurationDescriptor=" + averageParkingDurationDescriptor +
+                '}';
+    }
 }

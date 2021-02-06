@@ -28,17 +28,17 @@ public class DefaultSmartObjectDataManager implements ISmartObjectDataManager{
             return Optional.empty();
         //Iterate on map and take couples id, gps
         Map<String, SmartObject> smartObjectsMap = single_instance.smartObjectsMap;
-        System.out.println(single_instance.smartObjectsMap);
-        //System.out.println("ciao");
+
+
         Map<String, GpsLocationDescriptor> smartObjectsLocationMap = new HashMap<>();
         for (Map.Entry<String, SmartObject> entry : smartObjectsMap.entrySet()) {
-            System.out.println("ciao");
+
             String smartObjectId = entry.getKey();
             GpsLocationDescriptor gpsLocationDescriptor = entry.getValue().getGpsLocation();
             smartObjectsLocationMap.put(smartObjectId, gpsLocationDescriptor);
 
         }
-        System.out.println(smartObjectsLocationMap);
+        System.out.println("SSS-"+ smartObjectsLocationMap);
         return  Optional.ofNullable(smartObjectsLocationMap);
     }
 

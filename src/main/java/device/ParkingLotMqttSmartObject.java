@@ -38,7 +38,7 @@ public class ParkingLotMqttSmartObject extends MqttSmartObject{
             this.setMqttClient(mqttClient);
             this.setResourceMap(resourceMap);
             mapper = new ObjectMapper();
-            logger.info("Charging Station Smart Object correctly created ! Resource Number: {}", resourceMap.keySet().size());
+            logger.info("Parking Lot Smart Object correctly created ! Resource Number: {}", resourceMap.keySet().size());
         }
 
         /**

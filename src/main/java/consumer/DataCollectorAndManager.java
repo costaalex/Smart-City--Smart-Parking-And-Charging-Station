@@ -19,6 +19,7 @@ import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import resource.*;
+import services.AppService;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -89,11 +90,23 @@ public class DataCollectorAndManager {
                 logger.info("Message Received -> Topic: {} - Payload: {}", topic, new String(payload));
 
                 updateSmartObjectsMap(topic, msg);
+
+                logger.info("SINGLETON.tostring: {}", SingletonDataCollector.getInstance().toString());
+
             });
 
         }catch (Exception e){
             e.printStackTrace();
         }
+
+        Thread thread = new Thread(() -> {
+            try {
+                new AppService().run(new String[]{"server", args.length > 0 ? args[0] : "configuration.yml"});
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        thread.start();
 
     }
 
@@ -145,11 +158,16 @@ public class DataCollectorAndManager {
                     else
                         smartObject = new SmartObject(smartObjectId, new GpsLocationDescriptor(latitude, longitude), SmartObjectTypeDescriptor.PARKING_LOT);
                     SingletonDataCollector.getInstance().smartObjectsMap.put(smartObjectId, smartObject);
+                    logger.info("LLLL: {}",SingletonDataCollector.getInstance().smartObjectsMap.toString());
                 }
                 else{
                     SingletonDataCollector.getInstance().smartObjectsMap.get(smartObjectId).setGpsLocation(new GpsLocationDescriptor(latitude, longitude));
+                    logger.info("GGGG: {}",SingletonDataCollector.getInstance().smartObjectsMap.toString());
                 }
+
             }
+            logger.info("SINGLETON New Charging Station Gps Location Data Received. lat: {}, long: {}", SingletonDataCollector.getInstance().smartObjectsMap.get(smartObjectId).getGpsLocation().getLatitude(), SingletonDataCollector.getInstance().smartObjectsMap.get(smartObjectId).getGpsLocation().getLongitude());
+
         }
         else if(topic.contains(MqttSmartObject.TELEMETRY_TOPIC)) {
             Optional<TelemetryMessage<?>> telemetryMessageOptional = parseTelemetryMessagePayload(msg);
