@@ -11,7 +11,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <slf4j.version>1.7.26</slf4j.version>
-        <logback.version>1.0.13</logback.version>
+        <logback.version>1.1.11</logback.version>
         <junit.version>4.13</junit.version>
         <paho.version>1.2.1</paho.version>
         <jpx.version>2.0.0</jpx.version>
