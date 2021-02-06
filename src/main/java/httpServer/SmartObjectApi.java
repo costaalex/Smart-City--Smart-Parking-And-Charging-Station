@@ -96,6 +96,7 @@ public class SmartObjectApi {
             if(!gpsLocationDescriptor.isPresent())
                 return Response.status(Response.Status.NOT_FOUND).type(MediaType.APPLICATION_JSON_TYPE).entity(new ErrorMessage(Response.Status.NOT_FOUND.getStatusCode(),"Smart Objects Not Found !")).build();
 
+            logger.info("Ciao {}", gpsLocationDescriptor.get());
             return Response.ok(gpsLocationDescriptor.get()).build();
 
         } catch (Exception e){
