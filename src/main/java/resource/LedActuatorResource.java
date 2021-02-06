@@ -43,16 +43,15 @@ public class LedActuatorResource extends SmartObjectResource<Led> implements Res
     @Override
     public void onDataChanged(SmartObjectResource<Boolean> smartObjectResource, Boolean updatedValue) {
         if (smartObjectResource != null && smartObjectResource.getType().equals(VehiclePresenceSensorResource.RESOURCE_TYPE)) {
-            if (updatedValue == true) {     //If a new vehicle arrived, set led red
+            if (updatedValue == true && getIsActive() != Led.YELLOW) {     //If a new vehicle arrived, set led red
                 logger.info("Vehicle detected by sensor: {}.. setting parking led RED.", smartObjectResource.getId());
                 isActive = Led.RED;
             }
             else      //If the parking lot is empty, set led GREEN
                 isActive = Led.GREEN;
-            notify();
+            notifyUpdate(isActive);
         }
     }
-
 
     public static void main(String[] args) {
 

@@ -17,7 +17,6 @@ public abstract class SmartObjectResource<T> {
     private String id;
     private long timestamp;
 
-
     public SmartObjectResource() {
         this.resourceListenerList = new ArrayList<>();
     }

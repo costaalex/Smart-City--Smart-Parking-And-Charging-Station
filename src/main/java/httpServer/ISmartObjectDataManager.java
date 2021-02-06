@@ -2,6 +2,7 @@ package httpServer;
 
 import dto.SmartObject;
 import model.GpsLocationDescriptor;
+import model.Led;
 import model.SmartObjectTypeDescriptor;
 
 import java.util.Map;
@@ -15,4 +16,6 @@ public interface ISmartObjectDataManager {
     Optional<SmartObject> getSmartObjectById(String id);                                  //smartcity/id_smart_object  or smartcity/id_smart_object/sensor_type
 
     Optional<Map<String, SmartObject>> getSmartObjectsList(SmartObjectTypeDescriptor smartObjectType); //smartcity/parkinglot or //smartcity/charging_station
+
+    boolean setLed(String idSmartObject, Led led);
 }

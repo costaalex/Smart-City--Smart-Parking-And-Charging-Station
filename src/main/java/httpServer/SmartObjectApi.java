@@ -6,6 +6,7 @@ import io.dropwizard.jersey.errors.ErrorMessage;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import model.GpsLocationDescriptor;
+import model.Led;
 import model.SmartObjectTypeDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +19,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -170,32 +170,28 @@ public class SmartObjectApi {
     }
 
     @PUT
-    @Path("/{location_id}")
+    @Path("/{id_smart_object}/led")
     @Timed
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value="Update an existing Location")
-    public Response updateLocation(@Context ContainerRequestContext req,
+    @ApiOperation(value="Update Smart Object Led")
+            public Response updateLed(@Context ContainerRequestContext req,
                                    @Context UriInfo uriInfo,
-                                   @PathParam("location_id") String locationId,
-                                   LocationUpdateRequest locationUpdateRequest) {
+                                   @PathParam("id_smart_object") String idSmartObject,
+                                   Led led) {
 
         try {
 
-            logger.info("Incoming Location ({}) Update Request: {}", locationId, locationUpdateRequest);
+            logger.info("Incoming Led ({}) Update Request: {}", idSmartObject, led);
 
             //Check if the request is valid
-            if(locationUpdateRequest == null || !locationUpdateRequest.getId().equals(locationId))
-                return Response.status(Response.Status.BAD_REQUEST).type(MediaType.APPLICATION_JSON_TYPE).entity(new ErrorMessage(Response.Status.BAD_REQUEST.getStatusCode(),"Invalid request ! Check Location Id")).build();
+            if(idSmartObject == null)
+                return Response.status(Response.Status.BAD_REQUEST).type(MediaType.APPLICATION_JSON_TYPE).entity(new ErrorMessage(Response.Status.BAD_REQUEST.getStatusCode(),"Invalid request ! Check Smart Object Id")).build();
 
-            //Check if the device is available and correctly registered otherwise a 404 response will be sent to the client
-            if(!this.conf.getInventoryDataManager().getLocation(locationId).isPresent())
-                return Response.status(Response.Status.NOT_FOUND).type(MediaType.APPLICATION_JSON_TYPE).entity(new ErrorMessage(Response.Status.NOT_FOUND.getStatusCode(),"Location not found !")).build();
-
-            LocationDescriptor locationDescriptor = (LocationDescriptor) locationUpdateRequest;
-            this.conf.getInventoryDataManager().updateLocation(locationDescriptor);
-
-            return Response.noContent().build();
+            //Check if the Smart Object is available otherwise a 404 response will be sent to the client
+            if (this.conf.getInventoryDataManager().setLed(idSmartObject, led))
+                return Response.noContent().build();
+            return Response.status(Response.Status.NOT_FOUND).type(MediaType.APPLICATION_JSON_TYPE).entity(new ErrorMessage(Response.Status.NOT_FOUND.getStatusCode(),"Smart Object id not found !")).build();
 
         } catch (Exception e){
             e.printStackTrace();

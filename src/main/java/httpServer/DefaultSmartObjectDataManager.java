@@ -3,7 +3,10 @@ package httpServer;
 import dto.SingletonDataCollector;
 import dto.SmartObject;
 import model.GpsLocationDescriptor;
+import model.Led;
 import model.SmartObjectTypeDescriptor;
+import resource.LedActuatorResource;
+import resource.SmartObjectResource;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -40,7 +43,7 @@ public class DefaultSmartObjectDataManager implements ISmartObjectDataManager{
     public Optional<Map<String, SmartObject>> getSmartObjectsList() {
         if (single_instance == null)
             return Optional.empty();
-        return Optional.of(single_instance.smartObjectsMap);
+        return Optional.ofNullable(single_instance.smartObjectsMap);
     }
 
     @Override
@@ -56,6 +59,15 @@ public class DefaultSmartObjectDataManager implements ISmartObjectDataManager{
                 requiredSmartObjectsMap.put(smartObjectId, entry.getValue());
         }
         return  Optional.ofNullable(requiredSmartObjectsMap);
+    }
+
+    @Override
+    public boolean setLed(String idSmartObject, Led led) {
+        if (single_instance == null)
+            return false;
+        LedActuatorResource ledSensor = (LedActuatorResource)single_instance.smartObjectsMap.get(idSmartObject).getResourceMap().get("led");
+        ledSensor.setIsActive(led);
+        return true;
     }
 
 }

@@ -18,7 +18,7 @@ public class SmartObject {
 
     private ObjectMapper mapper;
 
-    private SmartObjectTypeDescriptor smartObjectType; // CHARGING_STATION, PPARKING_LOT
+    private SmartObjectTypeDescriptor smartObjectType; // CHARGING_STATION, PARKING_LOT
 
     private Map<String, SmartObjectResource<?>> resourceMap;  //key = sensor_type, value = sensor
 
