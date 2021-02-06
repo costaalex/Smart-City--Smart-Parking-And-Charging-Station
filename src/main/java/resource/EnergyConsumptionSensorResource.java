@@ -23,9 +23,9 @@ public class EnergyConsumptionSensorResource extends SmartObjectResource<Double>
     private static final String LOG_DISPLAY_NAME = "EnergyConsumptionSensor";
 
     //Ms associated to data update
-    private static final long UPDATE_PERIOD = 5000;
+    private static final long UPDATE_PERIOD = 2000;
 
-    private static final long TASK_DELAY_TIME = 5000;
+    private static final long TASK_DELAY_TIME = 0;
 
     public static final String RESOURCE_TYPE = "iot:sensor:energy_consumption";
 

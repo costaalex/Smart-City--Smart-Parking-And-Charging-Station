@@ -52,13 +52,16 @@ public abstract class SmartObjectResource<T> {
     }
 
     protected void notifyUpdate(T updatedValue){
+
         if(this.resourceListenerList != null && this.resourceListenerList.size() > 0)
             this.resourceListenerList.forEach(resourceDataListener -> {
                 if(resourceDataListener != null)
                     resourceDataListener.onDataChanged(this, updatedValue);
             });
+        else if(this.resourceListenerList == null)
+            logger.error("Null Resource Data Listener ! Nothing to notify ...");
         else
-            logger.error("Empty or Null Resource Data Listener ! Nothing to notify ...");
+            logger.info("Empty Resource Data Listener ! Nothing to notify ...");
     }
 
     public String getId() {

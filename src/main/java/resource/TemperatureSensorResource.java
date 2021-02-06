@@ -17,9 +17,9 @@ public class TemperatureSensorResource extends SmartObjectResource<Double> imple
 
     public static final String RESOURCE_TYPE = "iot:sensor:temperature";
 
-    private static final long UPDATE_PERIOD = 5000; //10 Seconds
+    private static final long UPDATE_PERIOD = 2000; //10 Seconds
 
-    private static final long TASK_DELAY_TIME = 5000; //5 Seconds before starting the periodic update task
+    private static final long TASK_DELAY_TIME = 0; //5 mls before starting the periodic update task
 
     private static final Double MIN_TEMPERATURE = 20.0;
 

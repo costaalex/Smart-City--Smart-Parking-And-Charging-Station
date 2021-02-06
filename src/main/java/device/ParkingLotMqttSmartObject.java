@@ -20,7 +20,7 @@ import java.util.Map;
 import java.util.Optional;
 
 public class ParkingLotMqttSmartObject extends MqttSmartObject{
-        private static final Logger logger = LoggerFactory.getLogger(ChargingStationMqttSmartObject.class);
+        private static final Logger logger = LoggerFactory.getLogger(ParkingLotMqttSmartObject.class);
 
         public static final String PARKING_TOPIC = BASIC_TOPIC + "/parking_lot";
 
@@ -60,8 +60,7 @@ public class ParkingLotMqttSmartObject extends MqttSmartObject{
 
                     try {
                         publishGeneralData(
-                                String.format("%s/%s/%s/%s", PARKING_TOPIC, getMqttSmartObjectId(), GENERAL),
-                                super.getGpsLocation());
+                                String.format("%s/%s/%s", PARKING_TOPIC, getMqttSmartObjectId(), GENERAL), super.getGpsLocation());
                     } catch (MqttException | JsonProcessingException e) {
                         e.printStackTrace();
                     }
@@ -69,7 +68,7 @@ public class ParkingLotMqttSmartObject extends MqttSmartObject{
                 }
 
             }catch (Exception e){
-                logger.error("Error Starting the Charging Station Emulator ! Msg: {}", e.getLocalizedMessage());
+                logger.error("Error Starting the Parking Lot Emulator ! Msg: {}", e.getLocalizedMessage());
             }
 
         }
