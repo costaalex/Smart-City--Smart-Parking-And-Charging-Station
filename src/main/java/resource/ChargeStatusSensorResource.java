@@ -103,7 +103,7 @@ public class ChargeStatusSensorResource extends SmartObjectResource<ChargeStatus
                 logger.info("Vehicle detected by sensor: {}", smartObjectResource.getId());
 
                 if(updatedChargeStatus == ChargeStatusDescriptor.CHARGING) {
-                    if (random.nextInt(CHARGING_IF_PRESENT_PROBABILITY) == 0)
+                    if (random.nextInt(CHARGING_IF_PRESENT_PROBABILITY) == 0)       //25% probability
                         updatedChargeStatus = ChargeStatusDescriptor.PLUGGED;
                 }else {
                     if (random.nextBoolean())

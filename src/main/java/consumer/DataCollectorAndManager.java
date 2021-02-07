@@ -233,6 +233,8 @@ public class DataCollectorAndManager {
                 logger.info("New Energy Consumption Saved for: {}", topic);
                 smartObjectsMapSingleton.get(smartObjectId).getResourceMap().put(sensor_type, sensor);
 
+                //System.err.println("ciao" + smartObjectsMapSingleton.values());
+
             }
         }
     }

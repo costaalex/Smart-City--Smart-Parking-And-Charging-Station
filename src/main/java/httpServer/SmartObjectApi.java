@@ -5,12 +5,13 @@ import dto.SmartObject;
 import io.dropwizard.jersey.errors.ErrorMessage;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import model.ChargeStatusDescriptor;
 import model.GpsLocationDescriptor;
 import model.Led;
 import model.SmartObjectTypeDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import resource.SmartObjectResource;
+import resource.*;
 import services.AppConfig;
 
 import javax.ws.rs.*;
@@ -23,6 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
+import static device.ParkingLotMqttSmartObject.PARKING_TOPIC;
 
 @Path("/smartcity")
 @Api("Smart Object Data")
@@ -163,8 +166,7 @@ public class SmartObjectApi {
             if(!smartObject.isPresent())
                 return Response.status(Response.Status.NOT_FOUND).type(MediaType.APPLICATION_JSON_TYPE).entity(new ErrorMessage(Response.Status.NOT_FOUND.getStatusCode(),"Smart Object Id Not Found !")).build();
 
-            SmartObject extractedSmartObject = smartObject.get();
-            SmartObjectResource<?> sensor = extractedSmartObject.getResourceMap().get(sensor_type);                  //Extract the requested sensor
+            SmartObjectResource<?> sensor = smartObject.get().getResourceMap().get(sensor_type);                  //Extract the requested sensor
 
             if (sensor != null)
                 return Response.ok(sensor).build();
@@ -214,8 +216,36 @@ public class SmartObjectApi {
         smartObjectList.add(smartObject.getAverageParkingDurationDescriptor());
         smartObjectList.add(smartObject.getSmartObjectType());
         smartObjectList.add(smartObject.getGpsLocation());
-        smartObjectList.add(smartObject.getResourceMap().values());
+        /*
+        List sensorList = new ArrayList();
+        for (SmartObjectResource s: smartObject.getResourceMap().values()) {
+            switch (s.getType()) {
+                case EnergyConsumptionSensorResource.RESOURCE_TYPE:
+                    sensorList.add((EnergyConsumptionSensorResource) s);
+                    break;
 
+                case TemperatureSensorResource.RESOURCE_TYPE:
+                    sensorList.add((TemperatureSensorResource) s);
+                    break;
+
+                case VehiclePresenceSensorResource.RESOURCE_TYPE:
+                    sensorList.add((VehiclePresenceSensorResource) s);
+                    break;
+
+                case ChargeStatusSensorResource.RESOURCE_TYPE:
+                    sensorList.add((ChargeStatusSensorResource) s);
+                    break;
+
+                case LedActuatorResource.RESOURCE_TYPE:
+                    sensorList.add((LedActuatorResource) s);
+                    break;
+            }
+        }
+        smartObjectList.add(sensorList);
+
+         */
+
+        smartObjectList.add(smartObject.getResourceMap().values());
         return smartObjectList;
     }
 

@@ -17,7 +17,7 @@ import java.util.Optional;
 import static process.SmartObjectProcess.MQTT_USERNAME;
 
 public abstract class MqttSmartObject {
-    protected static final String BASIC_TOPIC = "iot/user/" + MQTT_USERNAME + "/smartcity";
+    public static final String BASIC_TOPIC = "iot/user/" + MQTT_USERNAME + "/smartcity";
 
     public static final String TELEMETRY_TOPIC = "telemetry";
 

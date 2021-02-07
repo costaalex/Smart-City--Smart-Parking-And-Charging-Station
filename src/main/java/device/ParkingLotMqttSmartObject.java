@@ -152,7 +152,7 @@ public class ParkingLotMqttSmartObject extends MqttSmartObject{
                                     try {
                                         publishTelemetryData(
                                                 String.format("%s/%s/%s/%s", PARKING_TOPIC, getMqttSmartObjectId(), TELEMETRY_TOPIC, resourceEntry.getKey()),
-                                                new TelemetryMessage<>(smartObjectResource.getId(), smartObjectResource.getType(), updatedValue));
+                                                new TelemetryMessage<>(resource.getId(), smartObjectResource.getType(), updatedValue));
                                     } catch (MqttException | JsonProcessingException e) {
                                         e.printStackTrace();
                                     }

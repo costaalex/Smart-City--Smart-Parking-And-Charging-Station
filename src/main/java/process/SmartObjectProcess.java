@@ -18,6 +18,8 @@ import java.util.HashMap;
 import java.util.Random;
 import java.util.UUID;
 
+import static device.MqttSmartObject.BASIC_TOPIC;
+
 public class SmartObjectProcess {
 
     private static final Logger logger = LoggerFactory.getLogger(SmartObjectProcess.class);
