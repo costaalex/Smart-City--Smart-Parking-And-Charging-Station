@@ -19,6 +19,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -55,23 +57,26 @@ public class SmartObjectApi {
 
             logger.info("Loading all requested Smart Objects");
 
-            Optional<Map<String, SmartObject>> smartObjectList = null;
+            Optional<Map<String, SmartObject>> smartObjectMap = null;
 
             //No filter applied
             if(smartObjectType == null)
-                smartObjectList = this.conf.getInventoryDataManager().getSmartObjectsList();
+                smartObjectMap = this.conf.getInventoryDataManager().getSmartObjectsMap();
             else if(smartObjectType == SmartObjectTypeDescriptor.PARKING_LOT) {
-                smartObjectList = this.conf.getInventoryDataManager().getSmartObjectsList(SmartObjectTypeDescriptor.PARKING_LOT);
+                smartObjectMap = this.conf.getInventoryDataManager().getSmartObjectsMap(SmartObjectTypeDescriptor.PARKING_LOT);
             }
             else if(smartObjectType == SmartObjectTypeDescriptor.CHARGING_STATION) {
-                smartObjectList = this.conf.getInventoryDataManager().getSmartObjectsList(SmartObjectTypeDescriptor.CHARGING_STATION);
+                smartObjectMap = this.conf.getInventoryDataManager().getSmartObjectsMap(SmartObjectTypeDescriptor.CHARGING_STATION);
             }
             else
                 return Response.status(Response.Status.BAD_REQUEST).type(MediaType.APPLICATION_JSON_TYPE).entity(new ErrorMessage(Response.Status.BAD_REQUEST.getStatusCode(),"Type is not valid !")).build();
 
-            if(smartObjectList == null)
+            if(!smartObjectMap.isPresent())
                 return Response.status(Response.Status.NOT_FOUND).type(MediaType.APPLICATION_JSON_TYPE).entity(new ErrorMessage(Response.Status.NOT_FOUND.getStatusCode(),"Smart Objects Not Found !")).build();
 
+            List smartObjectList = new ArrayList();
+            for (SmartObject s: smartObjectMap.get().values())
+                smartObjectList.add(smartObjectToList(s));
             return Response.ok(smartObjectList).build();
 
         } catch (Exception e){
@@ -91,7 +96,7 @@ public class SmartObjectApi {
 
             logger.info("Loading all requested Gps Smart Objects Data");
 
-            Optional<Map<String, GpsLocationDescriptor>> gpsLocationDescriptor = this.conf.getInventoryDataManager().getSmartObjectLocationList();
+            Optional<Map<String, GpsLocationDescriptor>> gpsLocationDescriptor = this.conf.getInventoryDataManager().getsmartobjectlocationMap();
 
             if(!gpsLocationDescriptor.isPresent())
                 return Response.status(Response.Status.NOT_FOUND).type(MediaType.APPLICATION_JSON_TYPE).entity(new ErrorMessage(Response.Status.NOT_FOUND.getStatusCode(),"Smart Objects Not Found !")).build();
@@ -126,7 +131,9 @@ public class SmartObjectApi {
             if(!smartObject.isPresent())
                 return Response.status(Response.Status.NOT_FOUND).type(MediaType.APPLICATION_JSON_TYPE).entity(new ErrorMessage(Response.Status.NOT_FOUND.getStatusCode(),"Smart Object Id Not Found !")).build();
 
-            return Response.ok(smartObject.get()).build();
+            List smartObjectList = smartObjectToList(smartObject.get());
+
+            return Response.ok(smartObjectList).build();
 
         } catch (Exception e){
             e.printStackTrace();
@@ -198,6 +205,18 @@ public class SmartObjectApi {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).type(MediaType.APPLICATION_JSON_TYPE).entity(new ErrorMessage(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),"Internal Server Error !")).build();
         }
+    }
+
+    private List smartObjectToList(SmartObject smartObject) {
+        List smartObjectList = new ArrayList<>();
+        smartObjectList.add(smartObject.getSmartObjectId());
+        smartObjectList.add(smartObject.getAverageChargingDurationDescriptor());
+        smartObjectList.add(smartObject.getAverageParkingDurationDescriptor());
+        smartObjectList.add(smartObject.getSmartObjectType());
+        smartObjectList.add(smartObject.getGpsLocation());
+        smartObjectList.add(smartObject.getResourceMap().values());
+
+        return smartObjectList;
     }
 
 }

@@ -140,7 +140,7 @@ public class ChargingStationMqttSmartObject extends MqttSmartObject{
                                     Thread.sleep(SLEEP_TIME);
                                     publishTelemetryData(
                                             String.format("%s/%s/%s/%s", CHARGING_TOPIC, getMqttSmartObjectId(), TELEMETRY_TOPIC, resourceEntry.getKey()),
-                                            new TelemetryMessage<>(smartObjectResource.getType(), updatedValue));
+                                            new TelemetryMessage<>(smartObjectResource.getId(), smartObjectResource.getType(), updatedValue));
 
 
                                 } catch (MqttException | JsonProcessingException | InterruptedException e) {
@@ -163,7 +163,7 @@ public class ChargingStationMqttSmartObject extends MqttSmartObject{
                                      Thread.sleep(SLEEP_TIME);
                                      publishTelemetryData(
                                             String.format("%s/%s/%s/%s", CHARGING_TOPIC, getMqttSmartObjectId(), TELEMETRY_TOPIC, resourceEntry.getKey()),
-                                            new TelemetryMessage<>(smartObjectResource.getType(), updatedValue));
+                                            new TelemetryMessage<>(smartObjectResource.getId(), smartObjectResource.getType(), updatedValue));
                                 } catch (MqttException | JsonProcessingException | InterruptedException e) {
                                     e.printStackTrace();
                                 }
@@ -182,7 +182,7 @@ public class ChargingStationMqttSmartObject extends MqttSmartObject{
                                    Thread.sleep(SLEEP_TIME);
                                     publishTelemetryData(
                                             String.format("%s/%s/%s/%s", CHARGING_TOPIC, getMqttSmartObjectId(), TELEMETRY_TOPIC, resourceEntry.getKey()),
-                                            new TelemetryMessage<>(smartObjectResource.getType(), updatedValue));
+                                            new TelemetryMessage<>(smartObjectResource.getId(), smartObjectResource.getType(), updatedValue));
                                 } catch (MqttException | JsonProcessingException | InterruptedException e) {
                                     e.printStackTrace();
                                 }
@@ -201,7 +201,7 @@ public class ChargingStationMqttSmartObject extends MqttSmartObject{
                                     Thread.sleep(SLEEP_TIME);
                                     publishTelemetryData(
                                             String.format("%s/%s/%s/%s", CHARGING_TOPIC, getMqttSmartObjectId(), TELEMETRY_TOPIC, resourceEntry.getKey()),
-                                            new TelemetryMessage<>(smartObjectResource.getType(), updatedValue));
+                                            new TelemetryMessage<>(smartObjectResource.getId(), smartObjectResource.getType(), updatedValue));
                                 } catch (MqttException | JsonProcessingException | InterruptedException e) {
                                     e.printStackTrace();
                                 }
@@ -220,7 +220,7 @@ public class ChargingStationMqttSmartObject extends MqttSmartObject{
                                     Thread.sleep(SLEEP_TIME);
                                     publishTelemetryData(
                                             String.format("%s/%s/%s/%s", CHARGING_TOPIC, getMqttSmartObjectId(), TELEMETRY_TOPIC, resourceEntry.getKey()),
-                                            new TelemetryMessage<>(smartObjectResource.getType(), updatedValue));
+                                            new TelemetryMessage<>(smartObjectResource.getId(), smartObjectResource.getType(), updatedValue));
                                 } catch (MqttException | JsonProcessingException | InterruptedException e) {
                                     e.printStackTrace();
                                 }

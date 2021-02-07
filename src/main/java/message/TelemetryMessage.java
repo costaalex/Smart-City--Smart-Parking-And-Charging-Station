@@ -3,6 +3,8 @@ package message;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class TelemetryMessage<T> {
+    @JsonProperty("smartObjectId")
+    private String smartObjectId;
 
     @JsonProperty("timestamp")
     private long timestamp;
@@ -16,16 +18,26 @@ public class TelemetryMessage<T> {
     public TelemetryMessage() {
     }
 
-    public TelemetryMessage(String type, T dataValue) {
+    public TelemetryMessage(String smartObjectId, String type, T dataValue) {
+        this.smartObjectId = smartObjectId;
         this.timestamp = System.currentTimeMillis();
         this.type = type;
         this.dataValue = dataValue;
     }
 
-    public TelemetryMessage(long timestamp, String type, T dataValue) {
+    public TelemetryMessage(String smartObjectId, long timestamp, String type, T dataValue) {
+        this.smartObjectId = smartObjectId;
         this.timestamp = timestamp;
         this.type = type;
         this.dataValue = dataValue;
+    }
+
+    public String getSmartObjectId() {
+        return smartObjectId;
+    }
+
+    public void setSmartObjectId(String smartObjectId) {
+        this.smartObjectId = smartObjectId;
     }
 
     public long getTimestamp() {

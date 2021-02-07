@@ -38,8 +38,8 @@ public class TemperatureSensorResource extends SmartObjectResource<Double> imple
         init();
     }
 
-    public TemperatureSensorResource(String type, long timestamp, Double updatedTemperatureSensorValue) {  // server side
-        super(type, timestamp);
+    public TemperatureSensorResource(String id,String type, long timestamp, Double updatedTemperatureSensorValue) {  // server side
+        super(id, type, timestamp);
         this.updatedTemperatureSensorValue = updatedTemperatureSensorValue;
     }
 

@@ -91,8 +91,6 @@ public class DataCollectorAndManager {
 
                 updateSmartObjectsMap(topic, msg);
 
-                logger.info("SINGLETON.tostring: {}", SingletonDataCollector.getInstance().toString());
-
             });
 
         }catch (Exception e){
@@ -158,12 +156,10 @@ public class DataCollectorAndManager {
                     else
                         smartObject = new SmartObject(smartObjectId, new GpsLocationDescriptor(latitude, longitude), SmartObjectTypeDescriptor.PARKING_LOT);
                     SingletonDataCollector.getInstance().smartObjectsMap.put(smartObjectId, smartObject);
-                    logger.info("LLLL: {}",SingletonDataCollector.getInstance().smartObjectsMap.toString());
                 }
                 else{
 
                     SingletonDataCollector.getInstance().smartObjectsMap.get(smartObjectId).setGpsLocation(new GpsLocationDescriptor(latitude, longitude));
-                    logger.info("GGGG: {}",SingletonDataCollector.getInstance().smartObjectsMap.toString());
                 }
 
             }
@@ -176,6 +172,7 @@ public class DataCollectorAndManager {
             SmartObjectResource<?> sensor = null;
             long timestamp = telemetryMessageOptional.get().getTimestamp();
             String sensor_type = telemetryMessageOptional.get().getType();
+
             if (telemetryMessageOptional.isPresent() && telemetryMessageOptional.get().getType() != null) {
 
                 //If is the first value (charge station not exists in DataCollector)
@@ -193,23 +190,25 @@ public class DataCollectorAndManager {
                     // resourceMap.put(sensor_type, sensor);
                     smartObject.setResourceMap(resourceMap);
                     smartObjectsMapSingleton.put(smartObjectId, smartObject);
+
                 }
 
                 switch (telemetryMessageOptional.get().getType()) {
                     case EnergyConsumptionSensorResource.RESOURCE_TYPE:
                         Double newEnergyConsumptionValue = (Double) telemetryMessageOptional.get().getDataValue();
-                        sensor = new EnergyConsumptionSensorResource(sensor_type, timestamp, newEnergyConsumptionValue);
+                        sensor = new EnergyConsumptionSensorResource(telemetryMessageOptional.get().getSmartObjectId(),sensor_type, timestamp, newEnergyConsumptionValue);
                         logger.info("New Energy Consumption Data Received : {}", newEnergyConsumptionValue);
                         break;
 
                     case TemperatureSensorResource.RESOURCE_TYPE:
                         Double newTemperatureValue = (Double) telemetryMessageOptional.get().getDataValue();
-                        sensor = new TemperatureSensorResource(sensor_type, timestamp, newTemperatureValue);
+                        sensor = new TemperatureSensorResource(telemetryMessageOptional.get().getSmartObjectId(), sensor_type, timestamp, newTemperatureValue);
                         logger.info("New Temperature Data Received : {}", newTemperatureValue);
                         break;
+
                     case VehiclePresenceSensorResource.RESOURCE_TYPE:
                         Boolean newVehiclePresenceValue = (Boolean) telemetryMessageOptional.get().getDataValue();
-                        sensor = new VehiclePresenceSensorResource(sensor_type, timestamp, newVehiclePresenceValue);
+                        sensor = new VehiclePresenceSensorResource(telemetryMessageOptional.get().getSmartObjectId(), sensor_type, timestamp, newVehiclePresenceValue);
                         logger.info("New Vehicle Presence Data Received : {}", newVehiclePresenceValue);
 
                         if(topic.contains(PARKING_TOPIC))
@@ -218,7 +217,7 @@ public class DataCollectorAndManager {
                         break;
                     case ChargeStatusSensorResource.RESOURCE_TYPE:
                         ChargeStatusDescriptor newChargeStatusValue = ChargeStatusDescriptor.valueOf(telemetryMessageOptional.get().getDataValue().toString());
-                        sensor = new ChargeStatusSensorResource(sensor_type, timestamp, newChargeStatusValue);
+                        sensor = new ChargeStatusSensorResource(telemetryMessageOptional.get().getSmartObjectId(), sensor_type, timestamp, newChargeStatusValue);
                         logger.info("New Charge Status Data Received : {}", newChargeStatusValue);
 
                         updateChargingDurationAverage(newChargeStatusValue, timestamp, smartObjectId);
@@ -226,14 +225,13 @@ public class DataCollectorAndManager {
                         break;
                     case LedActuatorResource.RESOURCE_TYPE:
                         Led newLedValue = Led.valueOf(telemetryMessageOptional.get().getDataValue().toString());
-                        sensor = new LedActuatorResource(sensor_type, timestamp, newLedValue);
+                        sensor = new LedActuatorResource(telemetryMessageOptional.get().getSmartObjectId(), sensor_type, timestamp, newLedValue);
                         logger.info("New Led Actuator Data Received : {}", newLedValue);
                         break;
                 }
 
                 logger.info("New Energy Consumption Saved for: {}", topic);
                 smartObjectsMapSingleton.get(smartObjectId).getResourceMap().put(sensor_type, sensor);
-
 
             }
         }

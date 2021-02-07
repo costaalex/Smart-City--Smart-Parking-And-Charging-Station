@@ -108,16 +108,5 @@ public class SmartObject {
         this.resourceMap = resourceMap;
     }
 
-    @Override
-    public String toString() {
-        return "SmartObject{" +
-                "smartObjectId='" + smartObjectId + '\'' +
-                ", gpsLocation=" + gpsLocation +
-                ", mapper=" + mapper +
-                ", smartObjectType=" + smartObjectType +
-                ", resourceMap=" + resourceMap +
-                ", averageChargingDurationDescriptor=" + averageChargingDurationDescriptor +
-                ", averageParkingDurationDescriptor=" + averageParkingDurationDescriptor +
-                '}';
-    }
+
 }

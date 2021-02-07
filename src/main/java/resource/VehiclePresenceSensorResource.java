@@ -31,7 +31,7 @@ public class VehiclePresenceSensorResource extends SmartObjectResource<Boolean> 
         init();
     }
 
-    public VehiclePresenceSensorResource(String type, long timestamp, Boolean updatedTemperatureSensorValue) {  // server side
+    public VehiclePresenceSensorResource(String id, String type, long timestamp, Boolean updatedTemperatureSensorValue) {  // server side
         super(type, timestamp);
         this.updatedVehiclePresenceStatus = updatedVehiclePresenceStatus;
     }

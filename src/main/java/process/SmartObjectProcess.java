@@ -47,9 +47,12 @@ public class SmartObjectProcess {
                 createMqttSmartObject(CHARGING_STATION);
             }
 
+
             for(int i=0; i<1; i++) {
                 createMqttSmartObject(PARKING_LOT);
             }
+
+
 
 
 

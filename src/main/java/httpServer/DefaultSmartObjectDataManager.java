@@ -22,13 +22,12 @@ public class DefaultSmartObjectDataManager implements ISmartObjectDataManager{
     SingletonDataCollector single_instance = SingletonDataCollector.getInstance();
 
     @Override
-    public Optional<Map<String, GpsLocationDescriptor>> getSmartObjectLocationList() {
+    public Optional<Map<String, GpsLocationDescriptor>> getsmartobjectlocationMap() {
 
         if (single_instance == null)
             return Optional.empty();
         //Iterate on map and take couples id, gps
         Map<String, SmartObject> smartObjectsMap = single_instance.smartObjectsMap;
-
 
         Map<String, GpsLocationDescriptor> smartObjectsLocationMap = new HashMap<>();
         for (Map.Entry<String, SmartObject> entry : smartObjectsMap.entrySet()) {
@@ -38,7 +37,7 @@ public class DefaultSmartObjectDataManager implements ISmartObjectDataManager{
             smartObjectsLocationMap.put(smartObjectId, gpsLocationDescriptor);
 
         }
-        System.out.println("SSS-"+ smartObjectsLocationMap);
+
         return  Optional.ofNullable(smartObjectsLocationMap);
     }
 
@@ -51,14 +50,14 @@ public class DefaultSmartObjectDataManager implements ISmartObjectDataManager{
     }
 
     @Override
-    public Optional<Map<String, SmartObject>> getSmartObjectsList() {
+    public Optional<Map<String, SmartObject>> getSmartObjectsMap() {
         if (single_instance == null)
             return Optional.empty();
         return Optional.ofNullable(single_instance.smartObjectsMap);
     }
 
     @Override
-    public Optional<Map<String, SmartObject>> getSmartObjectsList(SmartObjectTypeDescriptor smartObjectType) {
+    public Optional<Map<String, SmartObject>> getSmartObjectsMap(SmartObjectTypeDescriptor smartObjectType) {
         if (single_instance == null)
             return Optional.empty();
 

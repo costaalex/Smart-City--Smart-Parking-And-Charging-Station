@@ -42,8 +42,8 @@ public class EnergyConsumptionSensorResource extends SmartObjectResource<Double>
         init();
     }
 
-    public EnergyConsumptionSensorResource(String type, long timestamp, Double updatedValue) {
-        super(type, timestamp);
+    public EnergyConsumptionSensorResource(String id, String type, long timestamp, Double updatedValue) {
+        super(id, type, timestamp);
         this.updatedValue = updatedValue;
     }
 
