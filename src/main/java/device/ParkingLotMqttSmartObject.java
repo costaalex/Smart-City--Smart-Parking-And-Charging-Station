@@ -17,14 +17,10 @@ import resource.*;
 import java.util.Map;
 import java.util.Optional;
 
-public class ParkingLotMqttSmartObject extends MqttSmartObject{
-        private static final Logger logger = LoggerFactory.getLogger(ParkingLotMqttSmartObject.class);
+public class ParkingLotMqttSmartObject extends MqttSmartObject {
+
 
         public static final String PARKING_TOPIC = BASIC_TOPIC + "/parking_lot";
-
-        private static ObjectMapper mapper;
-
-        public Led ledReceivedFromServer;
 
         /**
          * Init the charging station smart object with its ID, the MQTT Client and the Map of managed resources
@@ -36,10 +32,10 @@ public class ParkingLotMqttSmartObject extends MqttSmartObject{
 
             super.setMqttSmartObjectId(chargingStationId);
             super.setGpsLocation(gpsLocation);
-            this.setMqttClient(mqttClient);
-            this.setResourceMap(resourceMap);
-            mapper = new ObjectMapper();
-            logger.info("Parking Lot Smart Object correctly created ! Resource Number: {}", resourceMap.keySet().size());
+            super.setLogger(LoggerFactory.getLogger(ParkingLotMqttSmartObject.class));
+            super.getLogger().info("Parking Lot Smart Object correctly created ! Resource Number: {}", resourceMap.keySet().size());
+            super.setMqttClient(mqttClient);
+            super.setResourceMap(resourceMap);
         }
 
         /**
@@ -53,7 +49,7 @@ public class ParkingLotMqttSmartObject extends MqttSmartObject{
                         super.getMqttSmartObjectId() != null  && super.getMqttSmartObjectId().length() > 0 &&
                         super.getResourceMap() != null && super.getResourceMap().keySet().size() > 0){
 
-                    logger.info("Starting Charging Station Emulator ....");
+                    super.getLogger().info("Starting Charging Station Emulator ....");
 
                     registerToControlChannel();
 
@@ -69,104 +65,88 @@ public class ParkingLotMqttSmartObject extends MqttSmartObject{
                 }
 
             }catch (Exception e){
-                logger.error("Error Starting the Parking Lot Emulator ! Msg: {}", e.getLocalizedMessage());
+                super.getLogger().error("Error Starting the Parking Lot Emulator ! Msg: {}", e.getLocalizedMessage());
             }
 
         }
     protected void registerToControlChannel() {
 
-        final Led[] ledReceived = new Led[1];
+
         try{
             String deviceControlTopic = String.format("%s/%s/%s", PARKING_TOPIC, getMqttSmartObjectId(), CONTROL_TOPIC);
 
-            logger.info("Parking Lot Mqtt Registering to Control Topic ({}) ... ", deviceControlTopic);
+            super.getLogger().info("Parking Lot Mqtt Registering to Control Topic ({}) ... ", deviceControlTopic);
 
-            getMqttClient().subscribe(deviceControlTopic, new IMqttMessageListener() {
-                @Override
-                public void messageArrived(String topic, MqttMessage message) throws Exception {
+            getMqttClient().subscribe(deviceControlTopic, this);
 
-                    if (message != null){
-                        logger.info("[CONTROL CHANNEL] -> Control Message Received -> {}", new String(message.getPayload()));
-                        // TODO set led color from payload
-                        Optional<ControlMessage<?>> generalMessageOptional = parseControlMessagePayload(message);
-
-                        if (generalMessageOptional.isPresent() ) {
-                            ledReceivedFromServer = (Led) generalMessageOptional.get().getDataValue();
-                        }
-                    }
-                    else
-                        logger.error("[CONTROL CHANNEL] -> Null control message received !");
-                }
-            });
-            ((LedActuatorResource) super.getResourceMap().get("led")).setIsActive(ledReceivedFromServer);
 
 
         }catch (Exception e){
-            logger.error("ERROR Registering to Control Channel ! Msg: {}", e.getLocalizedMessage());
+            super.getLogger().error("ERROR Registering to Control Channel ! Msg: {}", e.getLocalizedMessage());
         }
     }
 
 
-        private void registerToAvailableResources(){
-            try{
+    private void registerToAvailableResources(){
+        try{
 
-                super.getResourceMap().entrySet().forEach(resourceEntry -> {
+            super.getResourceMap().entrySet().forEach(resourceEntry -> {
 
-                    if(resourceEntry.getKey() != null && resourceEntry.getValue() != null){
-                        SensorResource sensorResource = resourceEntry.getValue();
+                if(resourceEntry.getKey() != null && resourceEntry.getValue() != null){
+                    SensorResource sensorResource = resourceEntry.getValue();
 
-                        logger.info("Registering to Resource {} (id: {}) notifications ...",
-                                sensorResource.getType(),
-                                sensorResource.getId());
+                    super.getLogger().info("Registering to Resource {} (id: {}) notifications ...",
+                            sensorResource.getType(),
+                            sensorResource.getId());
 
-                        //Register to VehiclePresenceResource Notification
-                        if(sensorResource.getType().equalsIgnoreCase(VehiclePresenceSensorResource.RESOURCE_TYPE)){
+                    //Register to VehiclePresenceResource Notification
+                    if(sensorResource.getType().equalsIgnoreCase(VehiclePresenceSensorResource.RESOURCE_TYPE)){
 
-                            VehiclePresenceSensorResource vehiclePresenceSensorResource = (VehiclePresenceSensorResource) sensorResource;
-                            vehiclePresenceSensorResource.addDataListener((ResourceDataListener<Boolean>) super.getResourceMap().get("led"));
-                            vehiclePresenceSensorResource.addDataListener(new ResourceDataListener<Boolean>() {
-                                @Override
-                                public void onDataChanged(SensorResource<Boolean> resource, Boolean updatedValue) {
-                                    try {
-                                        publishTelemetryData(
-                                                String.format("%s/%s/%s/%s", PARKING_TOPIC, getMqttSmartObjectId(), TELEMETRY_TOPIC, resourceEntry.getKey()),
-                                                new TelemetryMessage<>(sensorResource.getId(), sensorResource.getType(), updatedValue));
-                                    } catch (MqttException | JsonProcessingException e) {
-                                        e.printStackTrace();
-                                    }
+                        VehiclePresenceSensorResource vehiclePresenceSensorResource = (VehiclePresenceSensorResource) sensorResource;
+                        vehiclePresenceSensorResource.addDataListener((ResourceDataListener<Boolean>) super.getResourceMap().get("led"));
+                        vehiclePresenceSensorResource.addDataListener(new ResourceDataListener<Boolean>() {
+                            @Override
+                            public void onDataChanged(SensorResource<Boolean> resource, Boolean updatedValue) {
+                                try {
+                                    publishTelemetryData(
+                                            String.format("%s/%s/%s/%s", PARKING_TOPIC, getMqttSmartObjectId(), TELEMETRY_TOPIC, resourceEntry.getKey()),
+                                            new TelemetryMessage<>(sensorResource.getId(), sensorResource.getType(), updatedValue));
+                                } catch (MqttException | JsonProcessingException e) {
+                                    e.printStackTrace();
                                 }
-                            });
-                        }
-
-                        //Register to LedActuatorResource         -- Led
-                        if(sensorResource.getType().equalsIgnoreCase(LedActuatorResource.RESOURCE_TYPE)){
-
-                            LedActuatorResource ledActuatorResource = (LedActuatorResource) sensorResource;
-                            ledActuatorResource.addDataListener((ResourceDataListener<Led>) super.getResourceMap().get("vehicle_presence"));
-                            ledActuatorResource.addDataListener(new ResourceDataListener<Led>() {
-                                @Override
-                                public void onDataChanged(SensorResource<Led> resource, Led updatedValue) {
-                                    try {
-                                        publishTelemetryData(
-                                                String.format("%s/%s/%s/%s", PARKING_TOPIC, getMqttSmartObjectId(), TELEMETRY_TOPIC, resourceEntry.getKey()),
-                                                new TelemetryMessage<>(resource.getId(), sensorResource.getType(), updatedValue));
-                                    } catch (MqttException | JsonProcessingException e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-                            });
-                        }
-
+                            }
+                        });
                     }
-                });
 
-            }catch (Exception e){
-                logger.error("Error Registering to Resource ! Msg: {}", e.getLocalizedMessage());
-            }
+                    //Register to LedActuatorResource         -- Led
+                    if(sensorResource.getType().equalsIgnoreCase(LedActuatorResource.RESOURCE_TYPE)){
+
+                        LedActuatorResource ledActuatorResource = (LedActuatorResource) sensorResource;
+                        ledActuatorResource.addDataListener((ResourceDataListener<Led>) super.getResourceMap().get("vehicle_presence"));
+                        ledActuatorResource.addDataListener(new ResourceDataListener<Led>() {
+                            @Override
+                            public void onDataChanged(SensorResource<Led> resource, Led updatedValue) {
+                                try {
+                                    publishTelemetryData(
+                                            String.format("%s/%s/%s/%s", PARKING_TOPIC, getMqttSmartObjectId(), TELEMETRY_TOPIC, resourceEntry.getKey()),
+                                            new TelemetryMessage<>(resource.getId(), sensorResource.getType(), updatedValue));
+                                } catch (MqttException | JsonProcessingException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
+                    }
+
+                }
+            });
+
+        }catch (Exception e){
+            super.getLogger().error("Error Registering to Resource ! Msg: {}", e.getLocalizedMessage());
         }
+    }
     public void publishTelemetryData(String topic, TelemetryMessage<?> telemetryMessage) throws MqttException, JsonProcessingException {
 
-        logger.info("Sending to topic: {} -> Data: {}", topic, telemetryMessage);
+        super.getLogger().info("Sending to topic: {} -> Data: {}", topic, telemetryMessage);
 
         if(getMqttClient() != null && getMqttClient().isConnected() && telemetryMessage != null && topic != null){
 
@@ -177,16 +157,16 @@ public class ParkingLotMqttSmartObject extends MqttSmartObject{
 
             getMqttClient().publish(topic, mqttMessage);
 
-            logger.info("Data Correctly Published to topic: {}", topic);
+            super.getLogger().info("Data Correctly Published to topic: {}", topic);
 
         }
         else
-            logger.error("Error: Topic or Msg = Null or MQTT Client is not Connected !");
+            super.getLogger().error("Error: Topic or Msg = Null or MQTT Client is not Connected !");
     }
 
     public void publishGeneralData(String topic, GpsLocationDescriptor gpsLocationDescriptor) throws MqttException, JsonProcessingException {
 
-        logger.info("Sending to topic: {} -> Data: {}", topic, gpsLocationDescriptor);
+        super.getLogger().info("Sending to topic: {} -> Data: {}", topic, gpsLocationDescriptor);
 
         if(getMqttClient() != null && getMqttClient().isConnected() && gpsLocationDescriptor != null && topic != null){
 
@@ -198,11 +178,11 @@ public class ParkingLotMqttSmartObject extends MqttSmartObject{
 
             getMqttClient().publish(topic, mqttMessage);
 
-            logger.info("Data Correctly Published to topic: {}", topic);
+            super.getLogger().info("Data Correctly Published to topic: {}", topic);
 
         }
         else
-            logger.error("Error: Topic or Msg = Null or MQTT Client is not Connected !");
+            super.getLogger().error("Error: Topic or Msg = Null or MQTT Client is not Connected !");
     }
 
     /**

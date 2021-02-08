@@ -20,8 +20,6 @@ import java.util.Optional;
 
 public class ChargingStationMqttSmartObject extends MqttSmartObject implements IMqttMessageListener{
 
-    private static final Logger logger = LoggerFactory.getLogger(ChargingStationMqttSmartObject.class);
-
     public static final String CHARGING_TOPIC = BASIC_TOPIC + "/charging_station";
 
     private static final Integer SLEEP_TIME = 50;
@@ -42,8 +40,8 @@ public class ChargingStationMqttSmartObject extends MqttSmartObject implements I
         super.setGpsLocation(gpsLocation);
         super.setMqttClient(mqttClient);
         super.setResourceMap(resourceMap);
-
-        logger.info("Charging Station Smart Object correctly created ! Resource Number: {}", resourceMap.keySet().size());
+        super.setLogger(LoggerFactory.getLogger(ChargingStationMqttSmartObject.class));
+        super.getLogger().info("Charging Station Smart Object correctly created ! Resource Number: {}", resourceMap.keySet().size());
     }
 
     /**
@@ -57,7 +55,7 @@ public class ChargingStationMqttSmartObject extends MqttSmartObject implements I
                 super.getMqttSmartObjectId() != null  && super.getMqttSmartObjectId().length() > 0 &&
                 super.getResourceMap() != null && super.getResourceMap().keySet().size() > 0){
 
-                logger.info("Starting Charging Station Emulator ....");
+                super.getLogger().info("Starting Charging Station Emulator ....");
 
                 registerToControlChannel();
 
@@ -74,7 +72,7 @@ public class ChargingStationMqttSmartObject extends MqttSmartObject implements I
             }
 
         }catch (Exception e){
-            logger.error("Error Starting the Charging Station Emulator ! Msg: {}", e.getLocalizedMessage());
+            super.getLogger().error("Error Starting the Charging Station Emulator ! Msg: {}", e.getLocalizedMessage());
         }
 
     }
@@ -84,12 +82,12 @@ public class ChargingStationMqttSmartObject extends MqttSmartObject implements I
         try{
             String deviceControlTopic = String.format("%s/%s/%s", CHARGING_TOPIC, getMqttSmartObjectId(), CONTROL_TOPIC);
 
-            logger.info("Charging Station Mqtt Registering to Control Topic ({}) ... ", deviceControlTopic);
+            super.getLogger().info("Charging Station Mqtt Registering to Control Topic ({}) ... ", deviceControlTopic);
 
             getMqttClient().subscribe(deviceControlTopic,this);
 
         }catch (Exception e){
-            logger.error("ERROR Registering to Control Channel ! Msg: {}", e.getLocalizedMessage());
+            super.getLogger().error("ERROR Registering to Control Channel ! Msg: {}", e.getLocalizedMessage());
         }
     }
 
@@ -101,7 +99,7 @@ public class ChargingStationMqttSmartObject extends MqttSmartObject implements I
                 if(resourceEntry.getKey() != null && resourceEntry.getValue() != null){
                     SensorResource sensorResource = resourceEntry.getValue();
 
-                    logger.info("Registering to Resource {} (id: {}) notifications ...",
+                    super.getLogger().info("Registering to Resource {} (id: {}) notifications ...",
                             sensorResource.getType(),
                             sensorResource.getId());
 
@@ -214,12 +212,12 @@ public class ChargingStationMqttSmartObject extends MqttSmartObject implements I
             });
 
         }catch (Exception e){
-            logger.error("Error Registering to Resource ! Msg: {}", e.getLocalizedMessage());
+            super.getLogger().error("Error Registering to Resource ! Msg: {}", e.getLocalizedMessage());
         }
     }
     public void publishTelemetryData(String topic, TelemetryMessage<?> telemetryMessage) throws MqttException, JsonProcessingException {
 
-        logger.info("Sending to topic: {} -> Data: {}", topic, telemetryMessage);
+        super.getLogger().info("Sending to topic: {} -> Data: {}", topic, telemetryMessage);
 
         if(getMqttClient() != null && getMqttClient().isConnected() && telemetryMessage != null && topic != null){
 
@@ -230,16 +228,16 @@ public class ChargingStationMqttSmartObject extends MqttSmartObject implements I
 
             getMqttClient().publish(topic, mqttMessage);
 
-            logger.info("Data Correctly Published to topic: {}", topic);
+            super.getLogger().info("Data Correctly Published to topic: {}", topic);
 
         }
         else
-            logger.error("Error: Topic or Msg = Null or MQTT Client is not Connected !");
+            super.getLogger().error("Error: Topic or Msg = Null or MQTT Client is not Connected !");
     }
 
     public void publishGeneralData(String topic, GpsLocationDescriptor gpsLocationDescriptor) throws MqttException, JsonProcessingException {
 
-        logger.info("Sending to topic: {} -> Data: {}", topic, gpsLocationDescriptor);
+        super.getLogger().info("Sending to topic: {} -> Data: {}", topic, gpsLocationDescriptor);
 
         if(getMqttClient() != null && getMqttClient().isConnected() && gpsLocationDescriptor != null && topic != null){
 
@@ -251,11 +249,11 @@ public class ChargingStationMqttSmartObject extends MqttSmartObject implements I
 
             getMqttClient().publish(topic, mqttMessage);
 
-            logger.info("Data Correctly Published to topic: {}", topic);
+            super.getLogger().info("Data Correctly Published to topic: {}", topic);
 
         }
         else
-            logger.error("Error: Topic or Msg = Null or MQTT Client is not Connected !");
+            super.getLogger().error("Error: Topic or Msg = Null or MQTT Client is not Connected !");
     }
 
     /**
@@ -270,19 +268,23 @@ public class ChargingStationMqttSmartObject extends MqttSmartObject implements I
     public void messageArrived(String topic, MqttMessage mqttMessage) throws Exception {
 
         if (mqttMessage != null){
-            logger.info("[CONTROL CHANNEL] -> Control Message Received -> {}", new String(mqttMessage.getPayload()));
-            // TODO set led color from payload
+            super.getLogger().info("[CONTROL CHANNEL] -> Control Message Received -> {}", new String(mqttMessage.getPayload()));
+
             Optional<ControlMessage<?>> generalMessageOptional = parseControlMessagePayload(mqttMessage);
 
             if (generalMessageOptional.isPresent() ) {
-                LedActuatorResource a = (LedActuatorResource) super.getResourceMap().get("led");
-                Led l= (Led) generalMessageOptional.get().getDataValue();
-                (a).setIsActive(l);
-                int i=0;
+                LedActuatorResource ledReceived = (LedActuatorResource) super.getResourceMap().get("led");
+                if(generalMessageOptional.get().getDataValue().equals("YELLOW"))
+                    ledReceived.setIsActive(Led.YELLOW);
+                else if(generalMessageOptional.get().getDataValue().equals("GREEN"))
+                    ledReceived.setIsActive(Led.GREEN);
+                if(generalMessageOptional.get().getDataValue().equals("RED"))
+                    ledReceived.setIsActive(Led.RED);
+
             }
         }
         else
-            logger.error("[CONTROL CHANNEL] -> Null control message received !");
+            super.getLogger().error("[CONTROL CHANNEL] -> Null control message received !");
     }
 
 }

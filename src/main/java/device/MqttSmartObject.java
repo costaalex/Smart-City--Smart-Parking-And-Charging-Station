@@ -4,8 +4,12 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import message.ControlMessage;
 import model.GpsLocationDescriptor;
+import model.Led;
 import org.eclipse.paho.client.mqttv3.IMqttClient;
+import org.eclipse.paho.client.mqttv3.IMqttMessageListener;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.slf4j.Logger;
+import resource.LedActuatorResource;
 import resource.SensorResource;
 
 import java.util.Map;
@@ -13,7 +17,7 @@ import java.util.Optional;
 
 import static process.SmartObjectProcess.MQTT_USERNAME;
 
-public abstract class MqttSmartObject {
+public abstract class MqttSmartObject implements IMqttMessageListener {
     public static final String BASIC_TOPIC = "iot/user/" + MQTT_USERNAME + "/smartcity";
 
     public static final String TELEMETRY_TOPIC = "telemetry";
@@ -36,14 +40,18 @@ public abstract class MqttSmartObject {
 
     private Map<String, SensorResource<?>> resourceMap;
 
+    private Logger logger;
+
     public MqttSmartObject() {
         this.mapper = new ObjectMapper();
     }
 
-    public MqttSmartObject(String mqttSmartObjectId, GpsLocationDescriptor gpsLocation) {
-        this.mqttSmartObjectId = mqttSmartObjectId;
-        this.gpsLocation = gpsLocation;
-        this.mapper = new ObjectMapper();
+    public Logger getLogger() {
+        return logger;
+    }
+
+    public void setLogger(Logger logger) {
+        this.logger = logger;
     }
 
     public String getMqttSmartObjectId() {
@@ -98,6 +106,25 @@ public abstract class MqttSmartObject {
 
         }catch (Exception e){
             return Optional.empty();
+        }
+    }
+    @Override
+    public void messageArrived(String topic, MqttMessage mqttMessage) throws Exception {
+
+        if (mqttMessage != null) {
+            logger.info("[CONTROL CHANNEL] -> Control Message Received -> {}", new String(mqttMessage.getPayload()));
+            Optional<ControlMessage<?>> generalMessageOptional = parseControlMessagePayload(mqttMessage);
+
+            if (generalMessageOptional.isPresent()) {
+                LedActuatorResource ledReceived = (LedActuatorResource) getResourceMap().get("led");
+                if (generalMessageOptional.get().getDataValue().equals("YELLOW"))
+                    ledReceived.setIsActive(Led.YELLOW);
+                else if (generalMessageOptional.get().getDataValue().equals("GREEN"))
+                    ledReceived.setIsActive(Led.GREEN);
+                if (generalMessageOptional.get().getDataValue().equals("RED"))
+                    ledReceived.setIsActive(Led.RED);
+            } else
+                logger.error("[CONTROL CHANNEL] -> Null control message received !");
         }
     }
 
