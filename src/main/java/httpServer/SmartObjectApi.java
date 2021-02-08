@@ -5,10 +5,7 @@ import dto.SmartObject;
 import io.dropwizard.jersey.errors.ErrorMessage;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import model.ChargeStatusDescriptor;
-import model.GpsLocationDescriptor;
-import model.Led;
-import model.SmartObjectTypeDescriptor;
+import model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import resource.*;
@@ -78,8 +75,10 @@ public class SmartObjectApi {
                 return Response.status(Response.Status.NOT_FOUND).type(MediaType.APPLICATION_JSON_TYPE).entity(new ErrorMessage(Response.Status.NOT_FOUND.getStatusCode(),"Smart Objects Not Found !")).build();
 
             List smartObjectList = new ArrayList();
-            for (SmartObject s: smartObjectMap.get().values())
+            for (SmartObject s: smartObjectMap.get().values()) {
+
                 smartObjectList.add(smartObjectToList(s));
+            }
             return Response.ok(smartObjectList).build();
 
         } catch (Exception e){
@@ -216,16 +215,20 @@ public class SmartObjectApi {
         smartObjectList.add(smartObject.getAverageParkingDurationDescriptor());
         smartObjectList.add(smartObject.getSmartObjectType());
         smartObjectList.add(smartObject.getGpsLocation());
-        /*
-        List sensorList = new ArrayList();
+
+        ArrayList sensorList = new ArrayList();
         for (SmartObjectResource s: smartObject.getResourceMap().values()) {
             switch (s.getType()) {
                 case EnergyConsumptionSensorResource.RESOURCE_TYPE:
-                    sensorList.add((EnergyConsumptionSensorResource) s);
+                    EnergyConsumptionSensorResource energyConsumptionSensorResource = (EnergyConsumptionSensorResource)s;
+                    SensorDescriptor<Double> sensorDescriptor = new SensorDescriptor(energyConsumptionSensorResource.getId(), energyConsumptionSensorResource.getTimestamp(), energyConsumptionSensorResource.getType(), energyConsumptionSensorResource.getUpdatedValue());
+                    sensorList.add(sensorDescriptor);
                     break;
 
                 case TemperatureSensorResource.RESOURCE_TYPE:
-                    sensorList.add((TemperatureSensorResource) s);
+                    TemperatureSensorResource sensorResource = (TemperatureSensorResource) s;
+                    SensorDescriptor<Double> sensorDescriptor = new SensorDescriptor(sensorResource.getId(),sensorResource.getTimestamp(),sensorResource.getType(),sensorResource.getUpdatedValue());
+                    sensorList.add(sensorDescriptor);
                     break;
 
                 case VehiclePresenceSensorResource.RESOURCE_TYPE:
@@ -243,9 +246,11 @@ public class SmartObjectApi {
         }
         smartObjectList.add(sensorList);
 
-         */
 
-        smartObjectList.add(smartObject.getResourceMap().values());
+
+      //  smartObjectList.add(smartObject.getResourceMap().values());
+        int i=0;
+        i++;
         return smartObjectList;
     }
 

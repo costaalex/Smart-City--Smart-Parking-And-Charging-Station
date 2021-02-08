@@ -10,10 +10,7 @@ import dto.SingletonDataCollector;
 import dto.SmartObject;
 import message.ControlMessage;
 import message.TelemetryMessage;
-import model.ChargeStatusDescriptor;
-import model.GpsLocationDescriptor;
-import model.Led;
-import model.SmartObjectTypeDescriptor;
+import model.*;
 import org.eclipse.paho.client.mqttv3.*;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.slf4j.Logger;
@@ -42,7 +39,7 @@ public class DataCollectorAndManager {
     private static int BROKER_PORT = 1883;
 
     private static final String TARGET_TOPIC = "#";
-
+    private static Integer conta = 0;
     private static ObjectMapper mapper;
     static IMqttClient client;
 
@@ -230,11 +227,17 @@ public class DataCollectorAndManager {
                         break;
                 }
 
-                logger.info("New Energy Consumption Saved for: {}", topic);
+                logger.info("New Sensor Saved for: {}", topic);
                 smartObjectsMapSingleton.get(smartObjectId).getResourceMap().put(sensor_type, sensor);
 
                 //System.err.println("ciao" + smartObjectsMapSingleton.values());
+             /*   if(conta==20) {
+                    AverageChargingDurationDescriptor acdd = SingletonDataCollector.getInstance().averageChargingDurationDescriptor;
+                    Map<String, SmartObject> som= SingletonDataCollector.getInstance().smartObjectsMap;
+                    logger.info("mappa: {}", som.toString());
+                }
 
+                conta++;*/
             }
         }
     }

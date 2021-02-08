@@ -104,6 +104,10 @@ public class EnergyConsumptionSensorResource extends SmartObjectResource<Double>
         isConsumingEnergy = active;
     }
 
+    public Double getUpdatedValue() {
+        return updatedValue;
+    }
+
     @Override
     public void onDataChanged(SmartObjectResource<ChargeStatusDescriptor> smartObjectResource, ChargeStatusDescriptor updatedValue) {
         if (smartObjectResource != null && smartObjectResource.getType().equals(ChargeStatusSensorResource.RESOURCE_TYPE)) {
