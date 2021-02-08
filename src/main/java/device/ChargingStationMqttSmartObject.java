@@ -80,7 +80,7 @@ public class ChargingStationMqttSmartObject extends MqttSmartObject implements I
 
 
         try{
-            String deviceControlTopic = String.format("%s/%s/%s", CHARGING_TOPIC, getMqttSmartObjectId(), CONTROL_TOPIC);
+            String deviceControlTopic = String.format("%s/%s/%s/%s", CHARGING_TOPIC, getMqttSmartObjectId(), CONTROL_TOPIC, LedActuatorResource.RESOURCE_NAME);
 
             super.getLogger().info("Charging Station Mqtt Registering to Control Topic ({}) ... ", deviceControlTopic);
 

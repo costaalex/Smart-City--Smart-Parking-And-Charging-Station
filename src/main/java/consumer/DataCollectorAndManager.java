@@ -24,6 +24,7 @@ import java.util.UUID;
 import static device.ChargingStationMqttSmartObject.CHARGING_TOPIC;
 import static device.MqttSmartObject.CONTROL_TOPIC;
 import static device.ParkingLotMqttSmartObject.PARKING_TOPIC;
+import static resource.LedActuatorResource.RESOURCE_NAME;
 
 public class DataCollectorAndManager {
 
@@ -267,10 +268,10 @@ public class DataCollectorAndManager {
         String topic = null;
         switch (smartObjectTypeDescriptor){
             case PARKING_LOT:
-                topic = String.format("%s/%s/%s", PARKING_TOPIC, idSmartObject, CONTROL_TOPIC);
+                topic = String.format("%s/%s/%s/%s", PARKING_TOPIC, idSmartObject, CONTROL_TOPIC, RESOURCE_NAME);
                 break;
             case CHARGING_STATION:
-                topic = String.format("%s/%s/%s", CHARGING_TOPIC, idSmartObject, CONTROL_TOPIC);
+                topic = String.format("%s/%s/%s/%s", CHARGING_TOPIC, idSmartObject, CONTROL_TOPIC, RESOURCE_NAME);
                 break;
         }
         logger.info("Sending to topic: {} -> Data: {}", topic, controlMessage);

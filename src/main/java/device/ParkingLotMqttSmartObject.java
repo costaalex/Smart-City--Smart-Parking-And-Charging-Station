@@ -17,6 +17,8 @@ import resource.*;
 import java.util.Map;
 import java.util.Optional;
 
+import static resource.LedActuatorResource.RESOURCE_NAME;
+
 public class ParkingLotMqttSmartObject extends MqttSmartObject {
 
 
@@ -73,7 +75,7 @@ public class ParkingLotMqttSmartObject extends MqttSmartObject {
 
 
         try{
-            String deviceControlTopic = String.format("%s/%s/%s", PARKING_TOPIC, getMqttSmartObjectId(), CONTROL_TOPIC);
+            String deviceControlTopic = String.format("%s/%s/%s/%s", PARKING_TOPIC, getMqttSmartObjectId(), CONTROL_TOPIC, LedActuatorResource.RESOURCE_NAME);
 
             super.getLogger().info("Parking Lot Mqtt Registering to Control Topic ({}) ... ", deviceControlTopic);
 

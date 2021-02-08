@@ -11,6 +11,8 @@ public class LedActuatorResource extends SensorResource<Led> implements Resource
 
     public static final String RESOURCE_TYPE = "iot:actuator:led";
 
+    public static final String RESOURCE_NAME = "led";
+
     private Led isActive;
 
     public LedActuatorResource() {

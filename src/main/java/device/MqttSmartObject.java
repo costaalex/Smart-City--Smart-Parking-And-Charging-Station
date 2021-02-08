@@ -22,13 +22,10 @@ public abstract class MqttSmartObject implements IMqttMessageListener {
 
     public static final String TELEMETRY_TOPIC = "telemetry";
 
-    public static final String EVENT_TOPIC = "event";
-
     public static final String CONTROL_TOPIC = "control";
 
     public static final String GENERAL = "general";
 
-    public static final String COMMAND_TOPIC = "command";
 
     private String mqttSmartObjectId;
 
