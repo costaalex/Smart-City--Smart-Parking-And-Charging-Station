@@ -70,14 +70,6 @@ public class SmartObjectApi {
             if(!smartObjectMap.isPresent())
                 return Response.status(Response.Status.NOT_FOUND).type(MediaType.APPLICATION_JSON_TYPE).entity(new ErrorMessage(Response.Status.NOT_FOUND.getStatusCode(),"Smart Objects Not Found !")).build();
 
-          /*  List smartObjectList = new ArrayList();
-            for (SmartObject s: smartObjectMap.get().values()) {
-
-                smartObjectList.add(smartObjectToList(s));
-            }
-
-           */
-            //return Response.ok(smartObjectList).build();
             return Response.ok(smartObjectMap.get()).build();
 
         } catch (Exception e){
@@ -102,7 +94,6 @@ public class SmartObjectApi {
             if(!gpsLocationDescriptor.isPresent())
                 return Response.status(Response.Status.NOT_FOUND).type(MediaType.APPLICATION_JSON_TYPE).entity(new ErrorMessage(Response.Status.NOT_FOUND.getStatusCode(),"Smart Objects Not Found !")).build();
 
-            logger.info("Ciao {}", gpsLocationDescriptor.get());
             return Response.ok(gpsLocationDescriptor.get()).build();
 
         } catch (Exception e){
@@ -132,8 +123,6 @@ public class SmartObjectApi {
             if(!smartObject.isPresent())
                 return Response.status(Response.Status.NOT_FOUND).type(MediaType.APPLICATION_JSON_TYPE).entity(new ErrorMessage(Response.Status.NOT_FOUND.getStatusCode(),"Smart Object Id Not Found !")).build();
 
-          //  List smartObjectList = smartObjectToList(smartObject.get());
-
             return Response.ok(smartObject.get()).build();
 
         } catch (Exception e){
@@ -159,22 +148,10 @@ public class SmartObjectApi {
             if(idSmartObject == null || sensor_type == null)
                 return Response.status(Response.Status.BAD_REQUEST).type(MediaType.APPLICATION_JSON_TYPE).entity(new ErrorMessage(Response.Status.BAD_REQUEST.getStatusCode(),"Invalid Smart Object Id Provided !")).build();
 
-            Optional<SmartObject> smartObject = this.conf.getInventoryDataManager().getSmartObjectById(idSmartObject);
+            Optional<SensorResource<?>> sensor = this.conf.getInventoryDataManager().getSensorBySmartObjectId(idSmartObject, sensor_type);
 
-            if(!smartObject.isPresent())
+            if(!sensor.isPresent())
                 return Response.status(Response.Status.NOT_FOUND).type(MediaType.APPLICATION_JSON_TYPE).entity(new ErrorMessage(Response.Status.NOT_FOUND.getStatusCode(),"Smart Object Id Not Found !")).build();
-
-            SensorResource<?> sensor = null;
-            if(VehiclePresenceSensorResource.RESOURCE_TYPE.contains(sensor_type))
-                sensor = smartObject.get().getResourceMap().get(VehiclePresenceSensorResource.RESOURCE_TYPE);                  //Extract the requested sensor
-            else if(TemperatureSensorResource.RESOURCE_TYPE.contains(sensor_type))
-                sensor = smartObject.get().getResourceMap().get(TemperatureSensorResource.RESOURCE_TYPE);
-            else if(EnergyConsumptionSensorResource.RESOURCE_TYPE.contains(sensor_type))
-                sensor = smartObject.get().getResourceMap().get(EnergyConsumptionSensorResource.RESOURCE_TYPE);
-            else if(ChargeStatusSensorResource.RESOURCE_TYPE.contains(sensor_type))
-                sensor = smartObject.get().getResourceMap().get(ChargeStatusSensorResource.RESOURCE_TYPE);
-            else if(LedActuatorResource.RESOURCE_TYPE.contains(sensor_type))
-                sensor = smartObject.get().getResourceMap().get(LedActuatorResource.RESOURCE_TYPE);
 
             if (sensor != null)
                 return Response.ok(sensor).build();
@@ -219,51 +196,4 @@ public class SmartObjectApi {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).type(MediaType.APPLICATION_JSON_TYPE).entity(new ErrorMessage(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),"Internal Server Error !")).build();
         }
     }
-
-  /*  private List smartObjectToList(SmartObject smartObject) {
-        List smartObjectList = new ArrayList<>();
-        smartObjectList.add(smartObject.getSmartObjectId());
-        smartObjectList.add(smartObject.getAverageChargingDurationDescriptor());
-        smartObjectList.add(smartObject.getAverageParkingDurationDescriptor());
-        smartObjectList.add(smartObject.getSmartObjectType());
-        smartObjectList.add(smartObject.getGpsLocation());
-
-        ArrayList sensorList = new ArrayList();
-        for (SensorResource s: smartObject.getResourceMap().values()) {
-            switch (s.getType()) {
-                case EnergyConsumptionSensorResource.RESOURCE_TYPE:
-                    EnergyConsumptionSensorResource energyConsumptionSensorResource = (EnergyConsumptionSensorResource)s;
-                    SensorDescriptor<Double> sensorDescriptor = new SensorDescriptor(energyConsumptionSensorResource.getId(), energyConsumptionSensorResource.getTimestamp(), energyConsumptionSensorResource.getType(), energyConsumptionSensorResource.getUpdatedValue());
-                    sensorList.add(sensorDescriptor);
-                    break;
-
-                case TemperatureSensorResource.RESOURCE_TYPE:
-                    TemperatureSensorResource sensorResource = (TemperatureSensorResource) s;
-                    SensorDescriptor<Double> sensorDescriptor = new SensorDescriptor(sensorResource.getId(),sensorResource.getTimestamp(),sensorResource.getType(),sensorResource.getUpdatedValue());
-                    sensorList.add(sensorDescriptor);
-                    break;
-
-                case VehiclePresenceSensorResource.RESOURCE_TYPE:
-                    sensorList.add((VehiclePresenceSensorResource) s);
-                    break;
-
-                case ChargeStatusSensorResource.RESOURCE_TYPE:
-                    sensorList.add((ChargeStatusSensorResource) s);
-                    break;
-
-                case LedActuatorResource.RESOURCE_TYPE:
-                    sensorList.add((LedActuatorResource) s);
-                    break;
-            }
-        }
-        smartObjectList.add(sensorList);
-
-
-
-      //  smartObjectList.add(smartObject.getResourceMap().values());
-        int i=0;
-        i++;
-        return smartObjectList;
-    }
-*/
 }

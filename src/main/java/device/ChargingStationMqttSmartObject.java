@@ -256,14 +256,6 @@ public class ChargingStationMqttSmartObject extends MqttSmartObject implements I
             super.getLogger().error("Error: Topic or Msg = Null or MQTT Client is not Connected !");
     }
 
-    /**
-     * Stop the emulated Smart Object
-     */
-    public void stop(){
-        //TODO Implement a proper closing method
-    }
-
-
     @Override
     public void messageArrived(String topic, MqttMessage mqttMessage) throws Exception {
 

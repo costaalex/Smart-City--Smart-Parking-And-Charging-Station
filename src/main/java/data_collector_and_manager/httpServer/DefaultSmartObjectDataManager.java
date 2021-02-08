@@ -9,7 +9,7 @@ import model.GpsLocationDescriptor;
 import model.Led;
 import model.SmartObjectTypeDescriptor;
 import org.eclipse.paho.client.mqttv3.MqttException;
-import resource.LedActuatorResource;
+import resource.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -44,6 +44,29 @@ public class DefaultSmartObjectDataManager implements ISmartObjectDataManager{
             return Optional.empty();
 
         return Optional.ofNullable(single_instance.smartObjectsMap.get(id));
+    }
+
+    @Override
+    public Optional<SensorResource<?>> getSensorBySmartObjectId(String id, String sensorType) {
+        Optional<SmartObject> smartObject = getSmartObjectById(id);
+
+        if (!smartObject.isPresent())
+            return Optional.empty();
+
+        SensorResource<?> sensor = null;
+
+        if(VehiclePresenceSensorResource.RESOURCE_TYPE.contains(sensorType))
+            sensor = smartObject.get().getResourceMap().get(VehiclePresenceSensorResource.RESOURCE_TYPE);                  //Extract the requested sensor
+        else if(TemperatureSensorResource.RESOURCE_TYPE.contains(sensorType))
+            sensor = smartObject.get().getResourceMap().get(TemperatureSensorResource.RESOURCE_TYPE);
+        else if(EnergyConsumptionSensorResource.RESOURCE_TYPE.contains(sensorType))
+            sensor = smartObject.get().getResourceMap().get(EnergyConsumptionSensorResource.RESOURCE_TYPE);
+        else if(ChargeStatusSensorResource.RESOURCE_TYPE.contains(sensorType))
+            sensor = smartObject.get().getResourceMap().get(ChargeStatusSensorResource.RESOURCE_TYPE);
+        else if(LedActuatorResource.RESOURCE_TYPE.contains(sensorType))
+            sensor = smartObject.get().getResourceMap().get(LedActuatorResource.RESOURCE_TYPE);
+
+        return Optional.ofNullable(sensor);
     }
 
     @Override
