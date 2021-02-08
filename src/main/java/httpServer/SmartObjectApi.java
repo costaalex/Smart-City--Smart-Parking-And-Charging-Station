@@ -47,9 +47,9 @@ public class SmartObjectApi {
             SmartObjectTypeDescriptor smartObjectType = null;
 
             if (type != null) {
-                if (type.equals("parking_lot"))
+                if (type.equalsIgnoreCase("parking_lot"))
                     smartObjectType = SmartObjectTypeDescriptor.PARKING_LOT;
-                else if (type.equals("charging_station"))
+                else if (type.equalsIgnoreCase("charging_station"))
                     smartObjectType = SmartObjectTypeDescriptor.CHARGING_STATION;
             }
 
@@ -166,7 +166,17 @@ public class SmartObjectApi {
             if(!smartObject.isPresent())
                 return Response.status(Response.Status.NOT_FOUND).type(MediaType.APPLICATION_JSON_TYPE).entity(new ErrorMessage(Response.Status.NOT_FOUND.getStatusCode(),"Smart Object Id Not Found !")).build();
 
-            SensorResource<?> sensor = smartObject.get().getResourceMap().get(sensor_type);                  //Extract the requested sensor
+            SensorResource<?> sensor = null;
+            if(VehiclePresenceSensorResource.RESOURCE_TYPE.contains(sensor_type))
+                sensor = smartObject.get().getResourceMap().get(VehiclePresenceSensorResource.RESOURCE_TYPE);                  //Extract the requested sensor
+            else if(TemperatureSensorResource.RESOURCE_TYPE.contains(sensor_type))
+                sensor = smartObject.get().getResourceMap().get(TemperatureSensorResource.RESOURCE_TYPE);
+            else if(EnergyConsumptionSensorResource.RESOURCE_TYPE.contains(sensor_type))
+                sensor = smartObject.get().getResourceMap().get(EnergyConsumptionSensorResource.RESOURCE_TYPE);
+            else if(ChargeStatusSensorResource.RESOURCE_TYPE.contains(sensor_type))
+                sensor = smartObject.get().getResourceMap().get(ChargeStatusSensorResource.RESOURCE_TYPE);
+            else if(LedActuatorResource.RESOURCE_TYPE.contains(sensor_type))
+                sensor = smartObject.get().getResourceMap().get(LedActuatorResource.RESOURCE_TYPE);
 
             if (sensor != null)
                 return Response.ok(sensor).build();
@@ -180,7 +190,7 @@ public class SmartObjectApi {
     }
 
     @PUT
-    @Path("/{id_smart_object}/led")
+    @Path("/{id_smart_object}/{sensor_type}")
     @Timed
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
@@ -188,6 +198,7 @@ public class SmartObjectApi {
             public Response updateLed(@Context ContainerRequestContext req,
                                    @Context UriInfo uriInfo,
                                    @PathParam("id_smart_object") String idSmartObject,
+                                   @PathParam("sensor_type") String sensor_type,
                                    Led led) {
 
         try {
@@ -197,6 +208,8 @@ public class SmartObjectApi {
             //Check if the request is valid
             if(idSmartObject == null)
                 return Response.status(Response.Status.BAD_REQUEST).type(MediaType.APPLICATION_JSON_TYPE).entity(new ErrorMessage(Response.Status.BAD_REQUEST.getStatusCode(),"Invalid request ! Check Smart Object Id")).build();
+            else if(!sensor_type.equalsIgnoreCase("led"))
+                return Response.status(Response.Status.BAD_REQUEST).type(MediaType.APPLICATION_JSON_TYPE).entity(new ErrorMessage(Response.Status.BAD_REQUEST.getStatusCode(),"Invalid request ! Check Sensor Type")).build();
 
             //Check if the Smart Object is available otherwise a 404 response will be sent to the client
             if (this.conf.getInventoryDataManager().setLed(idSmartObject, led))

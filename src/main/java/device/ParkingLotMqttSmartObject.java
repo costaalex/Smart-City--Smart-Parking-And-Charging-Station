@@ -23,6 +23,9 @@ public class ParkingLotMqttSmartObject extends MqttSmartObject{
         public static final String PARKING_TOPIC = BASIC_TOPIC + "/parking_lot";
 
         private static ObjectMapper mapper;
+
+        public Led ledReceivedFromServer;
+
         /**
          * Init the charging station smart object with its ID, the MQTT Client and the Map of managed resources
          * @param chargingStationId
@@ -88,19 +91,15 @@ public class ParkingLotMqttSmartObject extends MqttSmartObject{
                         Optional<ControlMessage<?>> generalMessageOptional = parseControlMessagePayload(message);
 
                         if (generalMessageOptional.isPresent() ) {
-                            ledReceived[0] = (Led) generalMessageOptional.get().getDataValue();
+                            ledReceivedFromServer = (Led) generalMessageOptional.get().getDataValue();
                         }
                     }
                     else
                         logger.error("[CONTROL CHANNEL] -> Null control message received !");
                 }
             });
-            if(ledReceived[0] == Led.GREEN)
-                ((LedActuatorResource) super.getResourceMap().get("led")).setIsActive(Led.GREEN);
-            else if(ledReceived[0] == Led.RED)
-                ((LedActuatorResource) super.getResourceMap().get("led")).setIsActive(Led.RED);
-            else if(ledReceived[0] == Led.YELLOW)
-                ((LedActuatorResource) super.getResourceMap().get("led")).setIsActive(Led.YELLOW);
+            ((LedActuatorResource) super.getResourceMap().get("led")).setIsActive(ledReceivedFromServer);
+
 
         }catch (Exception e){
             logger.error("ERROR Registering to Control Channel ! Msg: {}", e.getLocalizedMessage());
@@ -121,7 +120,7 @@ public class ParkingLotMqttSmartObject extends MqttSmartObject{
                                 sensorResource.getId());
 
                         //Register to VehiclePresenceResource Notification
-                        if(sensorResource.getType().equals(VehiclePresenceSensorResource.RESOURCE_TYPE)){
+                        if(sensorResource.getType().equalsIgnoreCase(VehiclePresenceSensorResource.RESOURCE_TYPE)){
 
                             VehiclePresenceSensorResource vehiclePresenceSensorResource = (VehiclePresenceSensorResource) sensorResource;
                             vehiclePresenceSensorResource.addDataListener((ResourceDataListener<Boolean>) super.getResourceMap().get("led"));
@@ -140,7 +139,7 @@ public class ParkingLotMqttSmartObject extends MqttSmartObject{
                         }
 
                         //Register to LedActuatorResource         -- Led
-                        if(sensorResource.getType().equals(LedActuatorResource.RESOURCE_TYPE)){
+                        if(sensorResource.getType().equalsIgnoreCase(LedActuatorResource.RESOURCE_TYPE)){
 
                             LedActuatorResource ledActuatorResource = (LedActuatorResource) sensorResource;
                             ledActuatorResource.addDataListener((ResourceDataListener<Led>) super.getResourceMap().get("vehicle_presence"));

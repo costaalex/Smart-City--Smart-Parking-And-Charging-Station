@@ -97,7 +97,7 @@ public class ChargeStatusSensorResource extends SensorResource<ChargeStatusDescr
      */
     @Override
     public void onDataChanged(SensorResource<Boolean> sensorResource, Boolean updatedValue) {
-        if (sensorResource != null && sensorResource.getType().equals(VehiclePresenceSensorResource.RESOURCE_TYPE)) {
+        if (sensorResource != null && sensorResource.getType().equalsIgnoreCase(VehiclePresenceSensorResource.RESOURCE_TYPE)) {
             if (updatedValue == true) {     //If a new vehicle arrived, choose a random value
                 logger.info("Vehicle detected by sensor: {}", sensorResource.getId());
 

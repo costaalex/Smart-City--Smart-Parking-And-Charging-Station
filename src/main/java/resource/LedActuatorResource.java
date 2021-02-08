@@ -28,9 +28,9 @@ public class LedActuatorResource extends SensorResource<Led> implements Resource
         return isActive;
     }
 
-    public void setIsActive(Led active) {
-        isActive = active;
-        notifyUpdate(isActive);
+    public void setIsActive(Led isActive) {
+        this.isActive = isActive;
+        notifyUpdate(this.isActive);
     }
 
     @Override
@@ -40,12 +40,12 @@ public class LedActuatorResource extends SensorResource<Led> implements Resource
 
     @Override
     public void onDataChanged(SensorResource<Boolean> sensorResource, Boolean updatedValue) {
-        if (sensorResource != null && sensorResource.getType().equals(VehiclePresenceSensorResource.RESOURCE_TYPE)) {
+        if (sensorResource != null && sensorResource.getType().equalsIgnoreCase(VehiclePresenceSensorResource.RESOURCE_TYPE)) {
             if (updatedValue == true && getIsActive() != Led.YELLOW) {     //If a new vehicle arrived, set led red
                 logger.info("Vehicle detected by sensor: {}.. setting led RED.", sensorResource.getId());
                 isActive = Led.RED;
             }
-            else      //If the parking lot is empty, set led GREEN
+            else if(getIsActive() != Led.YELLOW)     //If the parking lot is empty, set led GREEN
                 isActive = Led.GREEN;
             notifyUpdate(isActive);
         }

@@ -113,7 +113,7 @@ public class SmartObjectProcess {
             //Connect to the target broker
             mqttClient.connect(options);
 
-            if(mqttSmartObjectType.equals(CHARGING_STATION)) {
+            if(mqttSmartObjectType.equalsIgnoreCase(CHARGING_STATION)) {
                 logger.info("Connected new Charging Station - id: {}, lat: {}, long: {}",mqttSmartObjectId, latitude, longitude);
 
                 ChargingStationMqttSmartObject charhingstationMqttSmartObject = new ChargingStationMqttSmartObject();
@@ -128,7 +128,7 @@ public class SmartObjectProcess {
                 });
                 charhingstationMqttSmartObject.start();
             }
-            else if(mqttSmartObjectType.equals(PARKING_LOT)){
+            else if(mqttSmartObjectType.equalsIgnoreCase(PARKING_LOT)){
                 logger.info("Connected new Parking Lot - id: {}, lat: {}, long: {}",mqttSmartObjectId, latitude, longitude);
 
                 ParkingLotMqttSmartObject parkingLotMqttSmartObject = new ParkingLotMqttSmartObject();

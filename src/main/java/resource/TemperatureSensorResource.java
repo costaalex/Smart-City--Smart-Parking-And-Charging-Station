@@ -115,7 +115,7 @@ public class TemperatureSensorResource extends SensorResource<Double> implements
 
     @Override
     public void onDataChanged(SensorResource<ChargeStatusDescriptor> sensorResource, ChargeStatusDescriptor updatedValue) {
-        if (sensorResource != null && sensorResource.getType().equals(ChargeStatusSensorResource.RESOURCE_TYPE)) {
+        if (sensorResource != null && sensorResource.getType().equalsIgnoreCase(ChargeStatusSensorResource.RESOURCE_TYPE)) {
             if (updatedValue == ChargeStatusDescriptor.CHARGING) {     //If a vehicle is CHARGING, the temperature is rising
                 logger.info("Temperature Sensor is notified that a vehicle is CHARGING - charge status sensor: {}", sensorResource.getId());
                 temperatureIsRising = true;

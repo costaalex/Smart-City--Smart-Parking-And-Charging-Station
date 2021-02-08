@@ -18,7 +18,7 @@ import resource.*;
 import java.util.Map;
 import java.util.Optional;
 
-public class ChargingStationMqttSmartObject extends MqttSmartObject{
+public class ChargingStationMqttSmartObject extends MqttSmartObject implements IMqttMessageListener{
 
     private static final Logger logger = LoggerFactory.getLogger(ChargingStationMqttSmartObject.class);
 
@@ -80,35 +80,13 @@ public class ChargingStationMqttSmartObject extends MqttSmartObject{
     }
     protected void registerToControlChannel() {
 
-        final Led[] ledReceived = new Led[1];
+
         try{
             String deviceControlTopic = String.format("%s/%s/%s", CHARGING_TOPIC, getMqttSmartObjectId(), CONTROL_TOPIC);
 
             logger.info("Charging Station Mqtt Registering to Control Topic ({}) ... ", deviceControlTopic);
 
-            getMqttClient().subscribe(deviceControlTopic, new IMqttMessageListener() {
-                @Override
-                public void messageArrived(String topic, MqttMessage message) throws Exception {
-
-                    if (message != null){
-                        logger.info("[CONTROL CHANNEL] -> Control Message Received -> {}", new String(message.getPayload()));
-                        // TODO set led color from payload
-                        Optional<ControlMessage<?>> generalMessageOptional = parseControlMessagePayload(message);
-
-                        if (generalMessageOptional.isPresent() ) {
-                            ledReceived[0] = (Led) generalMessageOptional.get().getDataValue();
-                        }
-                    }
-                    else
-                        logger.error("[CONTROL CHANNEL] -> Null control message received !");
-                }
-            });
-            if(ledReceived[0] == Led.GREEN)
-                ((LedActuatorResource) super.getResourceMap().get("led")).setIsActive(Led.GREEN);
-            else if(ledReceived[0] == Led.RED)
-                ((LedActuatorResource) super.getResourceMap().get("led")).setIsActive(Led.RED);
-            else if(ledReceived[0] == Led.YELLOW)
-                ((LedActuatorResource) super.getResourceMap().get("led")).setIsActive(Led.YELLOW);
+            getMqttClient().subscribe(deviceControlTopic,this);
 
         }catch (Exception e){
             logger.error("ERROR Registering to Control Channel ! Msg: {}", e.getLocalizedMessage());
@@ -128,7 +106,7 @@ public class ChargingStationMqttSmartObject extends MqttSmartObject{
                             sensorResource.getId());
 
                     //Register to VehiclePresenceResource Notification
-                    if(sensorResource.getType().equals(VehiclePresenceSensorResource.RESOURCE_TYPE)){
+                    if(sensorResource.getType().equalsIgnoreCase(VehiclePresenceSensorResource.RESOURCE_TYPE)){
 
                         VehiclePresenceSensorResource vehiclePresenceSensorResource = (VehiclePresenceSensorResource) sensorResource;
                         vehiclePresenceSensorResource.addDataListener((ResourceDataListener<Boolean>) super.getResourceMap().get("charge_status"));
@@ -152,7 +130,7 @@ public class ChargingStationMqttSmartObject extends MqttSmartObject{
                     }
 
                     //Register to ChargeStatusSensorResource Notification      -- Double
-                    if(sensorResource.getType().equals(ChargeStatusSensorResource.RESOURCE_TYPE)){
+                    if(sensorResource.getType().equalsIgnoreCase(ChargeStatusSensorResource.RESOURCE_TYPE)){
 
                         ChargeStatusSensorResource chargeStatusSensorResource = (ChargeStatusSensorResource) sensorResource;
                         chargeStatusSensorResource.addDataListener((ResourceDataListener<ChargeStatusDescriptor>) super.getResourceMap().get("energy_consumption"));
@@ -173,7 +151,7 @@ public class ChargingStationMqttSmartObject extends MqttSmartObject{
                     }
 
                     //Register to TemperatureSensorResource Notification  -- Double
-                    if(sensorResource.getType().equals(TemperatureSensorResource.RESOURCE_TYPE)){
+                    if(sensorResource.getType().equalsIgnoreCase(TemperatureSensorResource.RESOURCE_TYPE)){
 
                         TemperatureSensorResource temperatureSensorResource = (TemperatureSensorResource) sensorResource;
                         temperatureSensorResource.addDataListener(new ResourceDataListener<Double>() {
@@ -192,7 +170,7 @@ public class ChargingStationMqttSmartObject extends MqttSmartObject{
                     }
 
                     //Register to EnergyConsumptionResource Notification  -- Double
-                    if(sensorResource.getType().equals(EnergyConsumptionSensorResource.RESOURCE_TYPE)){
+                    if(sensorResource.getType().equalsIgnoreCase(EnergyConsumptionSensorResource.RESOURCE_TYPE)){
 
                         EnergyConsumptionSensorResource energyConsumptionSensorResource = (EnergyConsumptionSensorResource) sensorResource;
                         energyConsumptionSensorResource.addDataListener(new ResourceDataListener<Double>() {
@@ -211,7 +189,7 @@ public class ChargingStationMqttSmartObject extends MqttSmartObject{
                     }
 
                     //Register to LedActuatorResource         -- Led
-                    if(sensorResource.getType().equals(LedActuatorResource.RESOURCE_TYPE)){
+                    if(sensorResource.getType().equalsIgnoreCase(LedActuatorResource.RESOURCE_TYPE)){
 
                         LedActuatorResource ledActuatorResource = (LedActuatorResource) sensorResource;
                         ledActuatorResource.addDataListener((ResourceDataListener<Led>) super.getResourceMap().get("vehicle_presence"));
@@ -287,5 +265,24 @@ public class ChargingStationMqttSmartObject extends MqttSmartObject{
         //TODO Implement a proper closing method
     }
 
+
+    @Override
+    public void messageArrived(String topic, MqttMessage mqttMessage) throws Exception {
+
+        if (mqttMessage != null){
+            logger.info("[CONTROL CHANNEL] -> Control Message Received -> {}", new String(mqttMessage.getPayload()));
+            // TODO set led color from payload
+            Optional<ControlMessage<?>> generalMessageOptional = parseControlMessagePayload(mqttMessage);
+
+            if (generalMessageOptional.isPresent() ) {
+                LedActuatorResource a = (LedActuatorResource) super.getResourceMap().get("led");
+                Led l= (Led) generalMessageOptional.get().getDataValue();
+                (a).setIsActive(l);
+                int i=0;
+            }
+        }
+        else
+            logger.error("[CONTROL CHANNEL] -> Null control message received !");
+    }
 
 }

@@ -37,7 +37,7 @@ public class SingletonDataCollector {
     public SmartObjectTypeDescriptor getSmartObjectTypeFromId(String smartObjectId){
         for (Map.Entry<String, SmartObject> entry : smartObjectsMap.entrySet()) {
             String id = entry.getKey();
-            if(id.equals(smartObjectId))
+            if(id.equalsIgnoreCase(smartObjectId))
                 return entry.getValue().getSmartObjectType();
         }
         return  null;

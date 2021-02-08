@@ -74,7 +74,7 @@ public class VehiclePresenceSensorResource extends SensorResource<Boolean> imple
             updateTimer.schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    if (isActive()) {
+                    if (isActive) {
                         if (updatedVehiclePresenceStatus == true) {                    //if vehicle present, it has 3/4 probability to stay present
                             if (random.nextInt(VEHICLE_PRESENCE_PROBABILITY) == 0)
                                 updatedVehiclePresenceStatus = false;
@@ -102,7 +102,7 @@ public class VehiclePresenceSensorResource extends SensorResource<Boolean> imple
 
     @Override
     public void onDataChanged(SensorResource<Led> sensorResource, Led updatedValue) {
-        if (sensorResource != null && sensorResource.getType().equals(LedActuatorResource.RESOURCE_TYPE)) {
+        if (sensorResource != null && sensorResource.getType().equalsIgnoreCase(LedActuatorResource.RESOURCE_TYPE)) {
             if (updatedValue == Led.YELLOW) {     //If a new vehicle arrived, set led red
                 logger.info("Led YELLOW color detected - sensor: {}.. setting parking inactive.", sensorResource.getId());
                 isActive = false;
@@ -133,10 +133,6 @@ public class VehiclePresenceSensorResource extends SensorResource<Boolean> imple
                     logger.error("onDataChanged Callback -> Null Resource or Updated Value !");
             }
         });
-    }
-
-    public boolean isActive() {
-        return isActive;
     }
 
     public Boolean getUpdatedVehiclePresenceStatus() {

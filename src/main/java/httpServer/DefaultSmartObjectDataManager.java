@@ -72,11 +72,11 @@ public class DefaultSmartObjectDataManager implements ISmartObjectDataManager{
     public boolean setLed(String idSmartObject, Led led) {
         if (single_instance == null)
             return false;
-        LedActuatorResource ledActuator = (LedActuatorResource)single_instance.smartObjectsMap.get(idSmartObject).getResourceMap().get("led");
-        ledActuator.setIsActive(led);
+       ((LedActuatorResource) single_instance.smartObjectsMap.get(idSmartObject).getResourceMap().get(LedActuatorResource.RESOURCE_TYPE)).setIsActive(led);
+
         //Publish New Led Actuator Status
         try {
-            DataCollectorAndManager.publishControlData(idSmartObject, new ControlMessage<>(ledActuator.getType(), led));
+            DataCollectorAndManager.publishControlData(idSmartObject, new ControlMessage<>(((LedActuatorResource) single_instance.smartObjectsMap.get(idSmartObject).getResourceMap().get(LedActuatorResource.RESOURCE_TYPE)).getType(), led));
         } catch (MqttException | JsonProcessingException e) {
             e.printStackTrace();
         }

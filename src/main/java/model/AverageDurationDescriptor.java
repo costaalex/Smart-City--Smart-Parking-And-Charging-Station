@@ -1,27 +1,15 @@
 package model;
 
 public class AverageDurationDescriptor {
-    private long sumDurationMillis;
-    private Integer occurrences;
+    protected long sumDurationMillis;
+    protected Integer occurrences;
 
-    private long lastStartTimestamp;
+    protected long lastStartTimestamp;
 
     public AverageDurationDescriptor() {
         this.sumDurationMillis = 0;
         this.occurrences = 0;
         this.lastStartTimestamp = -1;
-    }
-
-    public long getSumDurationMillis() {
-        return sumDurationMillis;
-    }
-
-    public Integer getOccurrences() {
-        return occurrences;
-    }
-
-    public long getLastStartTimestamp() {
-        return lastStartTimestamp;
     }
 
     public void setLastStartTimestamp(long lastStartTimestamp) {
