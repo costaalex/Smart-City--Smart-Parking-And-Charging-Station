@@ -1,4 +1,4 @@
-package dto;
+package data_collector_and_manager.dto;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import model.*;

@@ -1,7 +1,7 @@
-package services;
+package data_collector_and_manager.services;
 
-import httpServer.DefaultSmartObjectDataManager;
-import httpServer.ISmartObjectDataManager;
+import data_collector_and_manager.httpServer.DefaultSmartObjectDataManager;
+import data_collector_and_manager.httpServer.ISmartObjectDataManager;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.dropwizard.Configuration;
 import io.federecio.dropwizard.swagger.SwaggerBundleConfiguration;

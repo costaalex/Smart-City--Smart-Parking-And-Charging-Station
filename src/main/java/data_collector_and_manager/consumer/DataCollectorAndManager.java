@@ -1,11 +1,11 @@
-package consumer;
+package data_collector_and_manager.consumer;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import device.MqttSmartObject;
-import dto.SingletonDataCollector;
-import dto.SmartObject;
+import data_collector_and_manager.dto.SingletonDataCollector;
+import data_collector_and_manager.dto.SmartObject;
 import message.ControlMessage;
 import message.TelemetryMessage;
 import model.*;
@@ -14,7 +14,7 @@ import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import resource.*;
-import services.AppService;
+import data_collector_and_manager.services.AppService;
 
 import java.util.HashMap;
 import java.util.Map;

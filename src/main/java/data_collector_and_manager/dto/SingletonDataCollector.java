@@ -1,4 +1,4 @@
-package dto;
+package data_collector_and_manager.dto;
 
 import model.AverageChargingDurationDescriptor;
 import model.AverageParkingDurationDescriptor;

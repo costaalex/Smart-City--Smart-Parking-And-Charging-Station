@@ -1,7 +1,7 @@
-package httpServer;
+package data_collector_and_manager.httpServer;
 
 import com.codahale.metrics.annotation.Timed;
-import dto.SmartObject;
+import data_collector_and_manager.dto.SmartObject;
 import io.dropwizard.jersey.errors.ErrorMessage;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -9,7 +9,7 @@ import model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import resource.*;
-import services.AppConfig;
+import data_collector_and_manager.services.AppConfig;
 
 import javax.ws.rs.*;
 import javax.ws.rs.container.ContainerRequestContext;
@@ -17,8 +17,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 

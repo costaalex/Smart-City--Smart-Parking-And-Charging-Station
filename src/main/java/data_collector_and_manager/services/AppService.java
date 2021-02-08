@@ -1,6 +1,6 @@
-package services;
+package data_collector_and_manager.services;
 
-import httpServer.SmartObjectApi;
+import data_collector_and_manager.httpServer.SmartObjectApi;
 import io.dropwizard.Application;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;

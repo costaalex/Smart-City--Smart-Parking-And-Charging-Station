@@ -1,6 +1,6 @@
-package httpServer;
+package data_collector_and_manager.httpServer;
 
-import dto.SmartObject;
+import data_collector_and_manager.dto.SmartObject;
 import model.GpsLocationDescriptor;
 import model.Led;
 import model.SmartObjectTypeDescriptor;

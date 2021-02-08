@@ -1,9 +1,9 @@
-package httpServer;
+package data_collector_and_manager.httpServer;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import consumer.DataCollectorAndManager;
-import dto.SingletonDataCollector;
-import dto.SmartObject;
+import data_collector_and_manager.consumer.DataCollectorAndManager;
+import data_collector_and_manager.dto.SingletonDataCollector;
+import data_collector_and_manager.dto.SmartObject;
 import message.ControlMessage;
 import model.GpsLocationDescriptor;
 import model.Led;
