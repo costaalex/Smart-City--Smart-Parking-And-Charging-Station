@@ -36,8 +36,8 @@ public class SmartObjectProcess {
     private static final Double MAX_LONGITUDE = 12.0;
     private static final String CHARGING_STATION = "charging_station";
     private static final String PARKING_LOT = "parking_lot";
-    private static final Integer NUM_CHARGING_STATIONS = 3;
-    private static final Integer NUM_PARKING_LOT = 3;
+    private static final Integer NUM_CHARGING_STATIONS = 2;
+    private static final Integer NUM_PARKING_LOT = 2;
 
     public static void main(String[] args) {
         logger.info("MQTT Auth Producer Tester Started ...");

@@ -22,8 +22,6 @@ public class TemperatureSensorResource extends SensorResource<Double> implements
 
     private static final Double MIN_TEMPERATURE = 20.0;
 
-    private static final Double MAX_TEMPERATURE = 80.0;
-
     private static final Double MAX_TEMPERATURE_VARIATION = 3.0;
 
     private Boolean temperatureIsRising = false;
@@ -40,18 +38,6 @@ public class TemperatureSensorResource extends SensorResource<Double> implements
     public TemperatureSensorResource(String id,String type, long timestamp, Double updatedTemperatureSensorValue) {  // server side
         super(id, type, timestamp);
         this.updatedTemperatureSensorValue = updatedTemperatureSensorValue;
-    }
-
-    public TemperatureSensorResource(String id, String type, Double temperatureSensorValue) {
-        super(id, type);
-        this.updatedTemperatureSensorValue = temperatureSensorValue;
-        init();
-    }
-
-    public TemperatureSensorResource(GpsLocationDescriptor gpsLocationDescriptor, Double temperatureSensorValue) {
-        super(UUID.randomUUID().toString(), VehiclePresenceSensorResource.RESOURCE_TYPE);
-        this.updatedTemperatureSensorValue = temperatureSensorValue;
-        init();
     }
 
     public Double getUpdatedTemperatureSensorValue() {
@@ -79,6 +65,19 @@ public class TemperatureSensorResource extends SensorResource<Double> implements
 
     }
 
+    @Override
+    public void onDataChanged(SensorResource<ChargeStatusDescriptor> sensorResource, ChargeStatusDescriptor updatedValue) {
+        if (sensorResource != null && sensorResource.getType().equalsIgnoreCase(ChargeStatusSensorResource.RESOURCE_TYPE)) {
+            if (updatedValue == ChargeStatusDescriptor.CHARGING) {     //If a vehicle is CHARGING, the temperature is rising
+                logger.info("Temperature Sensor is notified that a vehicle is CHARGING - charge status sensor: {}", sensorResource.getId());
+                temperatureIsRising = true;
+            }
+            else{
+                temperatureIsRising = false;
+            }
+        }
+    }
+
     private void startPeriodicEventValueUpdateTask() {
         try{
 
@@ -89,14 +88,13 @@ public class TemperatureSensorResource extends SensorResource<Double> implements
             updateTimer.schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    if(temperatureIsRising) {    //if temperatureIsRising because CHARGING and < than max temp posible, increase it
+                    if(temperatureIsRising) {    //if temperatureIsRising because CHARGING increase it
                         updatedTemperatureSensorValue += MAX_TEMPERATURE_VARIATION * random.nextDouble();
                     }
                     else {
                         Double newTemperature = MAX_TEMPERATURE_VARIATION * random.nextDouble();
                         if ((updatedTemperatureSensorValue - newTemperature) > MIN_TEMPERATURE)
                             updatedTemperatureSensorValue -= newTemperature;
-                        //logger.info("Updated Parking Lot: {}", updatedParkingSensorStatus.getIsVehiclePresent());
                     }
                     notifyUpdate(updatedTemperatureSensorValue);
 
@@ -112,20 +110,6 @@ public class TemperatureSensorResource extends SensorResource<Double> implements
     public Double loadUpdatedValue() {
         return this.updatedTemperatureSensorValue;
     }
-
-    @Override
-    public void onDataChanged(SensorResource<ChargeStatusDescriptor> sensorResource, ChargeStatusDescriptor updatedValue) {
-        if (sensorResource != null && sensorResource.getType().equalsIgnoreCase(ChargeStatusSensorResource.RESOURCE_TYPE)) {
-            if (updatedValue == ChargeStatusDescriptor.CHARGING) {     //If a vehicle is CHARGING, the temperature is rising
-                logger.info("Temperature Sensor is notified that a vehicle is CHARGING - charge status sensor: {}", sensorResource.getId());
-                temperatureIsRising = true;
-            }
-            else{
-                temperatureIsRising = false;
-            }
-        }
-    }
-
 
 
     public static void main(String[] args) {

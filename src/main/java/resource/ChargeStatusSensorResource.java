@@ -37,17 +37,6 @@ public class ChargeStatusSensorResource extends SensorResource<ChargeStatusDescr
         this.updatedChargeStatus = updatedChargeStatus;
     }
 
-    public ChargeStatusSensorResource(String id, String type, ChargeStatusDescriptor updatedChargeStatus) {
-        super(id, type);
-        this.updatedChargeStatus = updatedChargeStatus;
-    }
-
-    public ChargeStatusSensorResource(ChargeStatusDescriptor updatedChargeStatus) {
-        super(UUID.randomUUID().toString(), RESOURCE_TYPE);
-        init();
-        this.updatedChargeStatus = updatedChargeStatus;
-    }
-
     /**
      * - Initialize ChargeStatusSensor
      */
@@ -68,28 +57,6 @@ public class ChargeStatusSensorResource extends SensorResource<ChargeStatusDescr
     @Override
     public ChargeStatusDescriptor loadUpdatedValue() {
         return this.updatedChargeStatus;
-    }
-
-    private void startPeriodicEventValueUpdateTask() {
-        try{
-
-            logger.info("Starting periodic Update Task with Period: {} ms", UPDATE_PERIOD);
-
-            Timer updateTimer = new Timer();
-
-            updateTimer.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    //logger.info("Updated Charge Status: {}", updatedChargeStatus);
-
-                    notifyUpdate(updatedChargeStatus);
-
-                }
-            }, TASK_DELAY_TIME, UPDATE_PERIOD);
-
-        }catch (Exception e){
-            logger.error("Error executing periodic update ! Msg: {}", e.getLocalizedMessage());
-        }
     }
 
     /**
@@ -113,6 +80,28 @@ public class ChargeStatusSensorResource extends SensorResource<ChargeStatusDescr
             }
             else      //If the parking lot is empty, put in UNPLUGGED status
                 updatedChargeStatus = ChargeStatusDescriptor.UNPLUGGED;
+        }
+    }
+
+    private void startPeriodicEventValueUpdateTask() {
+        try{
+
+            logger.info("Starting periodic Update Task with Period: {} ms", UPDATE_PERIOD);
+
+            Timer updateTimer = new Timer();
+
+            updateTimer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    //logger.info("Updated Charge Status: {}", updatedChargeStatus);
+
+                    notifyUpdate(updatedChargeStatus);
+
+                }
+            }, TASK_DELAY_TIME, UPDATE_PERIOD);
+
+        }catch (Exception e){
+            logger.error("Error executing periodic update ! Msg: {}", e.getLocalizedMessage());
         }
     }
 

@@ -91,6 +91,26 @@ public abstract class MqttSmartObject implements IMqttMessageListener {
         this.resourceMap = resourceMap;
     }
 
+    @Override
+    public void messageArrived(String topic, MqttMessage mqttMessage) throws Exception {
+
+        if (mqttMessage != null) {
+            logger.info("[CONTROL CHANNEL] -> Control Message Received -> {}", new String(mqttMessage.getPayload()));
+            Optional<ControlMessage<?>> controlMessageOptional = parseControlMessagePayload(mqttMessage);
+
+            if (controlMessageOptional.isPresent()) {
+                LedActuatorResource ledReceived = (LedActuatorResource) getResourceMap().get("led");  // gets led actuator from map
+                if (controlMessageOptional.get().getDataValue().equals("YELLOW"))
+                    ledReceived.setIsActive(Led.YELLOW);
+                else if (controlMessageOptional.get().getDataValue().equals("GREEN"))
+                    ledReceived.setIsActive(Led.GREEN);
+                if (controlMessageOptional.get().getDataValue().equals("RED"))
+                    ledReceived.setIsActive(Led.RED);
+            } else
+                logger.error("[CONTROL CHANNEL] -> Null control message received !");
+        }
+    }
+
     protected Optional<ControlMessage<?>> parseControlMessagePayload(MqttMessage mqttMessage){
         try{
             if(mqttMessage == null)
@@ -105,25 +125,4 @@ public abstract class MqttSmartObject implements IMqttMessageListener {
             return Optional.empty();
         }
     }
-    @Override
-    public void messageArrived(String topic, MqttMessage mqttMessage) throws Exception {
-
-        if (mqttMessage != null) {
-            logger.info("[CONTROL CHANNEL] -> Control Message Received -> {}", new String(mqttMessage.getPayload()));
-            Optional<ControlMessage<?>> generalMessageOptional = parseControlMessagePayload(mqttMessage);
-
-            if (generalMessageOptional.isPresent()) {
-                LedActuatorResource ledReceived = (LedActuatorResource) getResourceMap().get("led");
-                if (generalMessageOptional.get().getDataValue().equals("YELLOW"))
-                    ledReceived.setIsActive(Led.YELLOW);
-                else if (generalMessageOptional.get().getDataValue().equals("GREEN"))
-                    ledReceived.setIsActive(Led.GREEN);
-                if (generalMessageOptional.get().getDataValue().equals("RED"))
-                    ledReceived.setIsActive(Led.RED);
-            } else
-                logger.error("[CONTROL CHANNEL] -> Null control message received !");
-        }
-    }
-
-
 }

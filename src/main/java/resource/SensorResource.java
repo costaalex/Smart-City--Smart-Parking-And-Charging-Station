@@ -50,6 +50,7 @@ public abstract class SensorResource<T> {
             this.resourceListenerList.remove(resourceDataListener);
     }
 
+    //notify updated value to all listeners
     protected void notifyUpdate(T updatedValue){
 
         if(this.resourceListenerList != null && this.resourceListenerList.size() > 0)

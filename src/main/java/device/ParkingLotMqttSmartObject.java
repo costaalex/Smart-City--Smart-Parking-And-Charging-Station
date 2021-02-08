@@ -79,9 +79,7 @@ public class ParkingLotMqttSmartObject extends MqttSmartObject {
 
             super.getLogger().info("Parking Lot Mqtt Registering to Control Topic ({}) ... ", deviceControlTopic);
 
-            getMqttClient().subscribe(deviceControlTopic, this);
-
-
+            getMqttClient().subscribe(deviceControlTopic, this);  //subscribe to control topic for receiving the Led actuator update
 
         }catch (Exception e){
             super.getLogger().error("ERROR Registering to Control Channel ! Msg: {}", e.getLocalizedMessage());
@@ -105,7 +103,7 @@ public class ParkingLotMqttSmartObject extends MqttSmartObject {
                     if(sensorResource.getType().equalsIgnoreCase(VehiclePresenceSensorResource.RESOURCE_TYPE)){
 
                         VehiclePresenceSensorResource vehiclePresenceSensorResource = (VehiclePresenceSensorResource) sensorResource;
-                        vehiclePresenceSensorResource.addDataListener((ResourceDataListener<Boolean>) super.getResourceMap().get("led"));
+                        vehiclePresenceSensorResource.addDataListener((ResourceDataListener<Boolean>) super.getResourceMap().get("led"));  //LedActuator listens for changes in VehiclePresence
                         vehiclePresenceSensorResource.addDataListener(new ResourceDataListener<Boolean>() {
                             @Override
                             public void onDataChanged(SensorResource<Boolean> resource, Boolean updatedValue) {
