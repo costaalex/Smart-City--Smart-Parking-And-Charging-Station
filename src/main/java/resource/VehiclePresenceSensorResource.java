@@ -35,18 +35,6 @@ public class VehiclePresenceSensorResource extends SensorResource<Boolean> imple
         this.updatedVehiclePresenceStatus = updatedVehiclePresenceStatus;
     }
 
-    public VehiclePresenceSensorResource(String id, String type, Boolean vehiclePresenceSensorStatus) {
-        super(id, type);
-        this.updatedVehiclePresenceStatus = vehiclePresenceSensorStatus;
-        init();
-    }
-
-    public VehiclePresenceSensorResource(Boolean vehiclePresenceSensorStatus) {
-        super(UUID.randomUUID().toString(), VehiclePresenceSensorResource.RESOURCE_TYPE);
-        this.updatedVehiclePresenceStatus = vehiclePresenceSensorStatus;
-        init();
-    }
-
     /**
      * - Start Periodic Parking Lot Availability update
      */
@@ -64,6 +52,21 @@ public class VehiclePresenceSensorResource extends SensorResource<Boolean> imple
 
     }
 
+    @Override
+    public void onDataChanged(SensorResource<Led> sensorResource, Led updatedValue) {
+        if (sensorResource != null && sensorResource.getType().equalsIgnoreCase(LedActuatorResource.RESOURCE_TYPE)) {
+            if (updatedValue == Led.YELLOW) {     //If led value changed to Yellow, set parking lot to unusable
+                logger.info("Led YELLOW color detected - sensor: {}.. setting parking inactive.", sensorResource.getId());
+                isActive = false;
+            }
+            else if(updatedValue == Led.GREEN){
+                logger.info("Led GREEN color detected - sensor: {}.. setting parking active.", sensorResource.getId());
+                isActive = true;
+            }
+
+        }
+    }
+
     private void startPeriodicEventValueUpdateTask() {
         try{
 
@@ -74,11 +77,10 @@ public class VehiclePresenceSensorResource extends SensorResource<Boolean> imple
             updateTimer.schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    if (isActive) {
+                    if (isActive) {  // parking lot is usable
                         if (updatedVehiclePresenceStatus == true) {                    //if vehicle present, it has 3/4 probability to stay present
                             if (random.nextInt(VEHICLE_PRESENCE_PROBABILITY) == 0)
                                 updatedVehiclePresenceStatus = false;
-
                         }
                         else
                             updatedVehiclePresenceStatus = random.nextBoolean();
@@ -99,22 +101,6 @@ public class VehiclePresenceSensorResource extends SensorResource<Boolean> imple
     public Boolean loadUpdatedValue() {
         return this.updatedVehiclePresenceStatus;
     }
-
-    @Override
-    public void onDataChanged(SensorResource<Led> sensorResource, Led updatedValue) {
-        if (sensorResource != null && sensorResource.getType().equalsIgnoreCase(LedActuatorResource.RESOURCE_TYPE)) {
-            if (updatedValue == Led.YELLOW) {     //If a new vehicle arrived, set led red
-                logger.info("Led YELLOW color detected - sensor: {}.. setting parking inactive.", sensorResource.getId());
-                isActive = false;
-            }
-            else if(updatedValue == Led.GREEN){
-                logger.info("Led GREEN color detected - sensor: {}.. setting parking active.", sensorResource.getId());
-                isActive = true;
-            }
-
-        }
-    }
-
 
     public static void main(String[] args) {
         VehiclePresenceSensorResource vehiclePresenceSensorResource = new VehiclePresenceSensorResource();

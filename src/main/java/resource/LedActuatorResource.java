@@ -18,7 +18,6 @@ public class LedActuatorResource extends SensorResource<Led> implements Resource
     public LedActuatorResource() {
         super(UUID.randomUUID().toString(), RESOURCE_TYPE);
         this.isActive = Led.GREEN;
-
     }
 
     public LedActuatorResource(String id, String type, long timestamp, Led isActive) {  // server side
@@ -53,6 +52,8 @@ public class LedActuatorResource extends SensorResource<Led> implements Resource
         }
     }
 
+
+    //TEST MAIN
     public static void main(String[] args) {
 
         LedActuatorResource ledActuatorResourceResource = new LedActuatorResource();

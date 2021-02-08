@@ -110,15 +110,15 @@ public abstract class MqttSmartObject implements IMqttMessageListener {
 
         if (mqttMessage != null) {
             logger.info("[CONTROL CHANNEL] -> Control Message Received -> {}", new String(mqttMessage.getPayload()));
-            Optional<ControlMessage<?>> generalMessageOptional = parseControlMessagePayload(mqttMessage);
+            Optional<ControlMessage<?>> controlMessageOptional = parseControlMessagePayload(mqttMessage);
 
-            if (generalMessageOptional.isPresent()) {
+            if (controlMessageOptional.isPresent()) {
                 LedActuatorResource ledReceived = (LedActuatorResource) getResourceMap().get("led");
-                if (generalMessageOptional.get().getDataValue().equals("YELLOW"))
+                if (controlMessageOptional.get().getDataValue().equals("YELLOW"))
                     ledReceived.setIsActive(Led.YELLOW);
-                else if (generalMessageOptional.get().getDataValue().equals("GREEN"))
+                else if (controlMessageOptional.get().getDataValue().equals("GREEN"))
                     ledReceived.setIsActive(Led.GREEN);
-                if (generalMessageOptional.get().getDataValue().equals("RED"))
+                if (controlMessageOptional.get().getDataValue().equals("RED"))
                     ledReceived.setIsActive(Led.RED);
             } else
                 logger.error("[CONTROL CHANNEL] -> Null control message received !");

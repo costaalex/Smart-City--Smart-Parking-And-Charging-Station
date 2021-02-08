@@ -50,22 +50,32 @@ public class EnergyConsumptionSensorResource extends SensorResource<Double> impl
     private void init(){
 
         try{
-
             this.random = new Random(System.currentTimeMillis());
             this.updatedValue = 0.0;
 
             startPeriodicEventValueUpdateTask();
-
         }catch (Exception e){
             logger.error("Error initializing the IoT Resource ! Msg: {}", e.getLocalizedMessage());
         }
 
     }
 
+    @Override
+    public void onDataChanged(SensorResource<ChargeStatusDescriptor> sensorResource, ChargeStatusDescriptor updatedValue) {
+        if (sensorResource != null && sensorResource.getType().equalsIgnoreCase(ChargeStatusSensorResource.RESOURCE_TYPE)) {
+            if (updatedValue == ChargeStatusDescriptor.CHARGING) {     //If a vehicle is CHARGING, the temperature is rising
+                logger.info("Energy Consumption Sensor is notified that a vehicle is CHARGING - charge status sensor: {}", sensorResource.getId());
+                isConsumingEnergy = true;
+            }
+            else{
+                isConsumingEnergy = false;
+            }
+        }
+    }
+
     private void startPeriodicEventValueUpdateTask(){
 
         try{
-
             logger.info("Starting periodic Update Task with Period: {} ms", UPDATE_PERIOD);
 
             this.updateTimer = new Timer();
@@ -102,19 +112,6 @@ public class EnergyConsumptionSensorResource extends SensorResource<Double> impl
 
     public Double getUpdatedValue() {
         return updatedValue;
-    }
-
-    @Override
-    public void onDataChanged(SensorResource<ChargeStatusDescriptor> sensorResource, ChargeStatusDescriptor updatedValue) {
-        if (sensorResource != null && sensorResource.getType().equalsIgnoreCase(ChargeStatusSensorResource.RESOURCE_TYPE)) {
-            if (updatedValue == ChargeStatusDescriptor.CHARGING) {     //If a vehicle is CHARGING, the temperature is rising
-                logger.info("Energy Consumption Sensor is notified that a vehicle is CHARGING - charge status sensor: {}", sensorResource.getId());
-                isConsumingEnergy = true;
-            }
-            else{
-                isConsumingEnergy = false;
-            }
-        }
     }
 
     public static void main(String[] args) {
