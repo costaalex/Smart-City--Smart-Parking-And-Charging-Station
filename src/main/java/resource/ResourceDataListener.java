@@ -2,6 +2,6 @@ package resource;
 
 public interface ResourceDataListener<T> {
 
-    public void onDataChanged(SmartObjectResource<T> resource, T updatedValue);
+    public void onDataChanged(SensorResource<T> resource, T updatedValue);
 
 }

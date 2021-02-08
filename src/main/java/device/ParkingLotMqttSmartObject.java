@@ -1,11 +1,9 @@
 package device;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import message.ControlMessage;
 import message.TelemetryMessage;
-import model.ChargeStatusDescriptor;
 import model.GpsLocationDescriptor;
 import model.Led;
 import org.eclipse.paho.client.mqttv3.IMqttClient;
@@ -31,7 +29,7 @@ public class ParkingLotMqttSmartObject extends MqttSmartObject{
          * @param mqttClient
          * @param resourceMap
          */
-        public void init(String chargingStationId, GpsLocationDescriptor gpsLocation, IMqttClient mqttClient, Map<String, SmartObjectResource<?>> resourceMap){
+        public void init(String chargingStationId, GpsLocationDescriptor gpsLocation, IMqttClient mqttClient, Map<String, SensorResource<?>> resourceMap){
 
             super.setMqttSmartObjectId(chargingStationId);
             super.setGpsLocation(gpsLocation);
@@ -116,24 +114,24 @@ public class ParkingLotMqttSmartObject extends MqttSmartObject{
                 super.getResourceMap().entrySet().forEach(resourceEntry -> {
 
                     if(resourceEntry.getKey() != null && resourceEntry.getValue() != null){
-                        SmartObjectResource smartObjectResource = resourceEntry.getValue();
+                        SensorResource sensorResource = resourceEntry.getValue();
 
                         logger.info("Registering to Resource {} (id: {}) notifications ...",
-                                smartObjectResource.getType(),
-                                smartObjectResource.getId());
+                                sensorResource.getType(),
+                                sensorResource.getId());
 
                         //Register to VehiclePresenceResource Notification
-                        if(smartObjectResource.getType().equals(VehiclePresenceSensorResource.RESOURCE_TYPE)){
+                        if(sensorResource.getType().equals(VehiclePresenceSensorResource.RESOURCE_TYPE)){
 
-                            VehiclePresenceSensorResource vehiclePresenceSensorResource = (VehiclePresenceSensorResource)smartObjectResource;
+                            VehiclePresenceSensorResource vehiclePresenceSensorResource = (VehiclePresenceSensorResource) sensorResource;
                             vehiclePresenceSensorResource.addDataListener((ResourceDataListener<Boolean>) super.getResourceMap().get("led"));
                             vehiclePresenceSensorResource.addDataListener(new ResourceDataListener<Boolean>() {
                                 @Override
-                                public void onDataChanged(SmartObjectResource<Boolean> resource, Boolean updatedValue) {
+                                public void onDataChanged(SensorResource<Boolean> resource, Boolean updatedValue) {
                                     try {
                                         publishTelemetryData(
                                                 String.format("%s/%s/%s/%s", PARKING_TOPIC, getMqttSmartObjectId(), TELEMETRY_TOPIC, resourceEntry.getKey()),
-                                                new TelemetryMessage<>(smartObjectResource.getId(), smartObjectResource.getType(), updatedValue));
+                                                new TelemetryMessage<>(sensorResource.getId(), sensorResource.getType(), updatedValue));
                                     } catch (MqttException | JsonProcessingException e) {
                                         e.printStackTrace();
                                     }
@@ -142,17 +140,17 @@ public class ParkingLotMqttSmartObject extends MqttSmartObject{
                         }
 
                         //Register to LedActuatorResource         -- Led
-                        if(smartObjectResource.getType().equals(LedActuatorResource.RESOURCE_TYPE)){
+                        if(sensorResource.getType().equals(LedActuatorResource.RESOURCE_TYPE)){
 
-                            LedActuatorResource ledActuatorResource = (LedActuatorResource)smartObjectResource;
+                            LedActuatorResource ledActuatorResource = (LedActuatorResource) sensorResource;
                             ledActuatorResource.addDataListener((ResourceDataListener<Led>) super.getResourceMap().get("vehicle_presence"));
                             ledActuatorResource.addDataListener(new ResourceDataListener<Led>() {
                                 @Override
-                                public void onDataChanged(SmartObjectResource<Led> resource, Led updatedValue) {
+                                public void onDataChanged(SensorResource<Led> resource, Led updatedValue) {
                                     try {
                                         publishTelemetryData(
                                                 String.format("%s/%s/%s/%s", PARKING_TOPIC, getMqttSmartObjectId(), TELEMETRY_TOPIC, resourceEntry.getKey()),
-                                                new TelemetryMessage<>(resource.getId(), smartObjectResource.getType(), updatedValue));
+                                                new TelemetryMessage<>(resource.getId(), sensorResource.getType(), updatedValue));
                                     } catch (MqttException | JsonProcessingException e) {
                                         e.printStackTrace();
                                     }

@@ -36,7 +36,7 @@ public class ChargingStationMqttSmartObject extends MqttSmartObject{
      * @param mqttClient
      * @param resourceMap
      */
-    public void init(String chargingStationId, GpsLocationDescriptor gpsLocation, IMqttClient mqttClient, Map<String, SmartObjectResource<?>> resourceMap){
+    public void init(String chargingStationId, GpsLocationDescriptor gpsLocation, IMqttClient mqttClient, Map<String, SensorResource<?>> resourceMap){
 
         super.setMqttSmartObjectId(chargingStationId);
         super.setGpsLocation(gpsLocation);
@@ -121,20 +121,21 @@ public class ChargingStationMqttSmartObject extends MqttSmartObject{
             super.getResourceMap().entrySet().forEach(resourceEntry -> {
 
                 if(resourceEntry.getKey() != null && resourceEntry.getValue() != null){
-                    SmartObjectResource smartObjectResource = resourceEntry.getValue();
+                    SensorResource sensorResource = resourceEntry.getValue();
 
                     logger.info("Registering to Resource {} (id: {}) notifications ...",
-                            smartObjectResource.getType(),
-                            smartObjectResource.getId());
+                            sensorResource.getType(),
+                            sensorResource.getId());
 
                     //Register to VehiclePresenceResource Notification
-                    if(smartObjectResource.getType().equals(VehiclePresenceSensorResource.RESOURCE_TYPE)){
+                    if(sensorResource.getType().equals(VehiclePresenceSensorResource.RESOURCE_TYPE)){
 
-                        VehiclePresenceSensorResource vehiclePresenceSensorResource = (VehiclePresenceSensorResource)smartObjectResource;
+                        VehiclePresenceSensorResource vehiclePresenceSensorResource = (VehiclePresenceSensorResource) sensorResource;
                         vehiclePresenceSensorResource.addDataListener((ResourceDataListener<Boolean>) super.getResourceMap().get("charge_status"));
+                        vehiclePresenceSensorResource.addDataListener((ResourceDataListener<Boolean>) super.getResourceMap().get("led"));
                         vehiclePresenceSensorResource.addDataListener(new ResourceDataListener<Boolean>() {
                             @Override
-                            public void onDataChanged(SmartObjectResource<Boolean> resource, Boolean updatedValue) {
+                            public void onDataChanged(SensorResource<Boolean> resource, Boolean updatedValue) {
                                 try {
                                     //Sleep to let all listeners be synchronized
                                     Thread.sleep(SLEEP_TIME);
@@ -151,14 +152,14 @@ public class ChargingStationMqttSmartObject extends MqttSmartObject{
                     }
 
                     //Register to ChargeStatusSensorResource Notification      -- Double
-                    if(smartObjectResource.getType().equals(ChargeStatusSensorResource.RESOURCE_TYPE)){
+                    if(sensorResource.getType().equals(ChargeStatusSensorResource.RESOURCE_TYPE)){
 
-                        ChargeStatusSensorResource chargeStatusSensorResource = (ChargeStatusSensorResource)smartObjectResource;
+                        ChargeStatusSensorResource chargeStatusSensorResource = (ChargeStatusSensorResource) sensorResource;
                         chargeStatusSensorResource.addDataListener((ResourceDataListener<ChargeStatusDescriptor>) super.getResourceMap().get("energy_consumption"));
                         chargeStatusSensorResource.addDataListener((ResourceDataListener<ChargeStatusDescriptor>) super.getResourceMap().get("temperature"));
                         chargeStatusSensorResource.addDataListener(new ResourceDataListener<ChargeStatusDescriptor>() {
                             @Override
-                            public void onDataChanged(SmartObjectResource<ChargeStatusDescriptor> resource, ChargeStatusDescriptor updatedValue) {
+                            public void onDataChanged(SensorResource<ChargeStatusDescriptor> resource, ChargeStatusDescriptor updatedValue) {
                                 try {
                                      Thread.sleep(SLEEP_TIME);
                                      publishTelemetryData(
@@ -172,12 +173,12 @@ public class ChargingStationMqttSmartObject extends MqttSmartObject{
                     }
 
                     //Register to TemperatureSensorResource Notification  -- Double
-                    if(smartObjectResource.getType().equals(TemperatureSensorResource.RESOURCE_TYPE)){
+                    if(sensorResource.getType().equals(TemperatureSensorResource.RESOURCE_TYPE)){
 
-                        TemperatureSensorResource temperatureSensorResource = (TemperatureSensorResource)smartObjectResource;
+                        TemperatureSensorResource temperatureSensorResource = (TemperatureSensorResource) sensorResource;
                         temperatureSensorResource.addDataListener(new ResourceDataListener<Double>() {
                             @Override
-                            public void onDataChanged(SmartObjectResource<Double> resource, Double updatedValue) {
+                            public void onDataChanged(SensorResource<Double> resource, Double updatedValue) {
                                try {
                                    Thread.sleep(SLEEP_TIME);
                                     publishTelemetryData(
@@ -191,12 +192,12 @@ public class ChargingStationMqttSmartObject extends MqttSmartObject{
                     }
 
                     //Register to EnergyConsumptionResource Notification  -- Double
-                    if(smartObjectResource.getType().equals(EnergyConsumptionSensorResource.RESOURCE_TYPE)){
+                    if(sensorResource.getType().equals(EnergyConsumptionSensorResource.RESOURCE_TYPE)){
 
-                        EnergyConsumptionSensorResource energyConsumptionSensorResource = (EnergyConsumptionSensorResource)smartObjectResource;
+                        EnergyConsumptionSensorResource energyConsumptionSensorResource = (EnergyConsumptionSensorResource) sensorResource;
                         energyConsumptionSensorResource.addDataListener(new ResourceDataListener<Double>() {
                             @Override
-                            public void onDataChanged(SmartObjectResource<Double> resource, Double updatedValue) {
+                            public void onDataChanged(SensorResource<Double> resource, Double updatedValue) {
                                 try {
                                     Thread.sleep(SLEEP_TIME);
                                     publishTelemetryData(
@@ -210,12 +211,13 @@ public class ChargingStationMqttSmartObject extends MqttSmartObject{
                     }
 
                     //Register to LedActuatorResource         -- Led
-                    if(smartObjectResource.getType().equals(LedActuatorResource.RESOURCE_TYPE)){
+                    if(sensorResource.getType().equals(LedActuatorResource.RESOURCE_TYPE)){
 
-                        LedActuatorResource ledActuatorResource = (LedActuatorResource)smartObjectResource;
+                        LedActuatorResource ledActuatorResource = (LedActuatorResource) sensorResource;
+                        ledActuatorResource.addDataListener((ResourceDataListener<Led>) super.getResourceMap().get("vehicle_presence"));
                         ledActuatorResource.addDataListener(new ResourceDataListener<Led>() {
                             @Override
-                            public void onDataChanged(SmartObjectResource<Led> resource, Led updatedValue) {
+                            public void onDataChanged(SensorResource<Led> resource, Led updatedValue) {
                                 try {
                                     Thread.sleep(SLEEP_TIME);
                                     publishTelemetryData(

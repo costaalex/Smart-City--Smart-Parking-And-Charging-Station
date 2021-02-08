@@ -1,15 +1,14 @@
 package resource;
 
-import model.GpsLocationDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class SmartObjectResource<T> {
+public abstract class SensorResource<T> {
 
-    private static final Logger logger = LoggerFactory.getLogger(SmartObjectResource.class);
+    private static final Logger logger = LoggerFactory.getLogger(SensorResource.class);
 
     protected List<ResourceDataListener<T>> resourceListenerList;
 
@@ -17,22 +16,22 @@ public abstract class SmartObjectResource<T> {
     private String id;
     private long timestamp;
 
-    public SmartObjectResource() {
+    public SensorResource() {
         this.resourceListenerList = new ArrayList<>();
     }
 
-    public SmartObjectResource(String type, long timestamp) {
+    public SensorResource(String type, long timestamp) {
         this.type = type;
         this.timestamp = timestamp;
     }
 
-    public SmartObjectResource(String id, String type) {
+    public SensorResource(String id, String type) {
         this.id = id;
         this.type = type;
         this.resourceListenerList = new ArrayList<>();
     }
 
-    public SmartObjectResource(String id, String type, long timestamp) {
+    public SensorResource(String id, String type, long timestamp) {
         this.id = id;
         this.type = type;
         this.timestamp = timestamp;
@@ -90,7 +89,7 @@ public abstract class SmartObjectResource<T> {
 
     @Override
     public String toString() {
-        final StringBuffer sb = new StringBuffer("SmartObjectResource{");
+        final StringBuffer sb = new StringBuffer("SensorResource{");
         sb.append("id='").append(id).append('\'');
         sb.append(", type='").append(type).append('\'');
         sb.append('}');

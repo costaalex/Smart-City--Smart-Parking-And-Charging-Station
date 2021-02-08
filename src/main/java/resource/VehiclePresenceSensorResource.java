@@ -1,13 +1,12 @@
 package resource;
 
-import model.GpsLocationDescriptor;
 import model.Led;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
-public class VehiclePresenceSensorResource extends SmartObjectResource<Boolean> implements ResourceDataListener<Led>{
+public class VehiclePresenceSensorResource extends SensorResource<Boolean> implements ResourceDataListener<Led>{
 
     private static final Logger logger = LoggerFactory.getLogger(VehiclePresenceSensorResource.class);
 
@@ -102,14 +101,14 @@ public class VehiclePresenceSensorResource extends SmartObjectResource<Boolean> 
     }
 
     @Override
-    public void onDataChanged(SmartObjectResource<Led> smartObjectResource, Led updatedValue) {
-        if (smartObjectResource != null && smartObjectResource.getType().equals(LedActuatorResource.RESOURCE_TYPE)) {
+    public void onDataChanged(SensorResource<Led> sensorResource, Led updatedValue) {
+        if (sensorResource != null && sensorResource.getType().equals(LedActuatorResource.RESOURCE_TYPE)) {
             if (updatedValue == Led.YELLOW) {     //If a new vehicle arrived, set led red
-                logger.info("Led YELLOW color detected - sensor: {}.. setting parking inactive.", smartObjectResource.getId());
+                logger.info("Led YELLOW color detected - sensor: {}.. setting parking inactive.", sensorResource.getId());
                 isActive = false;
             }
             else if(updatedValue == Led.GREEN){
-                logger.info("Led GREEN color detected - sensor: {}.. setting parking active.", smartObjectResource.getId());
+                logger.info("Led GREEN color detected - sensor: {}.. setting parking active.", sensorResource.getId());
                 isActive = true;
             }
 
@@ -127,7 +126,7 @@ public class VehiclePresenceSensorResource extends SmartObjectResource<Boolean> 
 
         vehiclePresenceSensorResource.addDataListener(new ResourceDataListener<Boolean>() {
             @Override
-            public void onDataChanged(SmartObjectResource<Boolean> resource, Boolean updatedValue) {
+            public void onDataChanged(SensorResource<Boolean> resource, Boolean updatedValue) {
                 if (resource != null && updatedValue != null)
                     logger.info("Device: {} -> New Value Received: {}", resource.getId(), updatedValue);
                 else
@@ -138,6 +137,14 @@ public class VehiclePresenceSensorResource extends SmartObjectResource<Boolean> 
 
     public boolean isActive() {
         return isActive;
+    }
+
+    public Boolean getUpdatedVehiclePresenceStatus() {
+        return updatedVehiclePresenceStatus;
+    }
+
+    public void setUpdatedVehiclePresenceStatus(Boolean updatedVehiclePresenceStatus) {
+        this.updatedVehiclePresenceStatus = updatedVehiclePresenceStatus;
     }
 
     public void setActive(boolean active) {

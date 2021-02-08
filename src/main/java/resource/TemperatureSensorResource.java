@@ -2,7 +2,6 @@ package resource;
 
 import model.ChargeStatusDescriptor;
 import model.GpsLocationDescriptor;
-import model.Led;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,7 +10,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 
-public class TemperatureSensorResource extends SmartObjectResource<Double> implements ResourceDataListener<ChargeStatusDescriptor>{
+public class TemperatureSensorResource extends SensorResource<Double> implements ResourceDataListener<ChargeStatusDescriptor>{
 
     private static final Logger logger = LoggerFactory.getLogger(VehiclePresenceSensorResource.class);
 
@@ -53,6 +52,14 @@ public class TemperatureSensorResource extends SmartObjectResource<Double> imple
         super(UUID.randomUUID().toString(), VehiclePresenceSensorResource.RESOURCE_TYPE);
         this.updatedTemperatureSensorValue = temperatureSensorValue;
         init();
+    }
+
+    public Double getUpdatedTemperatureSensorValue() {
+        return updatedTemperatureSensorValue;
+    }
+
+    public void setUpdatedTemperatureSensorValue(Double updatedTemperatureSensorValue) {
+        this.updatedTemperatureSensorValue = updatedTemperatureSensorValue;
     }
 
     /**
@@ -107,10 +114,10 @@ public class TemperatureSensorResource extends SmartObjectResource<Double> imple
     }
 
     @Override
-    public void onDataChanged(SmartObjectResource<ChargeStatusDescriptor> smartObjectResource, ChargeStatusDescriptor updatedValue) {
-        if (smartObjectResource != null && smartObjectResource.getType().equals(ChargeStatusSensorResource.RESOURCE_TYPE)) {
+    public void onDataChanged(SensorResource<ChargeStatusDescriptor> sensorResource, ChargeStatusDescriptor updatedValue) {
+        if (sensorResource != null && sensorResource.getType().equals(ChargeStatusSensorResource.RESOURCE_TYPE)) {
             if (updatedValue == ChargeStatusDescriptor.CHARGING) {     //If a vehicle is CHARGING, the temperature is rising
-                logger.info("Temperature Sensor is notified that a vehicle is CHARGING - charge status sensor: {}", smartObjectResource.getId());
+                logger.info("Temperature Sensor is notified that a vehicle is CHARGING - charge status sensor: {}", sensorResource.getId());
                 temperatureIsRising = true;
             }
             else{

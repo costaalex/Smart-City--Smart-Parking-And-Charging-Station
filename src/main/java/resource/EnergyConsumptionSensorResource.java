@@ -10,7 +10,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 
-public class EnergyConsumptionSensorResource extends SmartObjectResource<Double> implements ResourceDataListener<ChargeStatusDescriptor>{
+public class EnergyConsumptionSensorResource extends SensorResource<Double> implements ResourceDataListener<ChargeStatusDescriptor>{
 
     private static Logger logger = LoggerFactory.getLogger(EnergyConsumptionSensorResource.class);
 
@@ -109,10 +109,10 @@ public class EnergyConsumptionSensorResource extends SmartObjectResource<Double>
     }
 
     @Override
-    public void onDataChanged(SmartObjectResource<ChargeStatusDescriptor> smartObjectResource, ChargeStatusDescriptor updatedValue) {
-        if (smartObjectResource != null && smartObjectResource.getType().equals(ChargeStatusSensorResource.RESOURCE_TYPE)) {
+    public void onDataChanged(SensorResource<ChargeStatusDescriptor> sensorResource, ChargeStatusDescriptor updatedValue) {
+        if (sensorResource != null && sensorResource.getType().equals(ChargeStatusSensorResource.RESOURCE_TYPE)) {
             if (updatedValue == ChargeStatusDescriptor.CHARGING) {     //If a vehicle is CHARGING, the temperature is rising
-                logger.info("Energy Consumption Sensor is notified that a vehicle is CHARGING - charge status sensor: {}", smartObjectResource.getId());
+                logger.info("Energy Consumption Sensor is notified that a vehicle is CHARGING - charge status sensor: {}", sensorResource.getId());
                 isConsumingEnergy = true;
             }
             else{
@@ -133,7 +133,7 @@ public class EnergyConsumptionSensorResource extends SmartObjectResource<Double>
 
         rawResource.addDataListener(new ResourceDataListener<Double>() {
             @Override
-            public void onDataChanged(SmartObjectResource<Double> resource, Double updatedValue) {
+            public void onDataChanged(SensorResource<Double> resource, Double updatedValue) {
 
                 if(resource != null && updatedValue != null)
                     logger.info("Device: {} -> New Value Received: {}", resource.getId(), updatedValue);

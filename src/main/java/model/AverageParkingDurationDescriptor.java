@@ -1,53 +1,34 @@
 package model;
 
-import consumer.DataCollectorAndManager;
-import org.slf4j.LoggerFactory;
-
 import java.util.concurrent.TimeUnit;
 
-public class AverageParkingDurationDescriptor {
-    private long sumParkingDurationMillis;
-    private Integer occurrences;
+public class AverageParkingDurationDescriptor extends AverageDurationDescriptor{
 
-    private long lastParkingStartTimestamp;
     private Boolean lastParkingState;
 
-    public AverageParkingDurationDescriptor(long sumParkingDurationMillis, Integer occurrences, Boolean lastParkingState, long lastParkingStartTimestamp) {
-        this.sumParkingDurationMillis = sumParkingDurationMillis;
-        this.occurrences = occurrences;
-        this.lastParkingStartTimestamp = -1;
-        this.lastParkingState = false;
-    }
-
     public AverageParkingDurationDescriptor() {
-        sumParkingDurationMillis = 0;
-        occurrences = 0;
-        lastParkingStartTimestamp = -1;
+        super();
         lastParkingState = false;
     }
 
-    public long getSumParkingDurationMillis() {
-        return sumParkingDurationMillis;
-    }
-
     public Double addParkingDurationFromStatusAndTimestamp(Boolean newParkingState, long timestamp){
-        if(lastParkingStartTimestamp != -1){
+        if(super.getLastStartTimestamp() != -1){
             //if not parking lot is freed calculate occupation time and update average
             if(lastParkingState == true && newParkingState == false){
-                long diffInMillis = getDateDiff(lastParkingStartTimestamp, timestamp, TimeUnit.MILLISECONDS);
-                sumParkingDurationMillis += diffInMillis;
-                occurrences++;
+                long diffInMillis = getDateDiff(super.getLastStartTimestamp(), timestamp, TimeUnit.MILLISECONDS);
+                super.addSumDurationMillis(diffInMillis);
+                super.addOccurrence();
                 lastParkingState = false;
 
                 return diffInMillis / 1000.0; // return last parking duration in seconds
             }//if parked now
             else if(lastParkingState == false && newParkingState == true){
-                lastParkingStartTimestamp = timestamp;
+                super.setLastStartTimestamp(timestamp);
                 lastParkingState = true;
             }
         }
         else{
-            lastParkingStartTimestamp = timestamp;
+            super.setLastStartTimestamp(timestamp);
             lastParkingState = newParkingState;
         }
         return 0.0;
@@ -60,27 +41,17 @@ public class AverageParkingDurationDescriptor {
     }
 
     public Double addParkingDurationSeconds(Double parkingDurationSeconds){
-        sumParkingDurationMillis += Math.floor(parkingDurationSeconds * 1000);
-        occurrences++;
+        super.addSumDurationMillis((long) Math.floor(parkingDurationSeconds * 1000));
+        super.addOccurrence();
         return getAverageParkingDurationSeconds();
     }
 
-    public void setSumParkingDuration(long sumParkingDurationMillis) {
-        this.sumParkingDurationMillis = sumParkingDurationMillis;
-    }
-
-    public Integer getOccurrences() {
-        return occurrences;
-    }
-
-    public void setOccurrences(Integer occurrences) {
-        this.occurrences = occurrences;
-    }
-
     public Double getAverageParkingDurationSeconds(){
-        if(occurrences > 0)
-            return Math.floor(sumParkingDurationMillis / 1.0) / 1000.0 / occurrences;
+        if(super.getOccurrences() > 0)
+            return Math.floor(super.getSumDurationMillis() / 1.0) / 1000.0 / super.getOccurrences();
         else
             return 0.0;
     }
+
+
 }

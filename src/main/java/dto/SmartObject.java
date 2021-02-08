@@ -1,11 +1,8 @@
 package dto;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import model.AverageChargingDurationDescriptor;
-import model.AverageParkingDurationDescriptor;
-import model.GpsLocationDescriptor;
-import model.SmartObjectTypeDescriptor;
-import resource.SmartObjectResource;
+import model.*;
+import resource.SensorResource;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,48 +13,41 @@ public class SmartObject {
 
     private GpsLocationDescriptor gpsLocation;
 
-    private ObjectMapper mapper;
-
     private SmartObjectTypeDescriptor smartObjectType; // CHARGING_STATION, PARKING_LOT
 
-    private Map<String, SmartObjectResource<?>> resourceMap;  //key = sensor_type, value = sensor
+    private Map<String, SensorResource<?>> resourceMap;  //key = sensor_type, value = sensor
 
-    public AverageChargingDurationDescriptor averageChargingDurationDescriptor;
-    public AverageParkingDurationDescriptor averageParkingDurationDescriptor;
+    private AverageDurationDescriptor averageDurationDescriptor;
 
     public SmartObject() {
-        this.mapper = new ObjectMapper();
-        averageChargingDurationDescriptor = new AverageChargingDurationDescriptor();
-        averageParkingDurationDescriptor = new AverageParkingDurationDescriptor();
     }
 
     public SmartObject(String smartObjectId, GpsLocationDescriptor gpsLocation, SmartObjectTypeDescriptor smartObjectType) {
         this.smartObjectId = smartObjectId;
         this.gpsLocation = gpsLocation;
-        this.mapper = new ObjectMapper();
         this.resourceMap = new HashMap<>();
         this.smartObjectType = smartObjectType;
-        averageChargingDurationDescriptor = new AverageChargingDurationDescriptor();
-        averageParkingDurationDescriptor = new AverageParkingDurationDescriptor();
+        if(smartObjectType == SmartObjectTypeDescriptor.CHARGING_STATION)
+            averageDurationDescriptor = new AverageChargingDurationDescriptor();
+        else
+            averageDurationDescriptor = new AverageParkingDurationDescriptor();
     }
 
     public SmartObject(String smartObjectId, SmartObjectTypeDescriptor smartObjectType) {
         this.smartObjectId = smartObjectId;
         this.gpsLocation = null;
-        this.mapper = new ObjectMapper();
         this.resourceMap = new HashMap<>();
         this.smartObjectType = smartObjectType;
-        averageChargingDurationDescriptor = new AverageChargingDurationDescriptor();
-        averageParkingDurationDescriptor = new AverageParkingDurationDescriptor();
+        if(smartObjectType == SmartObjectTypeDescriptor.CHARGING_STATION)
+            averageDurationDescriptor = new AverageChargingDurationDescriptor();
+        else
+            averageDurationDescriptor = new AverageParkingDurationDescriptor();
     }
 
-    public AverageChargingDurationDescriptor getAverageChargingDurationDescriptor() {
-        return averageChargingDurationDescriptor;
+    public AverageDurationDescriptor getAverageDurationDescriptor() {
+        return averageDurationDescriptor;
     }
 
-    public AverageParkingDurationDescriptor getAverageParkingDurationDescriptor() {
-        return averageParkingDurationDescriptor;
-    }
    /*
     public void setAverageChargingDurationDescriptor(AverageChargingDurationDescriptor averageChargingDurationDescriptor) {
         this.averageChargingDurationDescriptor = averageChargingDurationDescriptor;
@@ -92,19 +82,11 @@ public class SmartObject {
         this.gpsLocation = gpsLocation;
     }
 
-    public ObjectMapper getMapper() {
-        return mapper;
-    }
-
-    public void setMapper(ObjectMapper mapper) {
-        this.mapper = mapper;
-    }
-
-    public Map<String, SmartObjectResource<?>> getResourceMap() {
+    public Map<String, SensorResource<?>> getResourceMap() {
         return resourceMap;
     }
 
-    public void setResourceMap(Map<String, SmartObjectResource<?>> resourceMap) {
+    public void setResourceMap(Map<String, SensorResource<?>> resourceMap) {
         this.resourceMap = resourceMap;
     }
 

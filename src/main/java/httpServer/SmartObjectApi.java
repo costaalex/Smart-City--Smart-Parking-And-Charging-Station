@@ -22,8 +22,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static device.ParkingLotMqttSmartObject.PARKING_TOPIC;
-
 @Path("/smartcity")
 @Api("Smart Object Data")
 public class SmartObjectApi {
@@ -74,12 +72,15 @@ public class SmartObjectApi {
             if(!smartObjectMap.isPresent())
                 return Response.status(Response.Status.NOT_FOUND).type(MediaType.APPLICATION_JSON_TYPE).entity(new ErrorMessage(Response.Status.NOT_FOUND.getStatusCode(),"Smart Objects Not Found !")).build();
 
-            List smartObjectList = new ArrayList();
+          /*  List smartObjectList = new ArrayList();
             for (SmartObject s: smartObjectMap.get().values()) {
 
                 smartObjectList.add(smartObjectToList(s));
             }
-            return Response.ok(smartObjectList).build();
+
+           */
+            //return Response.ok(smartObjectList).build();
+            return Response.ok(smartObjectMap.get()).build();
 
         } catch (Exception e){
             e.printStackTrace();
@@ -133,9 +134,9 @@ public class SmartObjectApi {
             if(!smartObject.isPresent())
                 return Response.status(Response.Status.NOT_FOUND).type(MediaType.APPLICATION_JSON_TYPE).entity(new ErrorMessage(Response.Status.NOT_FOUND.getStatusCode(),"Smart Object Id Not Found !")).build();
 
-            List smartObjectList = smartObjectToList(smartObject.get());
+          //  List smartObjectList = smartObjectToList(smartObject.get());
 
-            return Response.ok(smartObjectList).build();
+            return Response.ok(smartObject.get()).build();
 
         } catch (Exception e){
             e.printStackTrace();
@@ -165,7 +166,7 @@ public class SmartObjectApi {
             if(!smartObject.isPresent())
                 return Response.status(Response.Status.NOT_FOUND).type(MediaType.APPLICATION_JSON_TYPE).entity(new ErrorMessage(Response.Status.NOT_FOUND.getStatusCode(),"Smart Object Id Not Found !")).build();
 
-            SmartObjectResource<?> sensor = smartObject.get().getResourceMap().get(sensor_type);                  //Extract the requested sensor
+            SensorResource<?> sensor = smartObject.get().getResourceMap().get(sensor_type);                  //Extract the requested sensor
 
             if (sensor != null)
                 return Response.ok(sensor).build();
@@ -208,7 +209,7 @@ public class SmartObjectApi {
         }
     }
 
-    private List smartObjectToList(SmartObject smartObject) {
+  /*  private List smartObjectToList(SmartObject smartObject) {
         List smartObjectList = new ArrayList<>();
         smartObjectList.add(smartObject.getSmartObjectId());
         smartObjectList.add(smartObject.getAverageChargingDurationDescriptor());
@@ -217,7 +218,7 @@ public class SmartObjectApi {
         smartObjectList.add(smartObject.getGpsLocation());
 
         ArrayList sensorList = new ArrayList();
-        for (SmartObjectResource s: smartObject.getResourceMap().values()) {
+        for (SensorResource s: smartObject.getResourceMap().values()) {
             switch (s.getType()) {
                 case EnergyConsumptionSensorResource.RESOURCE_TYPE:
                     EnergyConsumptionSensorResource energyConsumptionSensorResource = (EnergyConsumptionSensorResource)s;
@@ -253,5 +254,5 @@ public class SmartObjectApi {
         i++;
         return smartObjectList;
     }
-
+*/
 }

@@ -1,7 +1,6 @@
 package resource;
 
 import model.ChargeStatusDescriptor;
-import model.Led;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,7 +11,7 @@ import java.util.UUID;
 
 //This sensor depends on the presence of the vehicle
 
-public class ChargeStatusSensorResource extends SmartObjectResource<ChargeStatusDescriptor> implements ResourceDataListener<Boolean>{
+public class ChargeStatusSensorResource extends SensorResource<ChargeStatusDescriptor> implements ResourceDataListener<Boolean>{
 
     private static final Logger logger = LoggerFactory.getLogger(ChargeStatusSensorResource.class);
 
@@ -97,10 +96,10 @@ public class ChargeStatusSensorResource extends SmartObjectResource<ChargeStatus
      * - VehiclePresenceSensor changed status, choose a new value for ChargeStatusSensor
      */
     @Override
-    public void onDataChanged(SmartObjectResource<Boolean> smartObjectResource, Boolean updatedValue) {
-        if (smartObjectResource != null && smartObjectResource.getType().equals(VehiclePresenceSensorResource.RESOURCE_TYPE)) {
+    public void onDataChanged(SensorResource<Boolean> sensorResource, Boolean updatedValue) {
+        if (sensorResource != null && sensorResource.getType().equals(VehiclePresenceSensorResource.RESOURCE_TYPE)) {
             if (updatedValue == true) {     //If a new vehicle arrived, choose a random value
-                logger.info("Vehicle detected by sensor: {}", smartObjectResource.getId());
+                logger.info("Vehicle detected by sensor: {}", sensorResource.getId());
 
                 if(updatedChargeStatus == ChargeStatusDescriptor.CHARGING) {
                     if (random.nextInt(CHARGING_IF_PRESENT_PROBABILITY) == 0)       //25% probability
@@ -152,7 +151,7 @@ public class ChargeStatusSensorResource extends SmartObjectResource<ChargeStatus
 
         chargeStatusSensorResource.addDataListener(new ResourceDataListener<ChargeStatusDescriptor>() {
             @Override
-            public void onDataChanged(SmartObjectResource<ChargeStatusDescriptor> resource, ChargeStatusDescriptor updatedValue) {
+            public void onDataChanged(SensorResource<ChargeStatusDescriptor> resource, ChargeStatusDescriptor updatedValue) {
 
                 if(resource != null && updatedValue != null)
                     logger.info("Device: {} -> New Value Received: {}", resource.getId(), updatedValue);

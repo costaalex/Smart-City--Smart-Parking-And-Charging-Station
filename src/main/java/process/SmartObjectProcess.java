@@ -2,7 +2,6 @@ package process;
 
 import device.ChargingStationMqttSmartObject;
 
-import device.MqttSmartObject;
 import device.ParkingLotMqttSmartObject;
 import model.GpsLocationDescriptor;
 import org.eclipse.paho.client.mqttv3.IMqttClient;
@@ -17,8 +16,6 @@ import resource.*;
 import java.util.HashMap;
 import java.util.Random;
 import java.util.UUID;
-
-import static device.MqttSmartObject.BASIC_TOPIC;
 
 public class SmartObjectProcess {
 
@@ -120,7 +117,7 @@ public class SmartObjectProcess {
                 logger.info("Connected new Charging Station - id: {}, lat: {}, long: {}",mqttSmartObjectId, latitude, longitude);
 
                 ChargingStationMqttSmartObject charhingstationMqttSmartObject = new ChargingStationMqttSmartObject();
-                charhingstationMqttSmartObject.init(mqttSmartObjectId, gpsLocation, mqttClient, new HashMap<String, resource.SmartObjectResource<?>>() {
+                charhingstationMqttSmartObject.init(mqttSmartObjectId, gpsLocation, mqttClient, new HashMap<String, SensorResource<?>>() {
                     {
                         put("vehicle_presence", new VehiclePresenceSensorResource());
                         put("charge_status", new ChargeStatusSensorResource());
@@ -135,7 +132,7 @@ public class SmartObjectProcess {
                 logger.info("Connected new Parking Lot - id: {}, lat: {}, long: {}",mqttSmartObjectId, latitude, longitude);
 
                 ParkingLotMqttSmartObject parkingLotMqttSmartObject = new ParkingLotMqttSmartObject();
-                parkingLotMqttSmartObject.init(mqttSmartObjectId, gpsLocation, mqttClient, new HashMap<String, resource.SmartObjectResource<?>>(){
+                parkingLotMqttSmartObject.init(mqttSmartObjectId, gpsLocation, mqttClient, new HashMap<String, SensorResource<?>>(){
                     {
                         put("vehicle_presence", new VehiclePresenceSensorResource());
                         put("led", new LedActuatorResource());

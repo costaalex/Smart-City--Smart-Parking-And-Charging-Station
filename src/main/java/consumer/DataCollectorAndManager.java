@@ -3,9 +3,7 @@ package consumer;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import device.ChargingStationMqttSmartObject;
 import device.MqttSmartObject;
-import device.ParkingLotMqttSmartObject;
 import dto.SingletonDataCollector;
 import dto.SmartObject;
 import message.ControlMessage;
@@ -26,7 +24,6 @@ import java.util.UUID;
 import static device.ChargingStationMqttSmartObject.CHARGING_TOPIC;
 import static device.MqttSmartObject.CONTROL_TOPIC;
 import static device.ParkingLotMqttSmartObject.PARKING_TOPIC;
-import static process.SmartObjectProcess.MQTT_USERNAME;
 
 public class DataCollectorAndManager {
 
@@ -166,7 +163,7 @@ public class DataCollectorAndManager {
         }
         else if(topic.contains(MqttSmartObject.TELEMETRY_TOPIC)) {
             Optional<TelemetryMessage<?>> telemetryMessageOptional = parseTelemetryMessagePayload(msg);
-            SmartObjectResource<?> sensor = null;
+            SensorResource<?> sensor = null;
             long timestamp = telemetryMessageOptional.get().getTimestamp();
             String sensor_type = telemetryMessageOptional.get().getType();
 
@@ -183,7 +180,7 @@ public class DataCollectorAndManager {
                     else
                         smartObject = new SmartObject(smartObjectId, SmartObjectTypeDescriptor.PARKING_LOT);
 
-                    Map<String, SmartObjectResource<?>> resourceMap = new HashMap<>();
+                    Map<String, SensorResource<?>> resourceMap = new HashMap<>();
                     // resourceMap.put(sensor_type, sensor);
                     smartObject.setResourceMap(resourceMap);
                     smartObjectsMapSingleton.put(smartObjectId, smartObject);
@@ -223,7 +220,8 @@ public class DataCollectorAndManager {
                     case LedActuatorResource.RESOURCE_TYPE:
                         Led newLedValue = Led.valueOf(telemetryMessageOptional.get().getDataValue().toString());
                         sensor = new LedActuatorResource(telemetryMessageOptional.get().getSmartObjectId(), sensor_type, timestamp, newLedValue);
-                        logger.info("New Led Actuator Data Received : {}", newLedValue);
+
+                        logger.info("New Led Actuator Data Received: {}", newLedValue);
                         break;
                 }
 
@@ -231,20 +229,20 @@ public class DataCollectorAndManager {
                 smartObjectsMapSingleton.get(smartObjectId).getResourceMap().put(sensor_type, sensor);
 
                 //System.err.println("ciao" + smartObjectsMapSingleton.values());
-             /*   if(conta==20) {
+              /*  if(conta==100) {
                     AverageChargingDurationDescriptor acdd = SingletonDataCollector.getInstance().averageChargingDurationDescriptor;
                     Map<String, SmartObject> som= SingletonDataCollector.getInstance().smartObjectsMap;
                     logger.info("mappa: {}", som.toString());
                 }
-
-                conta++;*/
+*/
+                conta++;
             }
         }
     }
     private static void updateChargingDurationAverage(ChargeStatusDescriptor newChargeStatusValue, long timestamp, String smartObjectId){
         //add charging duration to a specific charging station and calculate new average
-        Double lastChargingDurationForStationSeconds = SingletonDataCollector.getInstance().smartObjectsMap.get(smartObjectId).getAverageChargingDurationDescriptor().addChargingDurationFromStatusAndTimestamp(newChargeStatusValue, timestamp);
-        logger.info("New Average Charging duration for: {}: {} seconds.", smartObjectId, SingletonDataCollector.getInstance().smartObjectsMap.get(smartObjectId).getAverageChargingDurationDescriptor().getAverageChargingDurationSeconds());
+        Double lastChargingDurationForStationSeconds = ((AverageChargingDurationDescriptor) SingletonDataCollector.getInstance().smartObjectsMap.get(smartObjectId).getAverageDurationDescriptor()).addChargingDurationFromStatusAndTimestamp(newChargeStatusValue, timestamp);
+        logger.info("New Average Charging duration for: {}: {} seconds.", smartObjectId,  ((AverageChargingDurationDescriptor) SingletonDataCollector.getInstance().smartObjectsMap.get(smartObjectId).getAverageDurationDescriptor()).getAverageChargingDurationSeconds());
 
         //calculate new overall charging average
         if(lastChargingDurationForStationSeconds != 0) {
@@ -253,8 +251,8 @@ public class DataCollectorAndManager {
         }
     }
     private static void updateParkingDurationAverage(Boolean newParkingStatusValue, long timestamp, String smartObjectId){
-        Double lastParkingDurationForParkingLotSeconds = SingletonDataCollector.getInstance().smartObjectsMap.get(smartObjectId).getAverageParkingDurationDescriptor().addParkingDurationFromStatusAndTimestamp(newParkingStatusValue, timestamp);
-        logger.info("New Average Parking duration for: {}: {} seconds.", smartObjectId, SingletonDataCollector.getInstance().smartObjectsMap.get(smartObjectId).getAverageParkingDurationDescriptor().getAverageParkingDurationSeconds());
+        Double lastParkingDurationForParkingLotSeconds = ((AverageParkingDurationDescriptor) SingletonDataCollector.getInstance().smartObjectsMap.get(smartObjectId).getAverageDurationDescriptor()).addParkingDurationFromStatusAndTimestamp(newParkingStatusValue, timestamp);
+        logger.info("New Average Parking duration for: {}: {} seconds.", smartObjectId, ((AverageParkingDurationDescriptor) SingletonDataCollector.getInstance().smartObjectsMap.get(smartObjectId).getAverageDurationDescriptor()).getAverageParkingDurationSeconds());
         //calculate new overall charging average
 
         if(lastParkingDurationForParkingLotSeconds != 0) {

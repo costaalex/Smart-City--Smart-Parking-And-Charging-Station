@@ -5,18 +5,15 @@ import consumer.DataCollectorAndManager;
 import dto.SingletonDataCollector;
 import dto.SmartObject;
 import message.ControlMessage;
-import message.TelemetryMessage;
 import model.GpsLocationDescriptor;
 import model.Led;
 import model.SmartObjectTypeDescriptor;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import resource.LedActuatorResource;
-import resource.SmartObjectResource;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.BiConsumer;
 
 public class DefaultSmartObjectDataManager implements ISmartObjectDataManager{
     SingletonDataCollector single_instance = SingletonDataCollector.getInstance();

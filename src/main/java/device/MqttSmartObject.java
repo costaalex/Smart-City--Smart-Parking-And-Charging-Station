@@ -1,15 +1,12 @@
 package device;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import message.ControlMessage;
 import model.GpsLocationDescriptor;
 import org.eclipse.paho.client.mqttv3.IMqttClient;
-import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
-import org.slf4j.Logger;
-import resource.SmartObjectResource;
+import resource.SensorResource;
 
 import java.util.Map;
 import java.util.Optional;
@@ -37,7 +34,7 @@ public abstract class MqttSmartObject {
 
     private IMqttClient mqttClient;
 
-    private Map<String, SmartObjectResource<?>> resourceMap;
+    private Map<String, SensorResource<?>> resourceMap;
 
     public MqttSmartObject() {
         this.mapper = new ObjectMapper();
@@ -81,11 +78,11 @@ public abstract class MqttSmartObject {
         this.mqttClient = mqttClient;
     }
 
-    public Map<String, SmartObjectResource<?>> getResourceMap() {
+    public Map<String, SensorResource<?>> getResourceMap() {
         return resourceMap;
     }
 
-    public void setResourceMap(Map<String, SmartObjectResource<?>> resourceMap) {
+    public void setResourceMap(Map<String, SensorResource<?>> resourceMap) {
         this.resourceMap = resourceMap;
     }
 
