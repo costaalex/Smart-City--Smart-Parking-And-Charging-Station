@@ -102,7 +102,6 @@ public class DataCollectorAndManager {
             if (generalMessageOptional.isPresent() ) {
                 Double latitude = generalMessageOptional.get().getLatitude();
                 Double longitude = generalMessageOptional.get().getLongitude();
-                logger.info("New Smart Object Gps Location Data Received. id:{} lat: {}, long: {}", smartObjectId, latitude, longitude);
 
                 if ( !SingletonDataCollector.getInstance().smartObjectsMap.containsKey(smartObjectId) ) {
                     SmartObject smartObject = null;
@@ -151,19 +150,16 @@ public class DataCollectorAndManager {
                     case EnergyConsumptionSensorResource.RESOURCE_TYPE:
                         Double newEnergyConsumptionValue = (Double) telemetryMessageOptional.get().getDataValue();
                         sensor = new EnergyConsumptionSensorResource(telemetryMessageOptional.get().getSmartObjectId(),sensor_type, timestamp, newEnergyConsumptionValue);
-                        //logger.info("New Energy Consumption Data Received : {}", newEnergyConsumptionValue);
                         break;
 
                     case TemperatureSensorResource.RESOURCE_TYPE:
                         Double newTemperatureValue = (Double) telemetryMessageOptional.get().getDataValue();
                         sensor = new TemperatureSensorResource(telemetryMessageOptional.get().getSmartObjectId(), sensor_type, timestamp, newTemperatureValue);
-                        //logger.info("New Temperature Data Received : {}", newTemperatureValue);
                         break;
 
                     case VehiclePresenceSensorResource.RESOURCE_TYPE:
                         Boolean newVehiclePresenceValue = (Boolean) telemetryMessageOptional.get().getDataValue();
                         sensor = new VehiclePresenceSensorResource(telemetryMessageOptional.get().getSmartObjectId(), sensor_type, timestamp, newVehiclePresenceValue);
-                        //logger.info("New Vehicle Presence Data Received : {}", newVehiclePresenceValue);
 
                         if(topic.contains(PARKING_TOPIC))
                             updateParkingDurationAverage(newVehiclePresenceValue, timestamp, smartObjectId);
@@ -172,7 +168,6 @@ public class DataCollectorAndManager {
                     case ChargeStatusSensorResource.RESOURCE_TYPE:
                         ChargeStatusDescriptor newChargeStatusValue = ChargeStatusDescriptor.valueOf(telemetryMessageOptional.get().getDataValue().toString());
                         sensor = new ChargeStatusSensorResource(telemetryMessageOptional.get().getSmartObjectId(), sensor_type, timestamp, newChargeStatusValue);
-                        //logger.info("New Charge Status Data Received : {}", newChargeStatusValue);
 
                         updateChargingDurationAverage(newChargeStatusValue, timestamp, smartObjectId);
 
@@ -180,7 +175,6 @@ public class DataCollectorAndManager {
                     case LedActuatorResource.RESOURCE_TYPE:
                         Led newLedValue = Led.valueOf(telemetryMessageOptional.get().getDataValue().toString());
                         sensor = new LedActuatorResource(telemetryMessageOptional.get().getSmartObjectId(), sensor_type, timestamp, newLedValue);
-                        //logger.info("New Led Actuator Data Received: {}", newLedValue);
 
                         break;
                 }
@@ -223,22 +217,22 @@ public class DataCollectorAndManager {
 
     private static void updateChargingDurationAverage(ChargeStatusDescriptor newChargeStatusValue, long timestamp, String smartObjectId){
         //add charging duration to a specific charging station and calculate new average
-        Double lastChargingDurationForStationSeconds = ((AverageChargingDurationDescriptor) SingletonDataCollector.getInstance().smartObjectsMap.get(smartObjectId).getAverageDurationDescriptor()).addChargingDurationFromStatusAndTimestamp(newChargeStatusValue, timestamp);
+        Double lastChargingDurationForStationSeconds = ((AverageChargingDurationDescriptor) SingletonDataCollector.getInstance().smartObjectsMap.get(smartObjectId).getAverageDurationDescriptor()).addChargingDuration(newChargeStatusValue, timestamp);
         logger.info("New Average Charging duration for: {}: {} seconds.", smartObjectId,  ((AverageChargingDurationDescriptor) SingletonDataCollector.getInstance().smartObjectsMap.get(smartObjectId).getAverageDurationDescriptor()).getAverageChargingDurationSeconds());
 
         //calculate new overall charging average
         if(lastChargingDurationForStationSeconds != 0) {
-            Double newOverallAverageChargingDuration = SingletonDataCollector.getInstance().averageChargingDurationDescriptor.addChargingDurationSeconds(lastChargingDurationForStationSeconds);
+            Double newOverallAverageChargingDuration = SingletonDataCollector.getInstance().averageChargingDurationDescriptor.addChargingDuration(lastChargingDurationForStationSeconds);
             logger.info("New Overall Charging Average {} seconds.", newOverallAverageChargingDuration);
         }
     }
     private static void updateParkingDurationAverage(Boolean newParkingStatusValue, long timestamp, String smartObjectId){
-        Double lastParkingDurationForParkingLotSeconds = ((AverageParkingDurationDescriptor) SingletonDataCollector.getInstance().smartObjectsMap.get(smartObjectId).getAverageDurationDescriptor()).addParkingDurationFromStatusAndTimestamp(newParkingStatusValue, timestamp);
+        Double lastParkingDurationForParkingLotSeconds = ((AverageParkingDurationDescriptor) SingletonDataCollector.getInstance().smartObjectsMap.get(smartObjectId).getAverageDurationDescriptor()).addParkingDuration(newParkingStatusValue, timestamp);
         logger.info("New Average Parking duration for: {}: {} seconds.", smartObjectId, ((AverageParkingDurationDescriptor) SingletonDataCollector.getInstance().smartObjectsMap.get(smartObjectId).getAverageDurationDescriptor()).getAverageParkingDurationSeconds());
         //calculate new overall charging average
 
         if(lastParkingDurationForParkingLotSeconds != 0) {
-            Double newOverallAverageParkingDuration = SingletonDataCollector.getInstance().averageParkingDurationDescriptor.addParkingDurationSeconds(lastParkingDurationForParkingLotSeconds);
+            Double newOverallAverageParkingDuration = SingletonDataCollector.getInstance().averageParkingDurationDescriptor.addParkingDuration(lastParkingDurationForParkingLotSeconds);
             logger.info("New Overall Parking Average {} seconds.", newOverallAverageParkingDuration);
         }
     }

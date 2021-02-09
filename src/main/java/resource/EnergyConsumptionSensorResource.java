@@ -63,7 +63,7 @@ public class EnergyConsumptionSensorResource extends SensorResource<Double> impl
     @Override
     public void onDataChanged(SensorResource<ChargeStatusDescriptor> sensorResource, ChargeStatusDescriptor updatedValue) {
         if (sensorResource != null && sensorResource.getType().equalsIgnoreCase(ChargeStatusSensorResource.RESOURCE_TYPE)) {
-            if (updatedValue == ChargeStatusDescriptor.CHARGING) {     //If a vehicle is CHARGING, the temperature is rising
+            if (updatedValue == ChargeStatusDescriptor.CHARGING) {     //If a vehicle is CHARGING, is consuming energy
                 logger.info("Energy Consumption Sensor is notified that a vehicle is CHARGING - charge status sensor: {}", sensorResource.getId());
                 isConsumingEnergy = true;
             }

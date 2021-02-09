@@ -9,7 +9,7 @@ public class TelemetryMessage<T> {
     @JsonProperty("timestamp")
     private long timestamp;
 
-    @JsonProperty("type")
+    @JsonProperty("sensorType")
     private String type;
 
     @JsonProperty("dataValue")

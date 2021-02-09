@@ -11,7 +11,7 @@ public class AverageChargingDurationDescriptor extends AverageDurationDescriptor
         lastChargeStatus = ChargeStatusDescriptor.UNPLUGGED;
     }
 
-    public Double addChargingDurationFromStatusAndTimestamp(ChargeStatusDescriptor newChargeStatus, long timestamp){
+    public Double addChargingDuration(ChargeStatusDescriptor newChargeStatus, long timestamp){
         if(lastStartTimestamp != -1){
             //if not charging anymore calculate occupation time and update average
             if(lastChargeStatus == ChargeStatusDescriptor.CHARGING
@@ -20,7 +20,6 @@ public class AverageChargingDurationDescriptor extends AverageDurationDescriptor
                 super.addSumDurationMillis(diffInMillis);
                 super.addOccurrence();
                 lastChargeStatus = newChargeStatus;
-
 
                 return diffInMillis / 1000.0; // return last charging duration in seconds
             } //if started charging
@@ -37,7 +36,7 @@ public class AverageChargingDurationDescriptor extends AverageDurationDescriptor
 
         return 0.0;
     }
-    public Double addChargingDurationSeconds(Double chargingDurationSeconds){
+    public Double addChargingDuration(Double chargingDurationSeconds){
         super.addSumDurationMillis( (long) Math.floor(chargingDurationSeconds * 1000));
         super.addOccurrence();
         return getAverageChargingDurationSeconds();

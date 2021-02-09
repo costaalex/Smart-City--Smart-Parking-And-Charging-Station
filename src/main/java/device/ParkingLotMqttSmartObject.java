@@ -7,20 +7,13 @@ import message.TelemetryMessage;
 import model.GpsLocationDescriptor;
 import model.Led;
 import org.eclipse.paho.client.mqttv3.IMqttClient;
-import org.eclipse.paho.client.mqttv3.IMqttMessageListener;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import resource.*;
-
 import java.util.Map;
-import java.util.Optional;
-
-import static resource.LedActuatorResource.RESOURCE_NAME;
 
 public class ParkingLotMqttSmartObject extends MqttSmartObject {
-
 
         public static final String PARKING_TOPIC = BASIC_TOPIC + "/parking_lot";
 

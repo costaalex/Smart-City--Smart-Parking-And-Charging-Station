@@ -11,7 +11,7 @@ public class AverageParkingDurationDescriptor extends AverageDurationDescriptor{
         lastParkingState = false;
     }
 
-    public Double addParkingDurationFromStatusAndTimestamp(Boolean newParkingState, long timestamp){
+    public Double addParkingDuration(Boolean newParkingState, long timestamp){
         if(lastStartTimestamp != -1){
             //if not parking lot is freed calculate occupation time and update average
             if(lastParkingState == true && newParkingState == false){
@@ -40,7 +40,7 @@ public class AverageParkingDurationDescriptor extends AverageDurationDescriptor{
         return timeUnit.convert(diffInMillies, TimeUnit.MILLISECONDS);
     }
 
-    public Double addParkingDurationSeconds(Double parkingDurationSeconds){
+    public Double addParkingDuration(Double parkingDurationSeconds){
         super.addSumDurationMillis((long) Math.floor(parkingDurationSeconds * 1000));
         super.addOccurrence();
         return getAverageParkingDurationSeconds();

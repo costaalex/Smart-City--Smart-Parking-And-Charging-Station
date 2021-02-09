@@ -10,11 +10,10 @@ public abstract class SensorResource<T> {
 
     private static final Logger logger = LoggerFactory.getLogger(SensorResource.class);
 
-    protected List<ResourceDataListener<T>> resourceListenerList;
-
     private String type;
     private String id;
     private long timestamp;
+    protected List<ResourceDataListener<T>> resourceListenerList;
 
     public SensorResource() {
         this.resourceListenerList = new ArrayList<>();

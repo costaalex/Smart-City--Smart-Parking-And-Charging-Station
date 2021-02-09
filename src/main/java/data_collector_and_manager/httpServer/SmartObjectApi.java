@@ -1,6 +1,7 @@
 package data_collector_and_manager.httpServer;
 
 import com.codahale.metrics.annotation.Timed;
+import data_collector_and_manager.dto.SingletonDataCollector;
 import data_collector_and_manager.dto.SmartObject;
 import io.dropwizard.jersey.errors.ErrorMessage;
 import io.swagger.annotations.Api;
@@ -17,6 +18,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Optional;
 
@@ -70,7 +72,11 @@ public class SmartObjectApi {
             if(!smartObjectMap.isPresent())
                 return Response.status(Response.Status.NOT_FOUND).type(MediaType.APPLICATION_JSON_TYPE).entity(new ErrorMessage(Response.Status.NOT_FOUND.getStatusCode(),"Smart Objects Not Found !")).build();
 
-            return Response.ok(smartObjectMap.get()).build();
+            ArrayList<Object> smartObjectsData = new ArrayList<>();
+            smartObjectsData.add(smartObjectMap.get());
+            smartObjectsData.add(SingletonDataCollector.getInstance().averageChargingDurationDescriptor);
+            smartObjectsData.add(SingletonDataCollector.getInstance().averageParkingDurationDescriptor);
+            return Response.ok(smartObjectsData).build();
 
         } catch (Exception e){
             e.printStackTrace();
