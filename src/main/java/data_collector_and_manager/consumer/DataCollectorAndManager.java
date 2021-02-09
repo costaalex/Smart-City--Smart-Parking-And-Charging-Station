@@ -22,6 +22,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static device.ChargingStationMqttSmartObject.CHARGING_TOPIC;
+import static device.MqttSmartObject.BASIC_TOPIC;
 import static device.MqttSmartObject.CONTROL_TOPIC;
 import static device.ParkingLotMqttSmartObject.PARKING_TOPIC;
 import static resource.LedActuatorResource.RESOURCE_NAME;
@@ -36,7 +37,7 @@ public class DataCollectorAndManager {
     //PORT of the target MQTT Broker
     private static int BROKER_PORT = 1883;
 
-    private static final String TARGET_TOPIC = "#";
+    private static final String TARGET_TOPIC = BASIC_TOPIC + "/#";
     private static ObjectMapper mapper;
     static IMqttClient client;
 
